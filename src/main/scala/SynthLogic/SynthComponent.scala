@@ -1,0 +1,6 @@
+package SynthLogic
+
+trait SynthComponent {
+
+}
+

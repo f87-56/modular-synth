@@ -1,0 +1,5 @@
+package SynthLogic
+
+class ModularSynthesizer {
+
+}
