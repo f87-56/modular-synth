@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/39556757/best-easiest-way-to-implement-node-based-graphical-gui
