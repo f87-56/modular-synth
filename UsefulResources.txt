@@ -1,2 +1,36 @@
 https://stackoverflow.com/questions/39556757/best-easiest-way-to-implement-node-based-graphical-gui
 javaFX cubic curve
+
+controlsFX for input validation:
+libraryDependencies += "org.controlsfx" % "controlsfx" % "11.0.2"
+
+https://docs.oracle.com/javase/8/javafx/user-interface-tutorial/
+Demo apps for UI:
+https://github.com/scalafx/scalafx-ensemble
+
+TestFX and Junit5 for GUI testing:
+//Testfx
+libraryDependencies += "org.testfx" % "testfx-junit5" % "4.0.16-alpha" % Test
+
+//Junit
+libraryDependencies += "org.junit.jupiter" % "junit-jupiter-api" % "5.7.0-M1" % Test
+libraryDependencies += "org.junit.jupiter" % "junit-jupiter-engine" % "5.7.0-M1" % Test
+libraryDependencies += "org.junit.platform" % "junit-platform-runner" % "1.7.0-M1" % Test
+
+//Junit5 interface, that allows running Junit tests from Scala
+//This requires a plugin in project/plugins.sbt
+resolvers in ThisBuild += Resolver.jcenterRepo
+libraryDependencies ++= Seq(
+  "net.aichler" % "jupiter-interface" % JupiterKeys.jupiterVersion.value % Test
+)
+And set this into plugins.sbt:
+resolvers += Resolver.jcenterRepo
+addSbtPlugin("net.aichler" % "sbt-jupiter-interface" % "0.8.3")
+
+https://www.softwaretestinghelp.com/gui-testing/
+
+Ask about anonymous types:
+    stage = new JFXApp3.PrimaryStage:
+      title = "Hello Stage"
+      width = 600
+      height = 450
