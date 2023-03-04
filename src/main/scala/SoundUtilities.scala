@@ -38,8 +38,6 @@ object SoundUtilities:
       .map(a => (a._2 -> genNoteFrequency(a._1))).toMap
 
 
-
-
 object MathUtilities:
 
   def clamp(lower:Int, upper:Int, value:Int) =

@@ -9,4 +9,10 @@ class SynthRuntime {
   private var inputMidiDevice:Option[midi.MidiDevice] = None
   def buildOutput = ???
   def send() = ???
+
+  /**
+   * Change the device this uses
+   * @return Unit
+   */
+  def setMidiInput() = ???
 }

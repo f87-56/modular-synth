@@ -34,17 +34,11 @@ object MainGUI extends JFXApp3:
     stage.scene = scene
 
     scene.onKeyPressed = (event) => {
-      println(event.getEventType)
-      MKBInputHandler.pressedKeys += event.getCode
-      println(MKBInputHandler.pressedKeys.mkString(","))
+      MKBInputHandler.keyInput(event)
     }
-
-    scene.onKeyReleased = (event) => {println(event.getEventType)
-      MKBInputHandler.pressedKeys -= event.getCode
-      println(MKBInputHandler.pressedKeys.mkString(","))
+    scene.onKeyReleased = (event) => {
+      MKBInputHandler.keyInput(event)
     }
-    scene.onKeyTyped = (event) => {println(event.getEventType)}
-    scene.onInputMethodTextChanged = (event) => {println("sdafsafj")}
 
 
 // Adding a text field
