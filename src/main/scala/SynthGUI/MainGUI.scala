@@ -1,6 +1,5 @@
 package SynthGUI
 
-import SynthGUI.MKBInputHandler
 import scalafx.application.JFXApp3
 import scalafx.scene.AccessibleRole.CheckBox
 import scalafx.scene.Scene
@@ -15,7 +14,7 @@ import scalafx.stage.FileChooser
 import scalafx.Includes._
 
 
-object TestApp extends JFXApp3:
+object MainGUI extends JFXApp3:
 
   override def start(): Unit =
 
@@ -34,46 +33,18 @@ object TestApp extends JFXApp3:
     val scene = Scene(parent = root)  // A scene contains the scene graph (the data structure that represents the UI)
     stage.scene = scene
 
-    // Key input
     scene.onKeyPressed = (event) => {
-      MKBInputHandler.keyDown(event.getCode)
+      println(event.getEventType)
+      MKBInputHandler.pressedKeys += event.getCode
+      println(MKBInputHandler.pressedKeys.mkString(","))
     }
+
     scene.onKeyReleased = (event) => {println(event.getEventType)
-      MKBInputHandler.keyUp(event.getCode)
+      MKBInputHandler.pressedKeys -= event.getCode
+      println(MKBInputHandler.pressedKeys.mkString(","))
     }
+    scene.onKeyTyped = (event) => {println(event.getEventType)}
+    scene.onInputMethodTextChanged = (event) => {println("sdafsafj")}
 
-    val rectangle = new Rectangle:
-      x = 100
-      y = 100
-      width = 50
-      height = 50
-      fill = Color.Blue
 
-    root.children += rectangle
-
-    // Adding a button
-    val button = Button("I'm a button!")
-    button.onAction = (event) => {println("Click")
-      // Make the user choose a file!
-      val fileChooser = new FileChooser
-      val selectedFile = fileChooser.showOpenDialog(stage)
-      println(selectedFile)
-    }
-    root.children += button
-
-    // Adding a Label
-    val label = Label("Ahoy, there!")
-    label.textFill = Color.Blue
-    label.font = Font.font(36)
-    // What to focus on when the label is clicked?
-    label.labelFor = rectangle
-    root.children += label
-
-    // Adding a CheckBox
-    val checkBox = scalafx.scene.control.CheckBox("TextBox")
-
-    // Properties: This allows us to automatically update values upon user interaction:
-    checkBox.selected <==> label.visible
-    root.children += checkBox
-
-    // Adding a text field
+// Adding a text field
