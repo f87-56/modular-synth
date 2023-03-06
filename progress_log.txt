@@ -1,0 +1,21 @@
+Week 1 and 2:
+The first week was uneventful in terms of the project. The exam week and other events consumed it nearly entirely.
+I did manage to make a basic project setup.
+
+At the end of the second week I managed to get the project under way. Most of the time during the week was spent learning
+the basics of ScalaFX, as well as familiarizing myself with ScalaTest.
+All in all, I have managed to build a basic skeleton from which functionality could be derived in the near future.
+
+The KeyboardMidiControl class has been partially implemented and tested: Keystrokes can now generate correct Midi messages.
+The classes SynthRuntime, ModularSynthesizer, SynthComponent, and Parameter have been partially implemented, but not tested.
+As of now, they are not functional.
+
+Though I am lagging behind when it comes to the project plan, that was to be expected. I would say that once I got things
+started, the initial stage has been unexpectedly smooth. Thus far, no difficult errors have exhibited, but an unexpected
+challenge regarding the synth's type structure has already presented itself.
+
+The workload used during these two weeks was about 15 hours, not including any self-study or learning of frameworks.
+I am lagging behind my planned schedule. I would say I'm about halfway to the point that the plan remarks. All of the features
+remarked are still under construction. I was,however, half-expecting this: the coming week offers a slightly
+more relaxed goal, which I can use to catch up.
+
