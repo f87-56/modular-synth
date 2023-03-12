@@ -1,9 +1,5 @@
 package SynthLogic
 
-// Inspired by Unreal Engine:
-// Also rent
-//sealed trait SignalType:
-  //def defautlValue
 sealed trait SignalType:
   type T
   val value:T
@@ -25,12 +21,12 @@ class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends S
 
 /**
  *
- * @param name
- * @param description
- * @param takesInput
- * @param defaultValue
- * @param input
- * @tparam T
+ * @param name The visible name of this parameter
+ * @param description A description for the parameter
+ * @param takesInput Can this parameter take input from another SynthComponent?
+ * @param defaultValue Default value to be given if no input exists
+ * @param input The (optional) SynthComponent that feeds data to this parameter
+ * @tparam T  The signal type of this parameter
  */
 case class Parameter[+T<:SignalType](name:String, description:String, takesInput:Boolean = true, defaultValue:T,
                                     input:Option[SynthComponent[T]] = None):
@@ -43,6 +39,6 @@ end Parameter
 /**
  * For parameters where discrete choices are presented
  */
-trait EnumerableParam(choices:Vector[String]):
+trait EnumerableParam(choices:String*):
   this: Parameter[IntSignal] =>
   def enumValue:String = choices.lift(this.value.value).getOrElse("")

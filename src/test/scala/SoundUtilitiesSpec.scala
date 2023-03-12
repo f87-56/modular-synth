@@ -1,4 +1,4 @@
-import SoundUtilities.*
+import SynthUtilities.SoundUtilities.*
 import org.scalatest.*
 import org.scalatest.flatspec.*
 import org.scalatest.matchers.*
