@@ -1,48 +1,48 @@
 package SynthLogic
 
-import sun.misc.Signal
-
-import java.util.function.DoubleUnaryOperator
-
-// the different types of data our parameters can take. Each hold different kinds of data.
-sealed trait Signal:
+// Inspired by Unreal Engine:
+// Also rent
+//sealed trait SignalType:
+  //def defautlValue
+sealed trait SignalType:
   type T
-  def value:T
-end Signal
+  val value:T
 
-
-// The Value traits represent a discrete value
-// The Signal traits represent a collection of values
-trait BoolValue extends Signal:
+class BoolSignal(val value:Boolean = false) extends SignalType:
   type T = Boolean
-/**
- * The EnumSignal can only take discrete values
- */
-trait EnumValue extends Signal:
-  type T = Int
-trait ByteValue extends Signal:
-  type T = Byte
 
-trait FloatValue extends Signal:
+class DoubleSignal(val value:Double = 0.0) extends SignalType:
   type T = Double
 
-trait FloatSignal extends Signal:
+class IntSignal(val value:Int = 0) extends SignalType:
+  type T = Int
+
+class DoubleVectorSignal(val value:Vector[Double] = Vector()) extends SignalType:
   type T = Vector[Double]
 
-/**
- * For frequency domain signal processing
- */
-trait FreqDomainSignal extends Signal:
+class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends SignalType:
   type T = Map[Double, Double]
 
 /**
- * All synth parameters are treated as signals.
+ *
  * @param name
- * @param descrition
- * @param defaultValue The default value of a parameter is a signal (For example, a constant-valued signal!)
- * @tparam U The type of signal this parameter represents.
+ * @param description
+ * @param takesInput
+ * @param defaultValue
+ * @param input
+ * @tparam T
  */
-class Parameter[U<:Signal](name:String, descrition:String, takesInput:Boolean = true, defaultValue:U,
-                          input:Option[SynthComponent[U]] = None):
-  def value:U = input.map(_.output).getOrElse(defaultValue)
+case class Parameter[+T<:SignalType](name:String, description:String, takesInput:Boolean = true, defaultValue:T,
+                                    input:Option[SynthComponent[T]] = None):
 
+  def value:T = input.map(_.output).getOrElse(defaultValue)
+end Parameter
+object Parameter:
+end Parameter
+
+/**
+ * For parameters where discrete choices are presented
+ */
+trait EnumerableParam(choices:Vector[String]):
+  this: Parameter[IntSignal] =>
+  def enumValue:String = choices.lift(this.value.value).getOrElse("")

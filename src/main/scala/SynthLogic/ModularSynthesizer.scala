@@ -6,7 +6,7 @@ package SynthLogic
 class ModularSynthesizer() {
   // Here just to manage calls, no practical use yet.
   val voices:Array[Int] = ???
-  val outputComponent:SynthComponent[FloatValue] =
+  val outputComponent:SynthComponent[DoubleSignal] =
     ComponentLibrary.passthrough
   def output:Double = outputComponent.output.value
 }
