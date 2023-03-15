@@ -38,6 +38,8 @@ trait SynthComponent[+T<:SignalType] {
 
   def output:T
 }
+
+// TODO : Provide operators for wiring these together
 object SynthComponent:
 
 end SynthComponent
