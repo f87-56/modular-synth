@@ -25,13 +25,30 @@ class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends S
  * @param description A description for the parameter
  * @param takesInput Can this parameter take input from another SynthComponent?
  * @param defaultValue Default value to be given if no input exists
- * @param input The (optional) SynthComponent that feeds data to this parameter
+ * @param input The (optional) SynthComponent that feeds data to this parameter. WARNING! THIS FIELD IS MUTABLE
  * @tparam T  The signal type of this parameter
  */
 case class Parameter[+T<:SignalType](name:String, description:String, takesInput:Boolean = true, defaultValue:T,
-                                    input:Option[SynthComponent[T]] = None):
-
+                                     private[this] var input:Option[SynthComponent[T]] = None):
   def value:T = input.map(_.output).getOrElse(defaultValue)
+
+  /**
+   * TODO: Make this return a Try[]
+   * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.
+   * Connect a SynthComponent to this parameter
+   * @param newInput The new input component
+   */
+  infix def <==(newInput:SynthComponent[SignalType]):Unit =
+    newInput match
+      case a:SynthComponent[T] => input = Some(a)
+      case _ => ()
+
+  /**
+   * WARNING! AN EFFECTFUL FUNCTION
+   * Disconnect the current input from this parameter
+   * "Cut" the line feeding into this parameter (x)
+   */
+  def x(): Unit = input = None
 end Parameter
 object Parameter:
 end Parameter

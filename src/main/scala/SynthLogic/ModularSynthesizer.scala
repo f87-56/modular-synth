@@ -5,8 +5,8 @@ package SynthLogic
  */
 class ModularSynthesizer(finalGather:SynthComponent[DoubleSignal]) {
   // Here just to manage calls, no practical use yet.
-  val voices:Array[Int] = ???
-  val outputComponent: ComponentLibrary.PassThrough = ???
+  val voices:Array[Int] = Array.ofDim[Int](16)
+  val outputComponent: ComponentLibrary.PassThrough = ComponentLibrary.passthrough
   def output:Double = outputComponent.output.value
 }
 

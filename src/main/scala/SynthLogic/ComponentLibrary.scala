@@ -21,9 +21,7 @@ object ComponentLibrary {
       Vector(
         new Parameter[IntSignal]("type", "", false, IntSignal(0)) with EnumerableParam("sine", "square", "sawtooth", "noise")
       )
-
     val time:Double = 0.0
-
     override def output: DoubleSignal = DoubleSignal(MathUtilities.parametricSin(1,2*math.Pi*440,0,0,time))
 
   def passthrough: PassThrough = PassThrough()

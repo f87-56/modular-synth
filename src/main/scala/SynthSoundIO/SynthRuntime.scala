@@ -19,7 +19,7 @@ abstract class SynthRuntime extends Receiver{
    * @param msg
    * @param timestamp
    */
-  def send(msg:MidiMessage, timestamp:Long) =
+  def send(msg:MidiMessage, timestamp:Long): Unit =
     // Superimpose resulting waves from our synths
     activeSynths.map(_.map(_.output).getOrElse(0.0)).sum
 
