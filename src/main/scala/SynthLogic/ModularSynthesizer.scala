@@ -28,8 +28,9 @@ class ModularSynthesizer(pComponents:Vector[SynthComponent[SignalType]],
   def components: Set[SynthComponent[SignalType]] = components_
 
   val outputComponent = ComponentLibrary.passthrough
+  // Connect the finalGather to the output.
   finalGather.foreach(
-    outputComponent.parameters(0) <== _
+    outputComponent.parameters.head <== _
   )
 
   // Here just to manage calls, no practical use yet.

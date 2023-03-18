@@ -46,8 +46,15 @@ package SynthUtilities:
     def clamp(lower:Int, upper:Int, value:Int): Int =
       math.min(math.max(lower,value), upper)
 
+    def clamp(lower: Double, upper: Double, value: Double): Double =
+      math.min(math.max(lower, value), upper)
+
     def parametricSin(amplitude:Double, angularVelocity:Double, phase:Double, offset:Double, x:Double): Double =
       amplitude*math.sin(angularVelocity*x)+offset
     def parametricCos(amplitude:Double, angularVelocity:Double, phase:Double, offset:Double, x:Double): Double =
       parametricSin(amplitude, angularVelocity:Double, phase+Math.PI/2, offset, x:Double)
+
+    def lerp(a:Double, b:Double, alpha:Double) =
+      val cAlpha = clamp(0,1,alpha)
+      a * alpha + b*(1-alpha)
   end MathUtilities

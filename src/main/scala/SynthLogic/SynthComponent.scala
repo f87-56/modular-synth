@@ -46,15 +46,15 @@ trait SynthComponent[+T<:SignalType] {
 
   // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
   // I haven't figured out how I could prevent this.
-  def addConnection(parameter: Parameter[SignalType]):Unit =
+  final def addConnection(parameter: Parameter[SignalType]):Unit =
     connections += parameter
 
   // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
-  def disconnect(parameter: Parameter[SignalType]):Unit =
+  final def disconnect(parameter: Parameter[SignalType]):Unit =
     this.connections -= parameter
 
   // Disconnects everything from this SynthComponent.
-  def xAll(): Unit =
+  final def xAll(): Unit =
     // remove all
     this.connections.foreach(_.x())
     this.connections.clear()
@@ -62,7 +62,7 @@ trait SynthComponent[+T<:SignalType] {
 
 
   // Disconnects all from the output side.
-  def xOutputs(): Unit =
+  final def xOutputs(): Unit =
   // remove all
     this.connections.foreach(_.x())
     this.connections.clear()
