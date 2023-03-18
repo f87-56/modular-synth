@@ -1,5 +1,8 @@
 package SynthLogic
 
+import java.security.InvalidParameterException
+import scala.util.{Failure, Success, Try}
+
 sealed trait SignalType:
   type T
   val value:T
@@ -28,27 +31,42 @@ class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends S
  * @param input The (optional) SynthComponent that feeds data to this parameter. WARNING! THIS FIELD IS MUTABLE
  * @tparam T  The signal type of this parameter
  */
-case class Parameter[+T<:SignalType](name:String, description:String, takesInput:Boolean = true, defaultValue:T,
-                                     private[this] var input:Option[SynthComponent[T]] = None):
+case class Parameter[+T<:SignalType](name: String, description: String, takesInput: Boolean = true, defaultValue: T,
+                                     parent: SynthComponent[SignalType],
+                                     private[this] var input: Option[SynthComponent[T]] = None):
   def value:T = input.map(_.output).getOrElse(defaultValue)
+
+  /**
+   * A getter for input.
+   * @return
+   */
+  def getInput:Option[SynthComponent[T]] = input
 
   /**
    * TODO: Make this return a Try[]
    * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.
    * Connect a SynthComponent to this parameter
+   *
    * @param newInput The new input component
    */
-  infix def <==(newInput:SynthComponent[SignalType]):Unit =
+  infix def <==(newInput:SynthComponent[SignalType]):Try[Int] =
     newInput match
-      case a:SynthComponent[T] => input = Some(a)
-      case _ => ()
+      case a:SynthComponent[T] =>
+        newInput.addConnection(this)
+        input = Some(a)
+        Success(1)
+      case _ => Failure(InvalidParameterException())
 
   /**
    * WARNING! AN EFFECTFUL FUNCTION
    * Disconnect the current input from this parameter
    * "Cut" the line feeding into this parameter (x)
    */
-  def x(): Unit = input = None
+  def x(): Unit =
+    input.foreach(_.disconnect(this))
+    input = None
+
+
 end Parameter
 object Parameter:
 end Parameter

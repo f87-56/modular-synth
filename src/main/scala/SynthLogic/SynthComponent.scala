@@ -9,6 +9,14 @@ import scala.util.{Failure, Success, Try}
  */
 trait SynthComponent[+T<:SignalType] {
   val parameters:Seq[Parameter[SignalType]]
+  def output:T
+
+  // The parameters (of other components) this component outputs to
+  // Here, we don't care about the types, since that is handled by
+  // Parameter
+  // OBSERVE: IT IS MUTABLE
+  private val connections:scala.collection.mutable.Set[Parameter[SignalType]] =
+    scala.collection.mutable.Set[Parameter[SignalType]]()
 
   /**
    * Within Synthcomponent, access a parameter with its proper type.
@@ -17,7 +25,7 @@ trait SynthComponent[+T<:SignalType] {
    * @tparam U  The signal type of the parameter
    * @return
    */
-  def param[U<:SignalType](name:String):Try[Parameter[U]] =
+  private def parameter[U<:SignalType](name:String):Try[Parameter[U]] =
     val rightType:Seq[Parameter[U]] = parameters.collect{
       case a:Parameter[U] => a
     }
@@ -34,12 +42,32 @@ trait SynthComponent[+T<:SignalType] {
    * @return
    */
   def paramValue[U<:SignalType](name:String):Try[U] =
-    param[U](name).map(_.value)
+    parameter[U](name).map(_.value)
 
-  def output:T
+  // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
+  // I haven't figured out how I could prevent this.
+  def addConnection(parameter: Parameter[SignalType]):Unit =
+    connections += parameter
+
+  // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
+  def disconnect(parameter: Parameter[SignalType]):Unit =
+    this.connections -= parameter
+
+  // Disconnects everything from this SynthComponent.
+  def xAll(): Unit =
+    // remove all
+    this.connections.foreach(_.x())
+    this.connections.clear()
+    this.parameters.foreach(_.x())
+
+
+  // Disconnects all from the output side.
+  def xOutputs(): Unit =
+  // remove all
+    this.connections.foreach(_.x())
+    this.connections.clear()
 }
 
-// TODO : Provide operators for wiring these together
 object SynthComponent:
 
 end SynthComponent

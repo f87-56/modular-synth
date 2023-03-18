@@ -10,7 +10,7 @@ import javax.sound.midi.{MidiMessage, Receiver, Transmitter}
 abstract class SynthRuntime extends Receiver{
 
   // 16 midi channels, 16 (possible) synths.
-  private var activeSynths:Array[Option[ModularSynthesizer]] = Array.fill(16)(None)
+  private val activeSynths:Array[Option[ModularSynthesizer]] = Array.fill(16)(None)
   private var inputMidiDevice:Option[midi.MidiDevice] = None
   def buildOutput = ???
 
