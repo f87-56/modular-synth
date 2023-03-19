@@ -44,9 +44,9 @@ object ComponentLibrary {
 
   // Provides a time-varying multiplier, from 0 to 1.
   class Envelope extends SynthComponent[DoubleSignal]():
-    val attack = Parameter[DoubleSignal]("attack", "", false, DoubleSignal(0.1), this)
+    val attack = Parameter[DoubleSignal]("attack", "", false, DoubleSignal(0.3), this)
     val decay = Parameter[DoubleSignal]("decay", "", false, DoubleSignal(2), this)
-    val sustain = Parameter[DoubleSignal]("sustain", "", false, DoubleSignal(0.2), this)
+    val sustain = Parameter[DoubleSignal]("sustain", "", false, DoubleSignal(0.1), this)
     val release = Parameter[DoubleSignal]("release", "", false, DoubleSignal(2), this)
 
     val attackRate = 1.0/attack.defaultValue.value

@@ -60,4 +60,10 @@ package SynthUtilities:
     def lerp(a:Double, b:Double, alpha:Double) =
       val cAlpha = clamp(0,1,alpha)
       a * alpha + b*(1-alpha)
+
+    // Break the short into two, separate bytes.
+    def breakToBytes(s:Short):Seq[Byte] =
+      Seq(s.toByte, (s >>> 8).toByte)
+
+
   end MathUtilities

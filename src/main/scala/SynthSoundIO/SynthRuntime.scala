@@ -1,5 +1,6 @@
 package SynthSoundIO
 import SynthLogic.ModularSynthesizer
+import SynthUtilities.MathUtilities
 
 import javax.sound.midi
 import javax.sound.midi.{MidiDevice, MidiMessage, Receiver, ShortMessage, Transmitter}
@@ -16,12 +17,15 @@ class SynthRuntime extends Receiver:
   private var inputMidiDevice:Option[midi.MidiDevice] = None
 
   private val BUFFER_SIZE = 256
+  private val BIT_DEPTH = 16
+  private val BYTE_SIZE = 8
+  private val BYTE_BUFFER_SIZE = BIT_DEPTH/BYTE_SIZE*BUFFER_SIZE
 
   // TODO: Error handling
   // TODO: Remove magic constants
   // TODO: Configurability
   // Hopefully temporary. We just need to send audio now.
-  val format = new AudioFormat(44100, 8, 1, true, false)
+  val format = new AudioFormat(44100, 16, 1, true, false)
   //val info = new DataLine.Info(classOf[SourceDataLine], format)
   // format.issupported etc. etc.
   val line:SourceDataLine = AudioSystem.getSourceDataLine(format)
@@ -34,7 +38,7 @@ class SynthRuntime extends Receiver:
     while(true) do
       //println(buildOutput.mkString(","))
       //println("\n\n")
-      line.write(buildOutput(None), 0, BUFFER_SIZE)
+      line.write(buildOutput(None), 0, BYTE_BUFFER_SIZE)
 
   // TODO: Include some way to close the data line on destruction.
   // line.close()
@@ -42,7 +46,9 @@ class SynthRuntime extends Receiver:
 
   def buildOutput(shortMessage:Option[ShortMessage]):Array[Byte] =
     (for(i <- 0 until BUFFER_SIZE) yield
-      (activeSynth.output(shortMessage)*Byte.MaxValue).toByte).toArray
+      (activeSynth.output(shortMessage)*Short.MaxValue).toShort)
+      .flatMap(a => MathUtilities.breakToBytes(a))
+      .toArray
 
   // TODO: Make it run on another thread
   /**
