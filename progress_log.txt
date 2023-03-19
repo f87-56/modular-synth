@@ -22,4 +22,28 @@ more relaxed goal, which I can use to catch up.
 
 Week 3 and 4:
 
-I finally got my first notes! It seems that 
+I finally got to play my first notes!
+
+I managed to solve my problems of the synth's internal type structure to a satisfactory level. This has thus far been the biggest
+time drain. No new especially difficult problems have presented themselves.
+
+I have spent the two weeks completing the implementations of SynthComponent and Parameter. This means fleshing out the
+channels through which data flows, as well as the methods to link them together. A new type, RuntimeContext type provides to
+the components information about the synth's state (e.g. the time). I have also fleshed out ModularSynthesizer's constructor.
+
+Though I did not get to implementing all the wanted SynthComponents, the ones I have implemented have proven the abilities
+of the program's design. Implementing new components is fairly straight-forward, as is building a synth from those components:
+A component is implemented by extending the class SynthComponent, and defining its abstarct members "parameters" and
+"output". Components are wired together by using the parameter's <== operator.
+
+I'd say the SynthComponent class and Parameter class now have their final form.
+Preliminary, manual testing has been applied to the new implemented features, though no systematic tests has been conducted.
+
+Admittedly, the code is a rather messy state at the moment. Specifically SynthRuntime and ModularSynth consist of
+somewhat-functional parts cobbled together for temporary testing. This should be addressed in the following weeks.
+I now start, in general, to turn my gaze towards usability. This should be a big help when testing.
+
+The workload spent on the project has been about 25 hours.
+
+I am clearly lagging behind the project plan: I have still yet to integrate MIDI controls, I lack the filter component,
+and the UI is still blank.
