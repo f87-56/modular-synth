@@ -24,6 +24,8 @@ package SynthUtilities:
       val clampedNum = MathUtilities.clamp(MinMidiNoteNum, MaxMidiNoteNum, MidiNumber)
       NoteFrequencies.getOrElse(clampedNum, 0.0)
 
+    def sampleToTime(sampleNum:Int, sampleRate:Int): Double = sampleNum/(sampleRate.toDouble)
+
     // midi codes of middle octave to their corresponding frequencies
     private val MiddleA = 69 -> 440.0
 
@@ -38,6 +40,7 @@ package SynthUtilities:
       (MinMidiNoteNum to MaxMidiNoteNum)
         .zipWithIndex
         .map(a => a._2 -> genNoteFrequency(a._1)).toMap
+
   end SoundUtilities
 
 

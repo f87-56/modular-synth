@@ -9,7 +9,7 @@ import scala.util.{Failure, Success, Try}
  */
 trait SynthComponent[+T<:SignalType] {
   val parameters:Seq[Parameter[SignalType]]
-  def output:T
+  def output(runtimeContext: RuntimeContext):T
 
   // The parameters (of other components) this component outputs to
   // Here, we don't care about the types, since that is handled by
@@ -25,7 +25,7 @@ trait SynthComponent[+T<:SignalType] {
    * @tparam U  The signal type of the parameter
    * @return
    */
-  private def parameter[U<:SignalType](name:String):Try[Parameter[U]] =
+  def parameter[U<:SignalType](name:String):Try[Parameter[U]] =
     val rightType:Seq[Parameter[U]] = parameters.collect{
       case a:Parameter[U] => a
     }
@@ -41,8 +41,8 @@ trait SynthComponent[+T<:SignalType] {
    * @tparam U  The signal type of the parameter
    * @return
    */
-  def paramValue[U<:SignalType](name:String):Try[U] =
-    parameter[U](name).map(_.value)
+  def paramValue[U<:SignalType](name:String, runtimeContext: RuntimeContext):Try[U] =
+    parameter[U](name).map(_.value(runtimeContext))
 
   // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
   // I haven't figured out how I could prevent this.
