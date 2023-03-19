@@ -82,7 +82,12 @@ object ModularSynthesizer:
     (immediatePrev ++ immediatePrev.flatMap(uproot(_, immediatePrev ++ exclude))) + component
 
   def default: ModularSynthesizer =
-    ModularSynthesizer(Vector(), Some(ComponentLibrary.Oscillator()), 44100)
+    val a = ComponentLibrary.Oscillator()
+    val b = ComponentLibrary.Amplifier()
+    val c = ComponentLibrary.Envelope()
+    b.gain <== c
+    b.input <== a
+    ModularSynthesizer(Vector(a,b,c), Some(b), 44100)
 
 end ModularSynthesizer
 

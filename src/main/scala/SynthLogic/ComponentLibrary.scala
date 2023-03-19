@@ -46,7 +46,7 @@ object ComponentLibrary {
   class Envelope extends SynthComponent[DoubleSignal]():
     val attack = Parameter[DoubleSignal]("attack", "", false, DoubleSignal(0.1), this)
     val decay = Parameter[DoubleSignal]("decay", "", false, DoubleSignal(2), this)
-    val sustain = Parameter[DoubleSignal]("sustain", "", false, DoubleSignal(1), this)
+    val sustain = Parameter[DoubleSignal]("sustain", "", false, DoubleSignal(0.2), this)
     val release = Parameter[DoubleSignal]("release", "", false, DoubleSignal(2), this)
 
     val attackRate = 1.0/attack.defaultValue.value
@@ -62,7 +62,7 @@ object ComponentLibrary {
       case Attack, DecaySustain, Release, Dead
 
   // What "phase" are we in?
-    private var state = State.Dead
+    private var state = State.Attack
     // When did the phase start?
     private var stateStartTime = 0.0
     // the previous value
