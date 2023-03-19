@@ -22,6 +22,7 @@ class DoubleVectorSignal(val value:Vector[Double] = Vector()) extends SignalType
 class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends SignalType:
   type T = Map[Double, Double]
 
+// TODO: Add upper and lower bounds
 /**
  *
  * @param name The visible name of this parameter
@@ -34,7 +35,9 @@ class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends S
 case class Parameter[+T<:SignalType](name: String, description: String, takesInput: Boolean = true, defaultValue: T,
                                      parent: SynthComponent[SignalType],
                                      private[this] var input: Option[SynthComponent[T]] = None):
-  def value:T = input.map(_.output).getOrElse(defaultValue)
+  
+  if(!takesInput) then input = None
+  def value(context:RuntimeContext):T = input.map(_.output(context)).getOrElse(defaultValue)
 
   /**
    * A getter for input.
@@ -45,11 +48,12 @@ case class Parameter[+T<:SignalType](name: String, description: String, takesInp
   /**
    * TODO: Make this return a Try[]
    * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.
-   * Connect a SynthComponent to this parameter
+   * Connect a SynthComponent to this parameter. This is THE ONLY method from which it can be done.
    *
    * @param newInput The new input component
    */
   infix def <==(newInput:SynthComponent[SignalType]):Try[Int] =
+    if(!takesInput) then Failure(IllegalArgumentException())
     newInput match
       case a:SynthComponent[T] =>
         newInput.addConnection(this)
@@ -76,4 +80,5 @@ end Parameter
  */
 trait EnumerableParam(choices:String*):
   this: Parameter[IntSignal] =>
-  def enumValue:String = choices.lift(this.value.value).getOrElse("")
+  def enumValue(runtimeContext: RuntimeContext):String =
+    choices.lift(this.value(runtimeContext).value).getOrElse("")

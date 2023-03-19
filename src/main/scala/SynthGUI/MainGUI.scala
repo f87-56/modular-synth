@@ -33,6 +33,9 @@ object MainGUI extends JFXApp3:
     val scene = Scene(parent = root)  // A scene contains the scene graph (the data structure that represents the UI)
     stage.scene = scene
 
+    // The main synth runtime.
+    val runtime = SynthSoundIO.SynthRuntime()
+
     scene.onKeyPressed = (event) => {
       MKBInputHandler.keyInput(event)
     }

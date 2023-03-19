@@ -2,27 +2,25 @@ package SynthSoundIO
 import SynthLogic.ModularSynthesizer
 
 import javax.sound.midi
-import javax.sound.midi.{MidiDevice, MidiMessage, Receiver, Transmitter}
+import javax.sound.midi.{MidiDevice, MidiMessage, Receiver, ShortMessage, Transmitter}
 import javax.sound.sampled.{AudioFormat, AudioSystem, DataLine, SourceDataLine}
 
 /**
  * The "Executuion ground" for modular synthesizers. Handles passing information between the sound system and modular synthesizers.
  */
-class SynthRuntime extends Receiver{
+class SynthRuntime extends Receiver:
 
   // 16 midi channels, 16 (possible) synths.
   //private val activeSynths:Array[Option[ModularSynthesizer]] = Array.fill(16)(None)
-  val activeSynth = ModularSynthesizer.default
+  val activeSynth: ModularSynthesizer = ModularSynthesizer.default
   private var inputMidiDevice:Option[midi.MidiDevice] = None
-
-  private var time = 0
 
   private val BUFFER_SIZE = 256
 
-  // Hopefully temporary. We just need to send audio now.
   // TODO: Error handling
   // TODO: Remove magic constants
   // TODO: Configurability
+  // Hopefully temporary. We just need to send audio now.
   val format = new AudioFormat(44100, 8, 1, true, false)
   //val info = new DataLine.Info(classOf[SourceDataLine], format)
   // format.issupported etc. etc.
@@ -30,15 +28,21 @@ class SynthRuntime extends Receiver{
   line.open(format)
   line.start()
 
+  // All to-and-fro is to happen here.
+  // Initialize thread, etc.
+  def openOutput()=
+    while(true) do
+      //println(buildOutput.mkString(","))
+      //println("\n\n")
+      line.write(buildOutput(None), 0, BUFFER_SIZE)
+
   // TODO: Include some way to close the data line on destruction.
   // line.close()
   //
 
-  def buildOutput:Seq[Byte] =
-    for(i <- 0 until BUFFER_SIZE) yield
-      (activeSynth.output*Byte.MaxValue).toByte
-
-
+  def buildOutput(shortMessage:Option[ShortMessage]):Array[Byte] =
+    (for(i <- 0 until BUFFER_SIZE) yield
+      (activeSynth.output(shortMessage)*Byte.MaxValue).toByte).toArray
 
   // TODO: Make it run on another thread
   /**
@@ -58,4 +62,5 @@ class SynthRuntime extends Receiver{
    * @return Unit
    */
   def setMidiInput(midiDevice: MidiDevice) = inputMidiDevice = Some(midiDevice)
-}
+
+end SynthRuntime
