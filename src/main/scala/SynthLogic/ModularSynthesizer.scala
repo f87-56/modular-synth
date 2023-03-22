@@ -61,10 +61,10 @@ object ModularSynthesizer:
    * @param previousSynth
    * @param newComponent
    */
-  def addComponent(previousSynth: ModularSynthesizer, newComponent:SynthComponent[SignalType]) =
+  def addComponent(previousSynth: ModularSynthesizer, newComponent:SynthComponent[_]) =
     ModularSynthesizer((previousSynth.components + newComponent).toVector, previousSynth.finalGather, previousSynth.sampleRate)
 
-  def removeComponent(previousSynth: ModularSynthesizer, toRemove: SynthComponent[SignalType]) =
+  def removeComponent(previousSynth: ModularSynthesizer, toRemove: SynthComponent[_]) =
     toRemove.xAll()
     if(previousSynth.finalGather.contains(toRemove)) then
       ModularSynthesizer((previousSynth.components - toRemove).toVector, None, previousSynth.sampleRate)
