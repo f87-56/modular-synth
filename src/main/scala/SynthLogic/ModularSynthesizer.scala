@@ -14,7 +14,7 @@ import javax.sound.midi.{MidiMessage, ShortMessage}
  * The only way a ModularSynthesizer object can be modified is by changing the
  * wiring of the components.
  *
- * @param components The components that the synth contains. What is listed here
+ * @param pComponents The components that the synth contains. What is listed here
  *                   doesn't matter all that much, all the connected components will
  *                   be automatically found.
  * @param finalGather The component that connects to the output. May be missing.

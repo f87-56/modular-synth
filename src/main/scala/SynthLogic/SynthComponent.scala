@@ -5,6 +5,7 @@ import scala.util.{Failure, Success, Try}
 // Suggestion: Value classes may be a good fit for creating "signal types"
 
 /**
+ * TODO: Fit this with the ability to store the last computed value, and checking for dirty.
  * @tparam T The type of signal this component outputs
  */
 trait SynthComponent[+T] {
