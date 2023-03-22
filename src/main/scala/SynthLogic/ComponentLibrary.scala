@@ -9,8 +9,8 @@ object ComponentLibrary {
   /**
    * An identity operation. A component that passes through its input unchanged.
    */
-  class PassThrough extends SynthComponent[DoubleSignal]():
-    val input: Parameter[DoubleSignal] = Parameter("input","", true, DoubleSignal(0.5), this)
+  class PassThrough extends SynthComponent[Double]():
+    val input: Parameter[Double] = Parameter("input","", true, 0.5, this)
 
     // I am fairly satisfied as to how this looks.
     override def output(runtimeContext: RuntimeContext) =
@@ -19,47 +19,47 @@ object ComponentLibrary {
   /**
    * A simple oscillator
    */
-  class Oscillator extends SynthComponent[DoubleSignal]():
-    val oscillatorType:Parameter[IntSignal] =
-      new Parameter("type", "", false,  IntSignal(0),this) with EnumerableParam("sine", "square", "sawtooth", "noise")
+  class Oscillator extends SynthComponent[Double]():
+    val oscillatorType:Parameter[Int] =
+      new Parameter("type", "", false,  0,this) with EnumerableParam("sine", "square", "sawtooth", "noise")
     override def output(rc: RuntimeContext) =
-      DoubleSignal(MathUtilities.parametricSin(1,2*math.Pi*440,0,0,
-        SoundUtilities.sampleToTime(rc.sample, rc.sampleRate)))
+      MathUtilities.parametricSin(1,2*math.Pi*440,0,0,
+        SoundUtilities.sampleToTime(rc.sample, rc.sampleRate))
 
   /**
    * Scales the input signal by the parameter gain.
    */
-  class Amplifier extends SynthComponent[DoubleSignal]():
+  class Amplifier extends SynthComponent[Double]():
 
-    val input = Parameter[DoubleSignal]("gain", "", true, DoubleSignal(1), this)
-    val gain = Parameter[DoubleSignal]("input", "", true, DoubleSignal(1), this)
+    val input = Parameter[Double]("gain", "", true, 1.0, this)
+    val gain = Parameter[Double]("input", "", true, 1.0, this)
     def output(rc:RuntimeContext) =
-      DoubleSignal(input.value(rc).value * gain.value(rc).value)
+      input.value(rc) * gain.value(rc)
 
 
   // Provides a time-varying multiplier, from 0 to 1.
-  class Envelope extends SynthComponent[DoubleSignal]():
-    val attack = Parameter[DoubleSignal]("attack", "", false, DoubleSignal(0.3), this)
-    val decay = Parameter[DoubleSignal]("decay", "", false, DoubleSignal(2), this)
-    val sustain = Parameter[DoubleSignal]("sustain", "", false, DoubleSignal(0.1), this)
-    val release = Parameter[DoubleSignal]("release", "", false, DoubleSignal(2), this)
+  class Envelope extends SynthComponent[Double]():
+    val attack = Parameter[Double]("attack", "", false, 0.3, this)
+    val decay = Parameter[Double]("decay", "", false, 2, this)
+    val sustain = Parameter[Double]("sustain", "", false, 0.1, this)
+    val release = Parameter[Double]("release", "", false, 2, this)
 
-    val attackRate = 1.0/attack.defaultValue.value
-    val decayRate = 1.0/decay.defaultValue.value
-    val releaseRate = 1.0/release.defaultValue.value
+    val attackRate = 1.0/attack.defaultValue
+    val decayRate = 1.0/decay.defaultValue
+    val releaseRate = 1.0/release.defaultValue
 
     enum State:
       case Attack, DecaySustain, Release, Dead
 
   // What "phase" are we in?
-    private var state = State.Dead
+    private var state = State.Attack
     // When did the phase start?
     private var stateStartTime = 0.0
     // the previous value
     private var prevValue = 0.0
 
     // A trapezoidal model. The method is a bit of a mess.
-    override def output(rc:RuntimeContext): DoubleSignal =
+    override def output(rc:RuntimeContext): Double =
       val time = SoundUtilities.sampleToTime(rc.sample, rc.sampleRate)
       val deltaTime = SoundUtilities.sampleToTime(1, rc.sampleRate)
 
@@ -86,13 +86,13 @@ object ComponentLibrary {
       val out = state match
         case State.Attack => prevValue + deltaTime * attackRate
         case State.DecaySustain =>
-          if(prevValue <= sustain.defaultValue.value) then prevValue
+          if(prevValue <= sustain.defaultValue) then prevValue
           else prevValue - deltaTime * decayRate
         case State.Release => prevValue - deltaTime * releaseRate
         case State.Dead => 0.0
 
       prevValue = out
-      DoubleSignal(out)
+      out
   end Envelope
 
   def passthrough: PassThrough = PassThrough()

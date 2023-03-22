@@ -19,15 +19,15 @@ import javax.sound.midi.{MidiMessage, ShortMessage}
  *                   be automatically found.
  * @param finalGather The component that connects to the output. May be missing.
  */
-class ModularSynthesizer(pComponents:Vector[SynthComponent[SignalType]],
-                         val finalGather:Option[SynthComponent[DoubleSignal]], val sampleRate:Int) {
+class ModularSynthesizer(pComponents:Vector[SynthComponent[_]],
+                         val finalGather:Option[SynthComponent[_]], val sampleRate:Int) {
   /**
    * Gahter all the components that are actually part of the synth tree
    * (plus the extra ones specified in comonents that may not be part of it.
    */
-  private val components_ : Set[SynthComponent[SignalType]] =
+  private val components_ : Set[SynthComponent[_]] =
     pComponents.flatMap(uproot(_, Set())).toSet ++ Set(finalGather).flatten
-  def components: Set[SynthComponent[SignalType]] = components_
+  def components: Set[SynthComponent[_]] = components_
 
   val outputComponent = ComponentLibrary.passthrough
   // Connect the finalGather to the output.
@@ -46,7 +46,7 @@ class ModularSynthesizer(pComponents:Vector[SynthComponent[SignalType]],
   private var voice: RuntimeContext = RuntimeContext.init(sampleRate)
   // Update the runtime contexts and give the output note
   def output(midiMessage: Option[ShortMessage]):Double =
-    val out = outputComponent.output(voice).value
+    val out = outputComponent.output(voice)
     voice = voice.stepTime(midiMessage)
     out
 }
@@ -76,9 +76,9 @@ object ModularSynthesizer:
    * @param component The component in question
    * @return A set of comoponents that trace themeselves to component.
    */
-  def uproot(component:SynthComponent[SignalType],
-             exclude:Set[SynthComponent[SignalType]]):Set[SynthComponent[SignalType]]=
-    val immediatePrev:Set[SynthComponent[SignalType]] = component.parameters.flatMap(_.getInput).toSet.diff(exclude)
+  def uproot(component:SynthComponent[_],
+             exclude:Set[SynthComponent[_]]):Set[SynthComponent[_]]=
+    val immediatePrev:Set[SynthComponent[_]] = component.parameters.flatMap(_.getInput).toSet.diff(exclude)
     (immediatePrev ++ immediatePrev.flatMap(uproot(_, immediatePrev ++ exclude))) + component
 
   def default: ModularSynthesizer =

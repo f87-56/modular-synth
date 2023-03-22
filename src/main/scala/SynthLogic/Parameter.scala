@@ -4,25 +4,7 @@ import java.security.InvalidParameterException
 import scala.annotation.targetName
 import scala.util.{Failure, Success, Try}
 
-sealed trait SignalType:
-  type T
-  val value:T
-  def apply: T = value
 
-class BoolSignal(val value:Boolean = false) extends SignalType:
-  type T = Boolean
-
-class DoubleSignal(val value:Double = 0.0) extends SignalType:
-  type T = Double
-
-class IntSignal(val value:Int = 0) extends SignalType:
-  type T = Int
-
-class DoubleVectorSignal(val value:Vector[Double] = Vector()) extends SignalType:
-  type T = Vector[Double]
-
-class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends SignalType:
-  type T = Map[Double, Double]
 
 // TODO: Add upper and lower bounds
 /**
@@ -34,8 +16,9 @@ class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends S
  * @param input The (optional) SynthComponent that feeds data to this parameter. WARNING! THIS FIELD IS MUTABLE
  * @tparam T  The signal type of this parameter
  */
-case class Parameter[+T<:SignalType](name: String, description: String, takesInput: Boolean = true, defaultValue: T,
-                                     parent: SynthComponent[SignalType],
+case class Parameter[+T](name: String, description: String, takesInput: Boolean = true,
+                                     defaultValue: T,
+                                     parent: SynthComponent[_],
                                      private[this] var input: Option[SynthComponent[T]] = None):
 
   parent.addParameter(this)
@@ -56,7 +39,7 @@ case class Parameter[+T<:SignalType](name: String, description: String, takesInp
    * @param newInput The new input component
    */
   @targetName("connect")
-  infix def <==(newInput:SynthComponent[SignalType]):Try[Int] =
+  infix def <==(newInput:SynthComponent[_]):Try[Int] =
     if(!takesInput) then Failure(IllegalArgumentException())
     newInput match
       case a:SynthComponent[T] =>
@@ -85,6 +68,6 @@ end Parameter
  * For parameters where discrete choices are presented
  */
 trait EnumerableParam(choices:String*):
-  this: Parameter[IntSignal] =>
+  this: Parameter[Int] =>
   def enumValue(runtimeContext: RuntimeContext):String =
-    choices.lift(this.value(runtimeContext).value).getOrElse("")
+    choices.lift(this.value(runtimeContext)).getOrElse("")
