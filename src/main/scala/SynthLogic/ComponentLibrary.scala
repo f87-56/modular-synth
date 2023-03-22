@@ -10,21 +10,18 @@ object ComponentLibrary {
    * An identity operation. A component that passes through its input unchanged.
    */
   class PassThrough extends SynthComponent[DoubleSignal]():
-    val parameters: Seq[Parameter[DoubleSignal]] =
-      Vector(Parameter[DoubleSignal]("input","", true, DoubleSignal(0.5), this))
+    val input: Parameter[DoubleSignal] = Parameter("input","", true, DoubleSignal(0.5), this)
 
     // I am fairly satisfied as to how this looks.
     override def output(runtimeContext: RuntimeContext) =
-      paramValue[DoubleSignal]("input", runtimeContext).getOrElse(DoubleSignal(0.0))
+      input.value(runtimeContext)
 
   /**
    * A simple oscillator
    */
   class Oscillator extends SynthComponent[DoubleSignal]():
-    override val parameters: Seq[Parameter[SignalType]] =
-      Vector(
-        new Parameter[IntSignal]("type", "", false,  IntSignal(0),this) with EnumerableParam("sine", "square", "sawtooth", "noise")
-      )
+    val oscillatorType:Parameter[IntSignal] =
+      new Parameter("type", "", false,  IntSignal(0),this) with EnumerableParam("sine", "square", "sawtooth", "noise")
     override def output(rc: RuntimeContext) =
       DoubleSignal(MathUtilities.parametricSin(1,2*math.Pi*440,0,0,
         SoundUtilities.sampleToTime(rc.sample, rc.sampleRate)))
@@ -36,8 +33,6 @@ object ComponentLibrary {
 
     val input = Parameter[DoubleSignal]("gain", "", true, DoubleSignal(1), this)
     val gain = Parameter[DoubleSignal]("input", "", true, DoubleSignal(1), this)
-    override val parameters: Seq[Parameter[SignalType]] =
-      Vector(input, gain)
     def output(rc:RuntimeContext) =
       DoubleSignal(input.value(rc).value * gain.value(rc).value)
 
@@ -53,16 +48,11 @@ object ComponentLibrary {
     val decayRate = 1.0/decay.defaultValue.value
     val releaseRate = 1.0/release.defaultValue.value
 
-    override val parameters: Seq[Parameter[SignalType]] =
-      Vector(
-        attack, decay, sustain, release
-      )
-
     enum State:
       case Attack, DecaySustain, Release, Dead
 
   // What "phase" are we in?
-    private var state = State.Attack
+    private var state = State.Dead
     // When did the phase start?
     private var stateStartTime = 0.0
     // the previous value

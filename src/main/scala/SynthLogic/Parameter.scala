@@ -6,6 +6,7 @@ import scala.util.{Failure, Success, Try}
 sealed trait SignalType:
   type T
   val value:T
+  def apply: T = value
 
 class BoolSignal(val value:Boolean = false) extends SignalType:
   type T = Boolean
@@ -35,7 +36,9 @@ class DoubleMapSignal(override val value: Map[Double, Double] = Map()) extends S
 case class Parameter[+T<:SignalType](name: String, description: String, takesInput: Boolean = true, defaultValue: T,
                                      parent: SynthComponent[SignalType],
                                      private[this] var input: Option[SynthComponent[T]] = None):
-  
+
+  parent.addParameter(this)
+
   if(!takesInput) then input = None
   def value(context:RuntimeContext):T = input.map(_.output(context)).getOrElse(defaultValue)
 
@@ -74,6 +77,7 @@ case class Parameter[+T<:SignalType](name: String, description: String, takesInp
 end Parameter
 object Parameter:
 end Parameter
+
 
 /**
  * For parameters where discrete choices are presented
