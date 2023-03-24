@@ -1,7 +1,7 @@
 package SynthGUI
 
-class GUINode {
+class GUINode :
+end GUINode
 
-}
-
-class GUIParameter:
+class GUIParameter(synthLogic: SynthLogic.Parameter[_]):
+end GUIParameter
