@@ -16,7 +16,7 @@ class KeyboardMidiControlSpec extends AnyFlatSpec with should.Matchers with Priv
     def send(midiMessage: MidiMessage, timeStame:Long) = {}
     override def close(): Unit = ???
 
-  val ctl = SynthSoundIO.KeyboardMidiControl(rcvr)
+  val ctl = SynthSoundIO.KeyboardMidiControl(Some(rcvr))
   val makeMessage = PrivateMethod[Try[MidiMessage]](Symbol("makeMessage"))
 
   "makeMessage" should "construct a correct midi message for valid inputs" in {

@@ -2,7 +2,7 @@ import scala.math.*
 
 package SynthUtilities:
 
-  object SoundUtilities:
+  object SoundMath:
 
     private val MaxMidiNoteNum = 127
     private val MinMidiNoteNum = 0
@@ -41,7 +41,7 @@ package SynthUtilities:
         .zipWithIndex
         .map(a => a._2 -> genNoteFrequency(a._1)).toMap
 
-  end SoundUtilities
+  end SoundMath
 
 
 

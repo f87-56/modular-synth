@@ -13,12 +13,26 @@ import scala.util.Try
 /**
  * Uses the Java sound library.
  */
-class KeyboardMidiControl(receiver: Receiver) extends KeyPressListener:
+class KeyboardMidiControl(receiver: Option[Receiver]) extends Transmitter with KeyPressListener:
 
   private class NotANoteException extends Throwable
 
   // Register as a listener on construction
   MKBInputHandler.addListener(this)
+
+  private var connectedReceiver:Option[Receiver] = receiver
+
+  // In accordance with the specification https://docs.oracle.com/javase/8/docs/api/javax/sound/midi/Transmitter.html
+  override def getReceiver: Receiver =
+    connectedReceiver match
+      case Some(a) => a
+      case _ => null
+
+  override def setReceiver(receiver: Receiver): Unit =
+    connectedReceiver = Some(receiver)
+
+  // Always present when our application runs.
+  override def close(): Unit = ()
 
   private val KeyNoteMap:Map[KeyCode, Int] =
     Map(KeyCode.Z -> 60,
@@ -43,10 +57,10 @@ class KeyboardMidiControl(receiver: Receiver) extends KeyPressListener:
 
   override def onNewKeyDown(keyCode: KeyCode): Unit =
     val msg = makeMessage(true, keyCode)
-    msg.foreach(receiver.send(_, NoTimeStamp))
-  override def onKeyUp(keyCode: KeyCode) =
+    msg.foreach(a => receiver.foreach(_.send(a, NoTimeStamp)))
+  override def onKeyUp(keyCode: KeyCode): Unit =
     val msg = makeMessage(false, keyCode)
-    msg.foreach(receiver.send(_, NoTimeStamp))
+    msg.foreach(a => receiver.foreach(_.send(a, NoTimeStamp)))
 
   /**
    *

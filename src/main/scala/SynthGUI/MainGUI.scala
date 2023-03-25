@@ -23,7 +23,7 @@ object MainGUI extends JFXApp3:
     // Creation of "primary stage", the appilcation window
     // Uses the anonymous subclass syntax. Interesting!
     stage = new JFXApp3.PrimaryStage:
-      title = "Hello Stage"
+      title = "Modular synth"
       width = 600
       height = 450
 
@@ -43,11 +43,11 @@ object MainGUI extends JFXApp3:
       new Menu("Help")
         )
 
+    // The bottom bar displays log messages.
     val bottomBar = new HBox() with LogListener:
       val messageText = new Label:
           text = "Log messages appear here"
       children = messageText
-
       override def onNewMessage: Unit =
         messageText.text = OutputLog.lastLog
 
@@ -58,6 +58,7 @@ object MainGUI extends JFXApp3:
 
     // The main synth runtime.
     val runtime = SynthSoundIO.SynthRuntime()
+    val keys = SynthSoundIO.KeyboardMidiControl(Some(runtime))
 
     scene.onKeyPressed = (event) => {
       MKBInputHandler.keyInput(event)
