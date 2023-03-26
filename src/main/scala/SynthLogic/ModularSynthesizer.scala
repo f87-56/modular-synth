@@ -46,7 +46,7 @@ class ModularSynthesizer(val sampleRate:Int) {
   def voice: Voice = voice_
 
   // Update the runtime contexts and give the output note
-  final def output(midiMessage: Option[ShortMessage]):Double =
+  final def output(midiMessage: Option[MidiMessage]):Double =
     val out = outputComponent.output
     voice_ = voice_.stepTime(midiMessage)
     out.getOrElse(0)
@@ -87,8 +87,8 @@ end ModularSynthesizer
  * @param keyDown Is the key that controls this context pressed?
  * @param primary Is this the primary voice? One such voice will NOT be terminated.
  */
-case class Voice(sample:Int, keyFrequency:Double, message:Option[ShortMessage], sampleRate:Int, primary:Boolean):
-  def stepTime(midiMessage: Option[ShortMessage]) = Voice(sample + 1, keyFrequency, midiMessage, sampleRate, primary)
+case class Voice(sample:Int, keyFrequency:Double, message:Option[MidiMessage], sampleRate:Int, primary:Boolean):
+  def stepTime(midiMessage: Option[MidiMessage]) = Voice(sample + 1, keyFrequency, midiMessage, sampleRate, primary)
 object Voice:
   def initPrimary(sampleRate:Int) = Voice(0, 0.0, None, sampleRate, true)
   def init(sampleRate:Int) = Voice(1, 0.0, None, sampleRate, false)

@@ -43,12 +43,15 @@ case class Parameter[+T](name: String, description: String, takesInput: Boolean 
   @targetName("connect")
   infix def <==(newInput:SynthComponent[_]):Try[Int] =
     if(!takesInput || (newInput.host != parent.host)) then Failure(IllegalArgumentException())
-    newInput match
-      case a:SynthComponent[T] =>
-        newInput.addConnection(this)
-        input = Some(a)
-        Success(0)
-      case _ => Failure(InvalidParameterException())
+    else
+      Try{
+      newInput.initialValue match
+        case _:T =>
+          newInput.addConnection(this)
+          input = Some(newInput.asInstanceOf[SynthComponent[T]])
+          1
+        case _ => throw InvalidParameterException()
+      }
 
   /**
    * WARNING! AN EFFECTFUL FUNCTION

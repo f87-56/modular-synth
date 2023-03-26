@@ -17,6 +17,9 @@ trait SynthComponent[+T](val host:ModularSynthesizer) {
   final def parameters: Vector[Parameter[_]] = _parameters.toVector
   def compute:T
 
+  // A bit of a hack to circumvent type erasure
+  lazy val initialValue: T = compute
+  
   // What is the number of the previous computed sample?
   private var prevSample = -1
 
