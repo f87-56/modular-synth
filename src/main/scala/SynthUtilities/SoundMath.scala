@@ -72,5 +72,16 @@ package SynthUtilities:
     def breakToBytes(s:Short):Seq[Byte] =
       Seq(s.toByte, (s >>> 8).toByte)
 
-
   end MathUtilities
+
+  object LogUtilities:
+
+    // from http://biercoff.com/easily-measuring-code-execution-time-in-scala/
+    def logTime[R](block: => R):R =
+      val t0 = System.nanoTime()
+      val result = block
+      val t1 = System.nanoTime()
+      println("Elapsed time: " + (t1 - t0) + "ns")
+      result
+
+  end LogUtilities

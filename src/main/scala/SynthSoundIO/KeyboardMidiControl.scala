@@ -88,7 +88,7 @@ class KeyboardMidiControl(receiver: Option[Receiver]) extends MidiDeviceTransmit
     override def open(): Unit = ()
     override def close(): Unit = ()
     override def isOpen: Boolean = true
-    private object emptyInfo extends MidiDevice.Info("","","","")
+    private object emptyInfo extends MidiDevice.Info("Computer keyboard","","","")
     override def getDeviceInfo: MidiDevice.Info = emptyInfo
     override def getTransmitters: util.List[Transmitter] = java.util.List.of[Transmitter]()
     override def getReceivers: util.List[Receiver] = java.util.List.of[Receiver]()

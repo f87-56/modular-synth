@@ -5,7 +5,7 @@ import javafx.geometry.Insets
 import scalafx.application.JFXApp3
 import scalafx.scene.AccessibleRole.CheckBox
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, CheckBox, Label, Menu, MenuBar, MenuItem}
+import scalafx.scene.control.{Button, CheckBox, CheckMenuItem, Label, Menu, MenuBar, MenuItem}
 import scalafx.scene.effect.BlendMode.Blue
 import scalafx.scene.input.KeyEvent
 import scalafx.scene.layout.{Background, BackgroundFill, BorderPane, CornerRadii, HBox, Pane, VBox}
@@ -40,7 +40,10 @@ object MainGUI extends JFXApp3:
       useSystemMenuBar = true
       menus = List(
       new Menu("Midi input"){
-        items = AudioResourceHandler.MIDIInputs.map(a => MenuItem(a.toString))},
+        items =
+          AudioResourceHandler.MIDIInputs.map(a => CheckMenuItem(a.getMidiDevice.getDeviceInfo.toString))
+            :+ MenuItem("Refresh list")
+      },
       new Menu("Settings"),
       new Menu("Help")
         )

@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.sound.midi.{MidiDevice, MidiMessage, Receiver, ShortMessage, Transmitter}
 import javax.sound.sampled.{AudioFormat, AudioSystem, DataLine, SourceDataLine}
 import scala.collection.mutable
-import scala.concurrent.{Future}
+import scala.concurrent.Future
 import scala.util.Try
 
 /**
@@ -45,12 +45,16 @@ class SynthRuntime extends Receiver:
   // All to-and-fro is to happen here.
   // Initialize thread, etc.
   def openOutput(): Future[Unit] =
-    def writeToAudio(): Unit =
-        line.write(
-          buildOutput(Try(Some(messageQueue.dequeue())).getOrElse(None)),
-          0, BYTE_BUFFER_SIZE)
-
     kill = false
+    def writeToAudio(): Unit =
+        val data = buildOutput(Try(Some(messageQueue.dequeue())).getOrElse(None))
+        line.write(data, 0, BYTE_BUFFER_SIZE)
+
+    /*
+    Future(
+      while !kill do
+        writeToAudio()
+    )*/
     val a = LazyList.continually(writeToAudio())
     Future(a.takeWhile(* => !kill).foreach(_ => ()))
 
@@ -61,10 +65,10 @@ class SynthRuntime extends Receiver:
     kill = true
 
   def buildOutput(shortMessage:Option[MidiMessage]):Array[Byte] =
-    (for(i <- 0 until SYNTH_BUFFER_SIZE) yield
-      (activeSynth.output(shortMessage)*Short.MaxValue).toShort)
+    Array.tabulate(SYNTH_BUFFER_SIZE)(
+      _ => (MathUtilities.clamp(-1,1, activeSynth.output(shortMessage))
+        *Short.MaxValue).toShort)
       .flatMap(a => MathUtilities.breakToBytes(a))
-      .toArray
 
   // TODO: Make it run on another thread
   /**
