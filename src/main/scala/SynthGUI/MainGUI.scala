@@ -1,10 +1,11 @@
 package SynthGUI
 
+import SynthSoundIO.AudioResourceHandler
 import javafx.geometry.Insets
 import scalafx.application.JFXApp3
 import scalafx.scene.AccessibleRole.CheckBox
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, CheckBox, Label, Menu, MenuBar}
+import scalafx.scene.control.{Button, CheckBox, Label, Menu, MenuBar, MenuItem}
 import scalafx.scene.effect.BlendMode.Blue
 import scalafx.scene.input.KeyEvent
 import scalafx.scene.layout.{Background, BackgroundFill, BorderPane, CornerRadii, HBox, Pane, VBox}
@@ -38,7 +39,8 @@ object MainGUI extends JFXApp3:
     val topBar = new MenuBar:
       useSystemMenuBar = true
       menus = List(
-      new Menu("Midi input"),
+      new Menu("Midi input"){
+        items = AudioResourceHandler.MIDIInputs.map(a => MenuItem(a.toString))},
       new Menu("Settings"),
       new Menu("Help")
         )
@@ -57,8 +59,9 @@ object MainGUI extends JFXApp3:
     root.bottom = bottomBar
 
     // The main synth runtime.
-    val runtime = SynthSoundIO.SynthRuntime()
-    val keys = SynthSoundIO.KeyboardMidiControl(Some(runtime))
+    val runtime = AudioResourceHandler.defaultRuntime
+    val keys = AudioResourceHandler.keyboardControl
+    runtime.openOutput()
 
     scene.onKeyPressed = (event) => {
       MKBInputHandler.keyInput(event)

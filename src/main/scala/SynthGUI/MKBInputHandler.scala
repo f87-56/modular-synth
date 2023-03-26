@@ -21,7 +21,6 @@ object MKBInputHandler {
   def removeListener(ls:KeyPressListener) = listeners -= ls
 
   def keyInput(keyEvent: KeyEvent) =
-    println(pressedKeys)
     keyEvent.eventType match
       case a if a == KEY_PRESSED => keyDown(keyEvent.code)
       case b if b == KEY_RELEASED => keyUp(keyEvent.code)
@@ -35,10 +34,8 @@ object MKBInputHandler {
     pressedKeys -= keyCode
 
   private def notifyKeyDown(keyCode: KeyCode):Unit =
-    println("Down!")
     listeners.foreach(_.onNewKeyDown(keyCode))
   private def notifyKeyUp(keyCode: KeyCode):Unit =
-    println("UP!")
     listeners.foreach(_.onKeyUp(keyCode))
 }
 

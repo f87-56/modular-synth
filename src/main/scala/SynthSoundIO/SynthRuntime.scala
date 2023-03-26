@@ -3,9 +3,12 @@ import SynthLogic.ModularSynthesizer
 import SynthUtilities.MathUtilities
 
 import javax.sound.midi
+import scala.concurrent.ExecutionContext.Implicits.global
 import javax.sound.midi.{MidiDevice, MidiMessage, Receiver, ShortMessage, Transmitter}
 import javax.sound.sampled.{AudioFormat, AudioSystem, DataLine, SourceDataLine}
 import scala.collection.mutable
+import scala.concurrent.{Future}
+import scala.util.Try
 
 /**
  * The "Executuion ground" for modular synthesizers. Handles passing information between the sound system and modular synthesizers.
@@ -35,16 +38,26 @@ class SynthRuntime extends Receiver:
   line.open(format)
   line.start()
 
+  private var kill = false
   // All to-and-fro is to happen here.
   // Initialize thread, etc.
-  def openOutput()=
-    while(true) do
+  def openOutput(): Future[Unit] =
+    def writeToAudio(): Unit =
+        line.write(
+          buildOutput(Try(Some(messageQueue.dequeue())).getOrElse(None)),
+          0, BYTE_BUFFER_SIZE)
+
+    kill = false
+    val a = LazyList.continually(writeToAudio())
+    Future(a.takeWhile(* => !kill).foreach(println))
+
       //println(buildOutput.mkString(","))
       //println("\n\n")
-      line.write(buildOutput(None), 0, BYTE_BUFFER_SIZE)
 
+  def closeOutput() =
+    kill = true
 
-  def buildOutput(shortMessage:Option[ShortMessage]):Array[Byte] =
+  def buildOutput(shortMessage:Option[MidiMessage]):Array[Byte] =
     (for(i <- 0 until BUFFER_SIZE) yield
       (activeSynth.output(shortMessage)*Short.MaxValue).toShort)
       .flatMap(a => MathUtilities.breakToBytes(a))
@@ -58,8 +71,6 @@ class SynthRuntime extends Receiver:
    */
   def send(msg: MidiMessage, timestamp: Long): Unit =
     messageQueue += msg
-    // Superimpose resulting waves from our synths
-    //activeSynths.map(_.map(_.output).getOrElse(0.0)).sum
 
   def close(): Unit = line.close()
 

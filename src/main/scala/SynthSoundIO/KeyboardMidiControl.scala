@@ -5,6 +5,7 @@ import com.sun.net.httpserver.Authenticator.Failure
 import scalafx.scene.input.KeyCode
 import scalafx.scene.input.KeyEvent
 
+import java.util
 import javax.sound.midi
 import javax.sound.midi.*
 import javax.sound.midi.Transmitter
@@ -13,7 +14,7 @@ import scala.util.Try
 /**
  * Uses the Java sound library.
  */
-class KeyboardMidiControl(receiver: Option[Receiver]) extends Transmitter with KeyPressListener:
+class KeyboardMidiControl(receiver: Option[Receiver]) extends MidiDeviceTransmitter with KeyPressListener:
 
   private class NotANoteException extends Throwable
 
@@ -27,10 +28,10 @@ class KeyboardMidiControl(receiver: Option[Receiver]) extends Transmitter with K
     connectedReceiver match
       case Some(a) => a
       case _ => null
-
   override def setReceiver(receiver: Receiver): Unit =
     connectedReceiver = Some(receiver)
 
+  override def getMidiDevice: MidiDevice = emptyMidiDevice
   // Always present when our application runs.
   override def close(): Unit = ()
 
@@ -83,4 +84,20 @@ class KeyboardMidiControl(receiver: Option[Receiver]) extends Transmitter with K
   end makeMessage
 
 
+  private object emptyMidiDevice extends MidiDevice():
+    override def open(): Unit = ()
+    override def close(): Unit = ()
+    override def isOpen: Boolean = true
+    private object emptyInfo extends MidiDevice.Info("","","","")
+    override def getDeviceInfo: MidiDevice.Info = emptyInfo
+    override def getTransmitters: util.List[Transmitter] = java.util.List.of[Transmitter]()
+    override def getReceivers: util.List[Receiver] = java.util.List.of[Receiver]()
+    override def getTransmitter: Transmitter = throw MidiUnavailableException()
+    override def getReceiver: Receiver = throw MidiUnavailableException()
+    override def getMaxTransmitters: Int = 0
+    override def getMaxReceivers: Int = 0
+    override def getMicrosecondPosition: Long = 0L
+  end emptyMidiDevice
+
 end KeyboardMidiControl
+
