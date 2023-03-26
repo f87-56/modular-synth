@@ -2,6 +2,8 @@ import scala.math.*
 
 package SynthUtilities:
 
+  import javax.sound.midi.MidiMessage
+
   object SoundMath:
 
     private val MaxMidiNoteNum = 127
@@ -14,15 +16,19 @@ package SynthUtilities:
       require(volume >= 0)
       20.0 * math.log10(volume)
 
+
     /**
      *
-     * @param MidiNumber Gets clamped into the range [0, 127], which conforms to the standard.
+     * @param midiNumber Gets clamped into the range [0, 127], which conforms to the standard.
      * @return
      */
-    def noteFrequency(MidiNumber:Int): Double =
+    def noteFrequency(midiNumber:Int): Double =
       // Clamp input range
-      val clampedNum = MathUtilities.clamp(MinMidiNoteNum, MaxMidiNoteNum, MidiNumber)
+      val clampedNum = MathUtilities.clamp(MinMidiNoteNum, MaxMidiNoteNum, midiNumber)
       NoteFrequencies.getOrElse(clampedNum, 0.0)
+
+    def noteFrequency(midiMessage: MidiMessage):Double =
+      noteFrequency(midiMessage.getMessage.lift(1).getOrElse(0.toByte))
 
     def sampleToTime(sampleNum:Int, sampleRate:Int): Double = sampleNum/(sampleRate.toDouble)
 
@@ -53,7 +59,8 @@ package SynthUtilities:
       math.min(math.max(lower, value), upper)
 
     def parametricSin(amplitude:Double, angularVelocity:Double, phase:Double, offset:Double, x:Double): Double =
-      amplitude*math.sin(angularVelocity*x)+offset
+      amplitude*math.sin(angularVelocity*x - phase)+offset
+
     def parametricCos(amplitude:Double, angularVelocity:Double, phase:Double, offset:Double, x:Double): Double =
       parametricSin(amplitude, angularVelocity:Double, phase+Math.PI/2, offset, x:Double)
 

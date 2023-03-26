@@ -19,11 +19,11 @@ trait SynthComponent[+T](val host:ModularSynthesizer) {
 
   // A bit of a hack to circumvent type erasure
   lazy val initialValue: T = compute
-  
-  // What is the number of the previous computed sample?
-  private var prevSample = -1
 
-  private[this] var prevValue = None
+  // What is the number of the previous computed sample?
+  protected var prevSample = -1
+
+  private[this] var prevValue:Option[T] = None
 
   // We may want helper functions for easily getting info from the host's voice.
 

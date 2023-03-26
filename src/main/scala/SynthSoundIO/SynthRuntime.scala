@@ -19,11 +19,12 @@ class SynthRuntime extends Receiver:
   //private val activeSynths:Array[Option[ModularSynthesizer]] = Array.fill(16)(None)
   val activeSynth: ModularSynthesizer = ModularSynthesizer.default
 
-  private val BUFFER_SIZE = 256
+  private val SYNTH_BUFFER_SIZE = 256
+  private val OUT_BUFFER_SIZE = 2048
   private val BIT_RATE = 44100
   private val BIT_DEPTH = 16
   private val BYTE_SIZE = 8
-  private val BYTE_BUFFER_SIZE = BIT_DEPTH/BYTE_SIZE*BUFFER_SIZE
+  private val BYTE_BUFFER_SIZE = BIT_DEPTH/BYTE_SIZE*SYNTH_BUFFER_SIZE
 
   private val messageQueue:mutable.Queue[MidiMessage] = mutable.Queue()
 
@@ -35,7 +36,9 @@ class SynthRuntime extends Receiver:
   //val info = new DataLine.Info(classOf[SourceDataLine], format)
   // format.issupported etc. etc.
   val line:SourceDataLine = AudioSystem.getSourceDataLine(format)
-  line.open(format)
+  println(line.getBufferSize)
+  line.open(format, OUT_BUFFER_SIZE)
+  println(line.getBufferSize)
   line.start()
 
   private var kill = false
@@ -49,7 +52,7 @@ class SynthRuntime extends Receiver:
 
     kill = false
     val a = LazyList.continually(writeToAudio())
-    Future(a.takeWhile(* => !kill).foreach(println))
+    Future(a.takeWhile(* => !kill).foreach(_ => ()))
 
       //println(buildOutput.mkString(","))
       //println("\n\n")
@@ -58,7 +61,7 @@ class SynthRuntime extends Receiver:
     kill = true
 
   def buildOutput(shortMessage:Option[MidiMessage]):Array[Byte] =
-    (for(i <- 0 until BUFFER_SIZE) yield
+    (for(i <- 0 until SYNTH_BUFFER_SIZE) yield
       (activeSynth.output(shortMessage)*Short.MaxValue).toShort)
       .flatMap(a => MathUtilities.breakToBytes(a))
       .toArray
@@ -70,7 +73,9 @@ class SynthRuntime extends Receiver:
    * @param timestamp
    */
   def send(msg: MidiMessage, timestamp: Long): Unit =
-    messageQueue += msg
+    val status = msg.getStatus
+    if(status == ShortMessage.NOTE_ON ||status == ShortMessage.NOTE_OFF) then
+      messageQueue += msg
 
   def close(): Unit = line.close()
 

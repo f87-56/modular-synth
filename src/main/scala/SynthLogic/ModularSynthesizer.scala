@@ -37,6 +37,8 @@ class ModularSynthesizer(val sampleRate:Int) {
 
   final val outputComponent = ComponentLibrary.passthrough(this)
 
+  val deltaTime: Double = 1.0/sampleRate
+  
   // Here just to manage calls, no practical use yet.
   //val voices:Array[Option[RuntimeContext]] = Array.fill[Option[RuntimeContext]](16)(None)
 
