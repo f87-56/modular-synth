@@ -22,7 +22,7 @@ class SynthRuntime extends Receiver:
   private val BYTE_SIZE = 8
   private val BYTE_BUFFER_SIZE = BIT_DEPTH/BYTE_SIZE*BUFFER_SIZE
 
-  private val messageQueue:Queue[MidiMessage] = mutable.Queue()
+  private val messageQueue:mutable.Queue[MidiMessage] = mutable.Queue()
 
   // TODO: Error handling
   // TODO: Remove magic constants

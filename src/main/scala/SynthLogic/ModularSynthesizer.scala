@@ -3,6 +3,7 @@ package SynthLogic
 import SynthLogic.ModularSynthesizer.uproot
 
 import javax.sound.midi.{MidiMessage, ShortMessage}
+import scala.collection.mutable
 
 /**
  * Does not support polyphony yet
@@ -19,36 +20,36 @@ import javax.sound.midi.{MidiMessage, ShortMessage}
  *                   be automatically found.
  * @param finalGather The component that connects to the output. May be missing.
  */
-class ModularSynthesizer(pComponents:Vector[SynthComponent[_]],
-                         val finalGather:Option[SynthComponent[_]], val sampleRate:Int) {
+class ModularSynthesizer(val sampleRate:Int) {
   /**
    * Gahter all the components that are actually part of the synth tree
    * (plus the extra ones specified in comonents that may not be part of it.
    */
-  private val components_ : Set[SynthComponent[_]] =
-    pComponents.flatMap(uproot(_, Set())).toSet ++ Set(finalGather).flatten
-  def components: Set[SynthComponent[_]] = components_
+  private val components_ = mutable.Set[SynthComponent[_]]()
+    //mutable.Set(pComponents.flatMap(uproot(_, Set())).toSet ++ Set(finalGather).flatten)
+  final def components: Vector [SynthComponent[_]] = components_.toVector
+  
+  final def addComponent(cmp:SynthComponent[_]):Unit =
+    components_ += cmp
+  final def removeComponent(cmp:SynthComponent[_]):Unit=
+    cmp.xAll()
+    components_ -= cmp
 
-  val outputComponent = ComponentLibrary.passthrough
-  // Connect the finalGather to the output.
-  finalGather.foreach(
-    outputComponent.parameters.head <== _
-  )
-
-  // Just for initial construction
-  private var time = 0
-
+  final val outputComponent = ComponentLibrary.passthrough(this)
 
   // Here just to manage calls, no practical use yet.
   //val voices:Array[Option[RuntimeContext]] = Array.fill[Option[RuntimeContext]](16)(None)
 
   // Our voices give the synth the values for its input variables
-  private var voice: RuntimeContext = RuntimeContext.init(sampleRate)
+  private var voice_ = Voice.init(sampleRate)
+  // this should be fine I think
+  def voice: Voice = voice_
+
   // Update the runtime contexts and give the output note
-  def output(midiMessage: Option[ShortMessage]):Double =
-    val out = outputComponent.output(voice)
-    voice = voice.stepTime(midiMessage)
-    out
+  final def output(midiMessage: Option[ShortMessage]):Double =
+    val out = outputComponent.output
+    voice_ = voice_.stepTime(midiMessage)
+    out.getOrElse(0)
 }
 
 /**
@@ -57,22 +58,7 @@ class ModularSynthesizer(pComponents:Vector[SynthComponent[_]],
 object ModularSynthesizer:
 
   /**
-   * Adding a component to a synthesizer.
-   * @param previousSynth
-   * @param newComponent
-   */
-  def addComponent(previousSynth: ModularSynthesizer, newComponent:SynthComponent[_]) =
-    ModularSynthesizer((previousSynth.components + newComponent).toVector, previousSynth.finalGather, previousSynth.sampleRate)
-
-  def removeComponent(previousSynth: ModularSynthesizer, toRemove: SynthComponent[_]) =
-    toRemove.xAll()
-    if(previousSynth.finalGather.contains(toRemove)) then
-      ModularSynthesizer((previousSynth.components - toRemove).toVector, None, previousSynth.sampleRate)
-    else
-      ModularSynthesizer((previousSynth.components - toRemove).toVector, previousSynth.finalGather, previousSynth.sampleRate)
-
-  /**
-   * Chase down all components that are connected to thes one.
+   * Chase down all components that are connected to this one.
    * @param component The component in question
    * @return A set of comoponents that trace themeselves to component.
    */
@@ -82,12 +68,14 @@ object ModularSynthesizer:
     (immediatePrev ++ immediatePrev.flatMap(uproot(_, immediatePrev ++ exclude))) + component
 
   def default: ModularSynthesizer =
-    val a = ComponentLibrary.Oscillator()
-    val b = ComponentLibrary.Amplifier()
-    val c = ComponentLibrary.Envelope()
+    val aa = ModularSynthesizer(44100)
+    val a = ComponentLibrary.Oscillator(aa)
+    val b = ComponentLibrary.Amplifier(aa)
+    val c = ComponentLibrary.Envelope(aa)
+    aa.outputComponent.input <== b
     b.gain <== c
     b.input <== a
-    ModularSynthesizer(Vector(a,b,c), Some(b), 44100)
+    aa
 
 end ModularSynthesizer
 
@@ -99,9 +87,9 @@ end ModularSynthesizer
  * @param keyDown Is the key that controls this context pressed?
  * @param primary Is this the primary voice? One such voice will NOT be terminated.
  */
-case class RuntimeContext(sample:Int, keyFrequency:Double, message:Option[ShortMessage], sampleRate:Int, primary:Boolean):
-  def stepTime(midiMessage: Option[ShortMessage]) = RuntimeContext(sample + 1, keyFrequency, midiMessage, sampleRate, primary)
-object RuntimeContext:
-  def initPrimary(sampleRate:Int) = RuntimeContext(0, 0.0, None, sampleRate, true)
-  def init(sampleRate:Int) = RuntimeContext(1, 0.0, None, sampleRate, false)
+case class Voice(sample:Int, keyFrequency:Double, message:Option[ShortMessage], sampleRate:Int, primary:Boolean):
+  def stepTime(midiMessage: Option[ShortMessage]) = Voice(sample + 1, keyFrequency, midiMessage, sampleRate, primary)
+object Voice:
+  def initPrimary(sampleRate:Int) = Voice(0, 0.0, None, sampleRate, true)
+  def init(sampleRate:Int) = Voice(1, 0.0, None, sampleRate, false)
 

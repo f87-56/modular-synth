@@ -9,44 +9,45 @@ object ComponentLibrary {
   /**
    * An identity operation. A component that passes through its input unchanged.
    */
-  class PassThrough extends SynthComponent[Double]():
+  class PassThrough(host:ModularSynthesizer) extends SynthComponent[Double](host):
     val input: Parameter[Double] = Parameter("input","", true, 0.5, this)
 
     // I am fairly satisfied as to how this looks.
-    override def output(runtimeContext: RuntimeContext) =
-      input.value(runtimeContext)
+    override def compute: Double =
+      input.value
 
   /**
    * A simple oscillator
    */
-  class Oscillator extends SynthComponent[Double]():
+  class Oscillator(host:ModularSynthesizer) extends SynthComponent[Double](host):
     val oscillatorType:Parameter[Int] =
-      new Parameter("type", "", false,  0,this) with EnumerableParam("sine", "square", "sawtooth", "noise")
-    override def output(rc: RuntimeContext) =
+      new Parameter("type", "", false,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
+
+    override def compute: Double =
       MathUtilities.parametricSin(1,2*math.Pi*440,0,0,
-        SoundUtilities.sampleToTime(rc.sample, rc.sampleRate))
+          SoundMath.sampleToTime(host.voice.sample, host.voice.sampleRate))
 
   /**
    * Scales the input signal by the parameter gain.
    */
-  class Amplifier extends SynthComponent[Double]():
+  class Amplifier(host:ModularSynthesizer) extends SynthComponent[Double](host):
 
-    val input = Parameter[Double]("gain", "", true, 1.0, this)
-    val gain = Parameter[Double]("input", "", true, 1.0, this)
-    def output(rc:RuntimeContext) =
-      input.value(rc) * gain.value(rc)
+    val input: Parameter[Double] = Parameter[Double]("gain", "", true, 1.0, this)
+    val gain: Parameter[Double] = Parameter[Double]("input", "", true, 1.0, this)
+    def compute: Double =
+      input.value * gain.value
 
 
   // Provides a time-varying multiplier, from 0 to 1.
-  class Envelope extends SynthComponent[Double]():
+  class Envelope(host:ModularSynthesizer) extends SynthComponent[Double](host):
     val attack = Parameter[Double]("attack", "", false, 0.3, this)
     val decay = Parameter[Double]("decay", "", false, 2, this)
     val sustain = Parameter[Double]("sustain", "", false, 0.1, this)
     val release = Parameter[Double]("release", "", false, 2, this)
 
-    val attackRate = 1.0/attack.defaultValue
-    val decayRate = 1.0/decay.defaultValue
-    val releaseRate = 1.0/release.defaultValue
+    private val attackRate = 1.0/attack.defaultValue
+    private val decayRate = 1.0/decay.defaultValue
+    private val releaseRate = 1.0/release.defaultValue
 
     enum State:
       case Attack, DecaySustain, Release, Dead
@@ -59,11 +60,11 @@ object ComponentLibrary {
     private var prevValue = 0.0
 
     // A trapezoidal model. The method is a bit of a mess.
-    override def output(rc:RuntimeContext): Double =
-      val time = SoundUtilities.sampleToTime(rc.sample, rc.sampleRate)
-      val deltaTime = SoundUtilities.sampleToTime(1, rc.sampleRate)
+    override def compute: Double =
+      val time = SoundMath.sampleToTime(host.voice.sample, host.voice.sampleRate)
+      val deltaTime = SoundMath.sampleToTime(1, host.voice.sampleRate)
 
-      val messageStatus = rc.message.map(_.getStatus)
+      val messageStatus = host.voice.message.map(_.getStatus)
 
       // Update the messageStatus
       // A note has started at this moment
@@ -95,6 +96,6 @@ object ComponentLibrary {
       out
   end Envelope
 
-  def passthrough: PassThrough = PassThrough()
+  def passthrough(host:ModularSynthesizer): PassThrough = PassThrough(host)
 
 }

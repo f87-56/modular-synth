@@ -22,9 +22,9 @@ case class Parameter[+T](name: String, description: String, takesInput: Boolean 
                                      private[this] var input: Option[SynthComponent[T]] = None):
 
   parent.addParameter(this)
-
-  if(!takesInput) then input = None
-  def value(context:RuntimeContext):T = input.map(_.output(context)).getOrElse(defaultValue)
+  
+  // a bit of a mouthful
+  def value:T = input.map(_.output.getOrElse(defaultValue)).getOrElse(defaultValue)
 
   /**
    * A getter for input.
@@ -34,13 +34,15 @@ case class Parameter[+T](name: String, description: String, takesInput: Boolean 
 
   /**
    * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.
-   * Connect a SynthComponent to this parameter. This is THE ONLY method from which it can be done.
+   * Connect a SynthComponent to this parameter. This should be THE ONLY method used for this purpose.
+   *
+   * Does nothing and returns a failure if the newComponent does not belong to the same synth.
    *
    * @param newInput The new input component
    */
   @targetName("connect")
   infix def <==(newInput:SynthComponent[_]):Try[Int] =
-    if(!takesInput) then Failure(IllegalArgumentException())
+    if(!takesInput || (newInput.host != parent.host)) then Failure(IllegalArgumentException())
     newInput match
       case a:SynthComponent[T] =>
         newInput.addConnection(this)
@@ -63,11 +65,10 @@ end Parameter
 object Parameter:
 end Parameter
 
-
 /**
  * For parameters where discrete choices are presented
  */
 trait EnumerableParam(choices:String*):
   this: Parameter[Int] =>
-  def enumValue(runtimeContext: RuntimeContext):String =
-    choices.lift(this.value(runtimeContext)).getOrElse("")
+  def enumValue:String =
+    choices.lift(this.value).getOrElse("")
