@@ -31,7 +31,7 @@ trait SynthComponent[+T](val host:ModularSynthesizer) {
 
   // Recalculate only if time has advanced and we want to tick.
   def output: Option[T] =
-    if (host.voice.sample == prevSample || host.voice.sample % tickTime == 0) then
+    if (host.voice.sample == prevSample || host.voice.sample % tickTime != 0) then
       prevValue
     else
       Some(compute)
