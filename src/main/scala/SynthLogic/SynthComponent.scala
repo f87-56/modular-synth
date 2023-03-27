@@ -25,11 +25,13 @@ trait SynthComponent[+T](val host:ModularSynthesizer) {
 
   private[this] var prevValue:Option[T] = None
 
+  protected val tickTime = 1
+
   // We may want helper functions for easily getting info from the host's voice.
 
-  // Recalculate only if time has advanced.
+  // Recalculate only if time has advanced and we want to tick.
   def output: Option[T] =
-    if host.voice.sample == prevSample then
+    if (host.voice.sample == prevSample || host.voice.sample % tickTime == 0) then
       prevValue
     else
       Some(compute)
