@@ -47,3 +47,27 @@ The workload spent on the project has been about 25 hours.
 
 I am clearly lagging behind the project plan: I have still yet to integrate MIDI controls, I lack the filter component,
 and the UI is still blank.
+
+
+Week 5 and 6:
+
+An issue regarding type erasure in the method <== came up (the method used to connect a component to another component's parameter),
+meaning my Synth tree could not have been built as I would have expected. I came up with a workaround, but not before sending many hours
+thinking of a "prettier" solution.
+
+Notes can finally be played on the computer's keyboard. The framework has been laid for the use of any MIDI controller,
+though this has not been tested. Some sound resources are currently accessed in an unsafe manner.
+
+I have conducted some basic performance testing on the sound generation algorithm. With a minimal graph, the lower bound
+of the update rate (how fast the synth can generate frames) was around 400kHz on my eight-year-old desktop computer (i7 6700k).
+It seems performance is not a crippling issue.
+
+A whole bunch is still missing from the program: From my "bare minimum" requirements, I have yet to implement different types of oscillators,
+most of the synthesizer's main components, the node editor, as well as saving and loading files. From these, the former should not pose
+greater issues. I feel I will have to dedicate a lot of time for the graph editor in the next two weeks.
+
+I am severely behind the original plan. The features now present reflect a state roughly equivalent to the end of week 3 in it.
+
+An approximate 12 hours has been used on this project during the last two weeks, a fair part of it fixing the issue with <==.
+I have not been able to work much on this project during the last two weeks. I have had my focus on a project for another course.
+Expect this number to grow dramatically for the next two weeks. If things go awry, expect me to be in contact.

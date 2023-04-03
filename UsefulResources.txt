@@ -29,6 +29,9 @@ addSbtPlugin("net.aichler" % "sbt-jupiter-interface" % "0.8.3")
 
 https://www.softwaretestinghelp.com/gui-testing/
 
+// Creative commons dark mode:
+https://raw.githubusercontent.com/antoniopelusi/JavaFX-Dark-Theme/main/style.css
+
 Ask about anonymous types:
     stage = new JFXApp3.PrimaryStage:
       title = "Hello Stage"
