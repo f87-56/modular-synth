@@ -32,6 +32,9 @@ https://www.softwaretestinghelp.com/gui-testing/
 // Creative commons dark mode:
 https://raw.githubusercontent.com/antoniopelusi/JavaFX-Dark-Theme/main/style.css
 
+// Noise over frequency range
+https://stackoverflow.com/questions/33933842/how-to-generate-noise-in-frequency-range-with-numpy
+
 Ask about anonymous types:
     stage = new JFXApp3.PrimaryStage:
       title = "Hello Stage"
