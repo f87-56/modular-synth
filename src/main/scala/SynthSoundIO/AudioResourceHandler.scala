@@ -23,7 +23,9 @@ object AudioResourceHandler {
         device.open()
         device.getTransmitter
       else
-        device.getTransmitters.toArray.head
+        // See if we are able to get an existing transmitter. Else, open a new one.
+        val a = device.getTransmitters.toArray.headOption
+        a.getOrElse(device.getTransmitter)
     })
     //val res = keyboardControl +: allDevices.filter(_.isInstanceOf[Receiver])
     println(allTransmitters.mkString("Array(", ", ", ")"))
