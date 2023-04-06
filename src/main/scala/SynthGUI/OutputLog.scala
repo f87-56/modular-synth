@@ -16,13 +16,14 @@ object OutputLog {
       history += s
     else
       history += s
+    listeners.foreach(_.onNewMessage())
 
-  def lastLog = history.last
+  def lastLog =
+    history.last
   
   def wholeLog = history.toVector
 }
 
 trait LogListener:
   OutputLog.listeners += this
-  
-  def onNewMessage:Unit
+  def onNewMessage():Unit

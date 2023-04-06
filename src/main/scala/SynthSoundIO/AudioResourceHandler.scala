@@ -1,4 +1,6 @@
 package SynthSoundIO
+import SynthGUI.OutputLog
+
 import javax.sound.midi.{MidiDeviceReceiver, MidiDeviceTransmitter, MidiSystem, Receiver, Synthesizer, Transmitter}
 import scala.util.{Success, Try}
 
@@ -17,7 +19,6 @@ object AudioResourceHandler {
     val deviceInfo = MidiSystem.getMidiDeviceInfo
     val allTransmitters = deviceInfo.map(a => Try{
       val device =  MidiSystem.getMidiDevice(a)
-      println(device)
       // Open the devices for our use
       if(!device.isOpen) then
         device.open()
@@ -28,7 +29,7 @@ object AudioResourceHandler {
         a.getOrElse(device.getTransmitter)
     })
     //val res = keyboardControl +: allDevices.filter(_.isInstanceOf[Receiver])
-    println(allTransmitters.mkString("Array(", ", ", ")"))
+    OutputLog.log(allTransmitters.mkString("Array(", ", ", ")"))
     val res = keyboardControl +: allTransmitters.collect{case Success(a:MidiDeviceTransmitter) => a}
     res
 

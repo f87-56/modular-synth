@@ -56,7 +56,6 @@ object MainGUI extends JFXApp3:
 
           // "recalcualte" the list of available devices without changing the existing state.
           def makeMidiDeviceList: Array[MenuItem] =
-            println("Yarrr???")
             val devices =
               AudioResourceHandler.MIDIInputs
             val deviceButtons = devices.map{
@@ -66,15 +65,19 @@ object MainGUI extends JFXApp3:
                   if(a.getReceiver != null) then true
                   else false
                 }
+
+                // TODO: This whole section should be done more safely in AudioResourceHandler
+                // TODO: e.g. we now hog all possible MIDI transmitters when getting the list
                 selected.onInvalidate {
                   // If we have checked it, set it to send to our synth.
                   if selected.value then
-                    println("lskjlskdjflj")
                     a.setReceiver(mainRuntime)
-                    println(a.getReceiver)
                   // If not in use in another runtime, set to null
                   // This adheres to the expected behaviour in java sound.
-                  else if a.getReceiver == mainRuntime then a.setReceiver(null)
+                  else if a.getReceiver == mainRuntime then
+                    // TODO: THIS SHOULD NOT BE DONE HERE, BUT IN THE AudioResourceHandler CLASS
+                    a.setReceiver(null)
+                    a.close()
                 }
             }
             deviceButtons :+ refreshButton
@@ -91,13 +94,16 @@ object MainGUI extends JFXApp3:
       val messageText = new Label:
         text = "Log messages appear here"
       children = messageText
-      override def onNewMessage: Unit =
+      override def onNewMessage(): Unit =
         messageText.text = OutputLog.lastLog
 
     bottomBar.alignment = Pos.BaselineRight
 
+    val workspace = GUIWorkspace()
+
     root.top = topBar
     root.bottom = bottomBar
+    root.center = workspace
 
     scene.onKeyPressed = (event) => {
       MKBInputHandler.keyInput(event)
