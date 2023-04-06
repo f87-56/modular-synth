@@ -10,7 +10,7 @@ object OutputLog {
 
   val history:mutable.Queue[String] = mutable.Queue()
 
-  def log(s:String) = 
+  def log(s:String):Unit =
     if(history.size >= LOG_SIZE) then
       history.dequeue()
       history += s

@@ -74,15 +74,19 @@ object ComponentLibrary {
 
       val msg = host.voice.message
       val messageStatus = msg.map(_.getStatus)
-
+      val msgVelocity = msg.flatMap(_.getMessage.lift(2))
+      messageStatus.foreach(println(_))
+      msgVelocity.foreach(println(_))
       // Update the messageStatus
       // A note has started at this moment
-      if messageStatus.contains(ShortMessage.NOTE_ON) then
+      if messageStatus.contains(ShortMessage.NOTE_ON ) && msgVelocity.exists(_!= 0) then
         mostRecentMsg = msg
         state = State.Attack
         stateStartTime = time
       // We've just released a key
-      else if messageStatus.contains(ShortMessage.NOTE_OFF) &&
+      // Some devices use a NOTE_ON with velocity 0 to signal a NOTE_OFF
+      else if (messageStatus.contains(ShortMessage.NOTE_OFF) ||
+        messageStatus.contains(ShortMessage.NOTE_ON)) &&
         mostRecentMsg.map(SoundMath.noteFrequency) == msg.map(SoundMath.noteFrequency)
         && state != State.Release && state != State.Dead then
           state = State.Release

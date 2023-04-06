@@ -1,6 +1,7 @@
 package SynthGUI
 
 import SynthSoundIO.AudioResourceHandler
+import javafx.event.{Event, EventHandler}
 import javafx.geometry.Insets
 import scalafx.application.JFXApp3
 import scalafx.scene.AccessibleRole.CheckBox
@@ -14,7 +15,10 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
 import scalafx.stage.FileChooser
 import scalafx.Includes.*
+import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{HPos, Pos}
+
+import javax.sound.midi.{MidiDevice, MidiDeviceTransmitter}
 
 
 object MainGUI extends JFXApp3:
@@ -36,22 +40,56 @@ object MainGUI extends JFXApp3:
     val scene = Scene(parent = root)  // A scene contains the scene graph (the data structure that represents the UI)
     stage.scene = scene
 
+    // The main synth runtime.
+    val mainRuntime = AudioResourceHandler.defaultRuntime
+    val keys = AudioResourceHandler.keyboardControl
+    mainRuntime.openOutput()
+
     val topBar = new MenuBar:
       useSystemMenuBar = true
       menus = List(
-      new Menu("Midi input"){
-        items =
-          AudioResourceHandler.MIDIInputs.map(a => CheckMenuItem(a.getMidiDevice.getDeviceInfo.toString))
-            :+ MenuItem("Refresh list")
-      },
-      new Menu("Settings"),
-      new Menu("Help")
-        )
+        new Menu("Midi input"){
+          val refreshButton: MenuItem = MenuItem("Refresh MIDI devices")
+
+          //private var midiDevices:Set[MidiDevice] = Set()
+          onShowing = _ => items = makeMidiDeviceList
+
+          // "recalcualte" the list of available devices without changing the existing state.
+          def makeMidiDeviceList: Array[MenuItem] =
+            println("Yarrr???")
+            val devices =
+              AudioResourceHandler.MIDIInputs
+            val deviceButtons = devices.map{
+              a => new CheckMenuItem(a.getMidiDevice.getDeviceInfo.toString):
+                selected = {
+                  println(a.getReceiver)
+                  if(a.getReceiver != null) then true
+                  else false
+                }
+                selected.onInvalidate {
+                  // If we have checked it, set it to send to our synth.
+                  if selected.value then
+                    println("lskjlskdjflj")
+                    a.setReceiver(mainRuntime)
+                    println(a.getReceiver)
+                  // If not in use in another runtime, set to null
+                  // This adheres to the expected behaviour in java sound.
+                  else if a.getReceiver == mainRuntime then a.setReceiver(null)
+                }
+            }
+            deviceButtons :+ refreshButton
+
+          items = makeMidiDeviceList
+          refreshButton.onAction = _ => items = makeMidiDeviceList
+        },
+        new Menu("Settings"),
+        new Menu("Help")
+      )
 
     // The bottom bar displays log messages.
     val bottomBar = new HBox() with LogListener:
       val messageText = new Label:
-          text = "Log messages appear here"
+        text = "Log messages appear here"
       children = messageText
       override def onNewMessage: Unit =
         messageText.text = OutputLog.lastLog
@@ -61,17 +99,15 @@ object MainGUI extends JFXApp3:
     root.top = topBar
     root.bottom = bottomBar
 
-    // The main synth runtime.
-    val runtime = AudioResourceHandler.defaultRuntime
-    val keys = AudioResourceHandler.keyboardControl
-    runtime.openOutput()
-
     scene.onKeyPressed = (event) => {
       MKBInputHandler.keyInput(event)
     }
     scene.onKeyReleased = (event) => {
       MKBInputHandler.keyInput(event)
     }
+  // Adding a text field
+
+  end start
+end MainGUI
 
 
-// Adding a text field

@@ -14,22 +14,21 @@ import scala.util.Try
 /**
  * Uses the Java sound library.
  */
-class KeyboardMidiControl(receiver: Option[Receiver]) extends MidiDeviceTransmitter with KeyPressListener:
+class KeyboardMidiControl(private var receiver: Option[Receiver]) extends MidiDeviceTransmitter with KeyPressListener:
 
   private class NotANoteException extends Throwable
 
   // Register as a listener on construction
   MKBInputHandler.addListener(this)
 
-  private var connectedReceiver:Option[Receiver] = receiver
 
   // In accordance with the specification https://docs.oracle.com/javase/8/docs/api/javax/sound/midi/Transmitter.html
   override def getReceiver: Receiver =
-    connectedReceiver match
+    receiver match
       case Some(a) => a
       case _ => null
-  override def setReceiver(receiver: Receiver): Unit =
-    connectedReceiver = Some(receiver)
+  override def setReceiver(newReceiver: Receiver): Unit =
+    receiver = Option(newReceiver)
 
   override def getMidiDevice: MidiDevice = emptyMidiDevice
   // Always present when our application runs.

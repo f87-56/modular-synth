@@ -5,18 +5,29 @@ import scala.util.{Success, Try}
 object AudioResourceHandler {
   
   // The canonical runtime
-  val defaultRuntime = SynthRuntime()
+  val defaultRuntime: SynthRuntime = SynthRuntime()
   // The "canonical instance of the keyboard control.
-  val keyboardControl = KeyboardMidiControl(Some(defaultRuntime))
+  val keyboardControl: KeyboardMidiControl = KeyboardMidiControl(Some(defaultRuntime))
 
   /**
+   * TODO: Keep track of all audio resources currently in use
    * @return returns all the available midi input devices.
    */
-  def MIDIInputs =
+  def MIDIInputs: Array[MidiDeviceTransmitter] =
     val deviceInfo = MidiSystem.getMidiDeviceInfo
-    val allReceivers = deviceInfo.map(a => Try(MidiSystem.getMidiDevice(a).getTransmitter))
+    val allTransmitters = deviceInfo.map(a => Try{
+      val device =  MidiSystem.getMidiDevice(a)
+      println(device)
+      // Open the devices for our use
+      if(!device.isOpen) then
+        device.open()
+        device.getTransmitter
+      else
+        device.getTransmitters.toArray.head
+    })
     //val res = keyboardControl +: allDevices.filter(_.isInstanceOf[Receiver])
-    val res = keyboardControl +: allReceivers.collect{case Success(a:MidiDeviceTransmitter) => a}
+    println(allTransmitters.mkString("Array(", ", ", ")"))
+    val res = keyboardControl +: allTransmitters.collect{case Success(a:MidiDeviceTransmitter) => a}
     res
 
   /**
