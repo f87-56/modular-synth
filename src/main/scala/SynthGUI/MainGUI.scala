@@ -1,6 +1,7 @@
 package SynthGUI
 
 import SynthSoundIO.AudioResourceHandler
+import javafx.application.Platform
 import javafx.event.{Event, EventHandler}
 import javafx.geometry.Insets
 import scalafx.application.JFXApp3
@@ -61,7 +62,6 @@ object MainGUI extends JFXApp3:
             val deviceButtons = devices.map{
               a => new CheckMenuItem(a.getMidiDevice.getDeviceInfo.toString):
                 selected = {
-                  println(a.getReceiver)
                   if(a.getReceiver != null) then true
                   else false
                 }
@@ -91,6 +91,7 @@ object MainGUI extends JFXApp3:
 
     // The bottom bar displays log messages.
     val bottomBar = new HBox() with LogListener:
+      this.setBackground(new Background(Array(new BackgroundFill(Color.Gray, CornerRadii.Empty, Insets.EMPTY))))
       val messageText = new Label:
         text = "Log messages appear here"
       children = messageText
@@ -101,9 +102,9 @@ object MainGUI extends JFXApp3:
 
     val workspace = GUIWorkspace()
 
+    root.center = workspace
     root.top = topBar
     root.bottom = bottomBar
-    root.center = workspace
 
     scene.onKeyPressed = (event) => {
       MKBInputHandler.keyInput(event)
@@ -111,9 +112,21 @@ object MainGUI extends JFXApp3:
     scene.onKeyReleased = (event) => {
       MKBInputHandler.keyInput(event)
     }
-  // Adding a text field
 
+    stage.show()
+    workspace.initialize()
+
+
+    // Initializing workspace in start() does not work. This is a workaround.
+    Platform.runLater(() => {
+      workspace.initialize()
+    })
+
+  // Adding a text field
   end start
+
+
+
 end MainGUI
 
 

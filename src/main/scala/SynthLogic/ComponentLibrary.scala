@@ -75,8 +75,6 @@ object ComponentLibrary {
       val msg = host.voice.message
       val messageStatus = msg.map(_.getStatus)
       val msgVelocity = msg.flatMap(_.getMessage.lift(2))
-      messageStatus.foreach(println(_))
-      msgVelocity.foreach(println(_))
       // Update the messageStatus
       // A note has started at this moment
       if messageStatus.contains(ShortMessage.NOTE_ON ) && msgVelocity.exists(_!= 0) then
