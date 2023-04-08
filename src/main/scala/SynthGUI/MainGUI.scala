@@ -102,6 +102,8 @@ object MainGUI extends JFXApp3:
 
     val workspace = GUIWorkspace()
 
+    val bg = SynthCanvas()
+
     root.center = workspace
     root.top = topBar
     root.bottom = bottomBar
@@ -113,16 +115,6 @@ object MainGUI extends JFXApp3:
       MKBInputHandler.keyInput(event)
     }
 
-    stage.show()
-    workspace.initialize()
-
-
-    // Initializing workspace in start() does not work. This is a workaround.
-    Platform.runLater(() => {
-      workspace.initialize()
-    })
-
-  // Adding a text field
   end start
 
 

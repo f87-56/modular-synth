@@ -27,16 +27,15 @@ import scala.util.Try
  */
 class GUIWorkspace extends ScrollPane:
 
-  private val MIN_SCROLL = 0.01
-  private val MAX_SCROLL = 100.0
+  private val MinZoom = 0.1
+  private val MaxZoom = 4.0
   private val zoomIntensity = 0.04
 
   private var zoomScale = 1.0
 
   // Constructing
-  val synthCanvas: Pane = new Pane()
-  synthCanvas.setMinSize(100000,100000)
-  synthCanvas.setBackground(new Background(new BackgroundFill(Color.Gold, CornerRadii.Empty, Insets.Empty)))
+  val synthCanvas = SynthCanvas()
+  //synthCanvas.setBackground(new Background(new BackgroundFill(Color.Gold, CornerRadii.Empty, Insets.Empty)))
 
   private val zoomNode:Node = Group(synthCanvas)
   this.setContent(outerNode(zoomNode))
@@ -48,14 +47,12 @@ class GUIWorkspace extends ScrollPane:
   this.fitToWidth = true
   this.fitToHeight = true
 
-  // Initialize things that cannot be initialized in constructor (They don't work properly)
-  def initialize(): Unit =
-    // Where should the camera be centered at the start? (fractional)
-    val hStartPos = 0.9
-    this.layout()
 
-    //this.hvalue = this.hmax.value* hStartPos
-    //this.vvalue = this.vmax.value/2
+  // Set initial scroll bar positions
+  private val hStartPos = 0.9
+  //this.hvalue = this.hmax.value * hStartPos
+  //this.vvalue = this.vmax.value / 2
+  this.layout()
 
   // We wrap our canvas in this construct.
   def outerNode(node:Node):Node =
@@ -80,6 +77,13 @@ class GUIWorkspace extends ScrollPane:
     synthCanvas.setScaleX(zoomScale)
     synthCanvas.setScaleY(zoomScale)
 
+  val comp =  new GUISynthParameter[Int]()
+
+  synthCanvas.children += new GUISynthComponent[Int]():
+    this.children += comp
+    translateX = 400
+    translateY = 400
+
   synthCanvas.children += new Rectangle:
     x = 100
     y = 100
@@ -88,8 +92,8 @@ class GUIWorkspace extends ScrollPane:
     fill = Red
 
   synthCanvas.children += new Rectangle:
-    x = -100
-    y = -100
+    x = 200
+    y = 200
     width = 50
     height = 50
     fill = Red
@@ -123,22 +127,28 @@ class GUIWorkspace extends ScrollPane:
     val valX = this.getHvalue * (innerBounds.getWidth - vpBounds.getWidth)
     val valY = this.getVvalue * (innerBounds.getHeight - vpBounds.getHeight)
 
-    zoomScale = zoomScale * zoomFactor
-    updateScale()
-    this.layout()     // refresh ScrollPane scroll positions and target bounds
+    val newScale = zoomScale * zoomFactor
+    val newScaleClamped = if(newScale > MaxZoom) then MaxZoom
+      else if(newScale < MinZoom) then MinZoom
+      else newScale
 
-    // convert canvas coordinates to zoomTarget coordinates
-    val posInZoomTarget = synthCanvas.parentToLocal(zoomNode.parentToLocal(mousePoint))
+    if(newScaleClamped != zoomScale) then
+      zoomScale = newScaleClamped
+      updateScale()
+      this.layout()     // refresh ScrollPane scroll positions and target bounds
 
-    // calculate adjustment of scroll position in pixels
-    val adjustment = synthCanvas.getLocalToParentTransform.deltaTransform(
-      posInZoomTarget.multiply(zoomFactor - 1))
+      // convert canvas coordinates to zoomTarget coordinates
+      val posInZoomTarget = synthCanvas.parentToLocal(zoomNode.parentToLocal(mousePoint))
 
-    // convert back to range [0,1] (range of the scrollbars's values)
-    // Too large/small values are automatically corrected by ScrollPane
-    val updatedInnerBounds = zoomNode.getBoundsInLocal
-    this.setHvalue((valX + adjustment.getX) / (updatedInnerBounds.getWidth - vpBounds.getWidth))
-    this.setVvalue((valY + adjustment.getY) / (updatedInnerBounds.getHeight - vpBounds.getHeight))
+      // calculate adjustment of scroll position in pixels
+      val adjustment = synthCanvas.getLocalToParentTransform.deltaTransform(
+        posInZoomTarget.multiply(zoomFactor - 1))
+
+      // convert back to range [0,1] (range of the scrollbars's values)
+      // Too large/small values are automatically corrected by ScrollPane
+      val updatedInnerBounds = zoomNode.getBoundsInLocal
+      this.setHvalue((valX + adjustment.getX) / (updatedInnerBounds.getWidth - vpBounds.getWidth))
+      this.setVvalue((valY + adjustment.getY) / (updatedInnerBounds.getHeight - vpBounds.getHeight))
 
   end onScroll
 
