@@ -49,13 +49,16 @@ class GUISynthComponent[T]() extends VBox:
     event.consume()
 
   this.onMouseDragged = event =>
+    val parentBounds = Option(this.getParent.getLayoutBounds)
     val posInParent = localToParent(event.getX, event.getY)
-    println(event.getY)
-    this.translateX = DragContext.initialTranslateX
-      +  posInParent.x - DragContext.mouseAnchorX
-    this.translateY = DragContext.initialTranslateY
-      + posInParent.y - DragContext.mouseAnchorY
-    event.consume()
+    parentBounds.foreach{parBounds =>
+    this.translateX = math.max(math.min(DragContext.initialTranslateX
+      +  posInParent.x - DragContext.mouseAnchorX,
+      parBounds.getMaxX - this.getWidth),parBounds.getMinY)
+    this.translateY = math.max(math.min(DragContext.initialTranslateY
+      + posInParent.y - DragContext.mouseAnchorY,
+      parBounds.getMaxY - this.getHeight), parBounds.getMinY)
+    event.consume()}
 
 end GUISynthComponent
 object GUISynthComponent:
