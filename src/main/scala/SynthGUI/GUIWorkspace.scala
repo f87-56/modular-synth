@@ -14,8 +14,10 @@ import scalafx.scene.shape.Rectangle
 import scalafx.scene.transform.*
 import scalafx.stage.FileChooser
 import scalafx.Includes.*
+import scalafx.application.Platform
 
 import java.awt.{MouseInfo, Point}
+import scala.concurrent.Future
 import scala.util.Try
 
 
@@ -73,9 +75,10 @@ class GUIWorkspace extends ScrollPane:
             Point2D(event.getX, event.getY)))
     //Adding new components
     outrNode.onKeyPressed = event =>
-      if event.code == KeyCode.Space then
+      if event.code == KeyCode.Space && this.hover.value then
         event.consume()
-        showFinder()
+        val a = showFinder()
+        a.requestFocus()
     outrNode
 
   // A node within a VBox that is centered in the middle
@@ -90,7 +93,7 @@ class GUIWorkspace extends ScrollPane:
 
   val comp =  new GUISynthParameter[Int]()
 
-  synthCanvas.children += new GUISynthComponent[Int]():
+  synthCanvas.children += new GUISynthComponent[Int](synthCanvas):
     this.children += comp
     translateX = 400
     translateY = 400
@@ -165,22 +168,22 @@ class GUIWorkspace extends ScrollPane:
 
   //this.onContextMenuRequested = event => ()
 
-  private def showFinder(): Unit =
+  private def showFinder()=
     println("YARR__")
-    val a = new ComponentSearchBox():
-      private val pos: Point = MouseInfo.getPointerInfo.getLocation
-      println(pos.x)
-      translateX = pos.x
-      translateY = pos.y
-    synthCanvas.children += a
+    val a = new ComponentSearchBox(synthCanvas):
+      private val pos = synthCanvas.localMousePos
+      translateX = pos._1
+      translateY = pos._2
     a.show()
+    a.editor.value.layout()
     a.editor.value.requestFocus()
-    println(a.editor.value.isFocused)
+    a
+
 
 
 end GUIWorkspace
 
-class ComponentSearchBox extends ComboBox[String]:
+class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
   val testList:ObservableBuffer[String] = ObservableBuffer("Item0","Item1", "Humphrey Davey", "Weezer","Weezer1","Item2","Item3")
   this.items = testList
   this.editable = true
@@ -188,6 +191,8 @@ class ComponentSearchBox extends ComboBox[String]:
   private var oldTextVal = ""
   this.show()
   this.editor.value.requestFocus()
+
+  parentCanvas.children += this
 
   //this.onAction = event =>
     //println(event.getSource)
@@ -214,7 +219,6 @@ class ComponentSearchBox extends ComboBox[String]:
       this.value.value = newValue
       val newStr = editor.value.textProperty.getValue.trim.toLowerCase
       this.items = testList.filter(_.toLowerCase.contains(newStr))
-      this.hide()
     this.show()
     valueChangedFlag = false
   }
@@ -224,5 +228,27 @@ class ComponentSearchBox extends ComboBox[String]:
   this.value.onChange { (source, oldValue, newValue) =>
     valueChangedFlag = true
   }
+
+  // User has canceled search
+  this.focused.onChange{ (op, oldVal, newVal) =>
+    if !newVal then
+      this.delete()
+  }
+
+  // User has made descision.
+  // Observe: Even esc key will provoke this.
+  this.onHidden = (event) =>
+    if (testList.contains(this.value.value)) then println("We got it!")
+    this.delete()
+
+  def delete() =
+    parentCanvas.requestFocus()
+    Try(parentCanvas.children.remove(this))
+  /*// Handle the ESC key separately
+  this.editor.value.onKeyPressed = (event) =>
+    println("Yarrr??")
+    if(event.code == KeyCode.Escape) then
+      this.value.value = ""
+      this.editor.value.textProperty.value = ""*/
 
 end ComponentSearchBox

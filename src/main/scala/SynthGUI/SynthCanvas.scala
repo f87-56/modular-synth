@@ -1,7 +1,12 @@
 package SynthGUI
 
+import scalafx.scene.Node
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.canvas.Canvas
+import scalafx.scene.layout.Region
+import scalafx.scene.shape.Rectangle
+
+import scala.util.Try
 // LayoutChildren does not work in the scala wrapper
 import scalafx.scene.layout.Pane
 import scalafx.scene.paint.Color
@@ -14,6 +19,21 @@ class SynthCanvas extends Pane:
   val canvasSize: (Int, Int) = (10000,10000)
   this.setMinSize(canvasSize._1, canvasSize._2)
   this.makeGrid()
+
+  // prevent children from going out of bounds
+  private val clip:Rectangle = Rectangle(this.getWidth + 500, this.getHeight + 500)
+  //this.setClip(clip)
+
+  // If the node is out of bounds, set it into bounds.
+  def restrictToBounds(node:Region) =
+    val bounds = this.getLayoutBounds
+    node.translateX = math.max(math.min(node.getTranslateX, bounds.getMaxX - node.getWidth), bounds.getMinX)
+    node.translateY = math.max(math.min(node.getTranslateY, bounds.getMaxY - node.getHeight), bounds.getMinY)
+
+
+  // The latest known mouse position
+  private var localMousePos_ = (0.0,0.0)
+  def localMousePos = localMousePos_
 
   private def makeGrid(): Unit =
     // We know beforehand how big the pane is.
@@ -47,7 +67,8 @@ class SynthCanvas extends Pane:
     grid.toBack()
   end makeGrid
 
-
+  this.onMouseMoved = event =>
+    this.localMousePos_ = (event.getX, event.getY)
 
 end SynthCanvas
 

@@ -15,7 +15,7 @@ import scalafx.scene.shape.{Circle, Rectangle}
 import java.net.Socket
 import scala.util.Try
 
-class GUISynthComponent[T]() extends VBox:
+class GUISynthComponent[T](val canvas:SynthCanvas) extends VBox:
   this.children +=
     new Label():
       text = "Name of node"
@@ -49,16 +49,12 @@ class GUISynthComponent[T]() extends VBox:
     event.consume()
 
   this.onMouseDragged = event =>
-    val parentBounds = Option(this.getParent.getLayoutBounds)
     val posInParent = localToParent(event.getX, event.getY)
-    parentBounds.foreach{parBounds =>
-    this.translateX = math.max(math.min(DragContext.initialTranslateX
-      +  posInParent.x - DragContext.mouseAnchorX,
-      parBounds.getMaxX - this.getWidth),parBounds.getMinY)
-    this.translateY = math.max(math.min(DragContext.initialTranslateY
-      + posInParent.y - DragContext.mouseAnchorY,
-      parBounds.getMaxY - this.getHeight), parBounds.getMinY)
-    event.consume()}
+    this.translateX = DragContext.initialTranslateX + posInParent.x - DragContext.mouseAnchorX
+    this.translateY = DragContext.initialTranslateY + posInParent.y - DragContext.mouseAnchorY
+
+    event.consume()
+    canvas.restrictToBounds(this)
 
 end GUISynthComponent
 object GUISynthComponent:
