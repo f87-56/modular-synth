@@ -79,6 +79,7 @@ class GUIWorkspace extends ScrollPane:
         event.consume()
         val a = showFinder()
         a.requestFocus()
+        a.layout()
     outrNode
 
   // A node within a VBox that is centered in the middle
@@ -92,6 +93,7 @@ class GUIWorkspace extends ScrollPane:
     synthCanvas.setScaleY(zoomScale)
 
   val comp =  new GUISynthParameter[Int]()
+  this.layout()
 
   synthCanvas.children += new GUISynthComponent[Int](synthCanvas):
     this.children += comp
@@ -194,21 +196,6 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
 
   parentCanvas.children += this
 
-  //this.onAction = event =>
-    //println(event.getSource)
-
-/*
-  this.editor.value.onKeyTyped = event =>
-    this.hide()
-    val newStr = editor.value.textProperty.getValue.trim.toLowerCase
-    println(newStr)
-    if(newStr == "") then this.hide()
-    if(!(oldTextVal == newStr) && !event.code.isWhitespaceKey) then
-      this.getSelectionModel.clearSelection()
-      oldTextVal = newStr
-      this.items = testList.filter(_.trim.toLowerCase.contains(newStr))
-    this.show()*/
-
   private var valueChangedFlag = false
 
   this.editor.value.textProperty.onChange{(source, oldValue, newValue) =>
@@ -238,12 +225,20 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
   // User has made descision.
   // Observe: Even esc key will provoke this.
   this.onHidden = (event) =>
-    if (testList.contains(this.value.value)) then println("We got it!")
+    if (testList.contains(this.value.value)) then
+      val pos = (this.getTranslateX, this.getTranslateY)
+      val a = new GUISynthComponent[Int](parentCanvas):
+        translateX = pos._1
+        translateY = pos._2
+      this.parentCanvas.children += a
+      a.layout()
+      println("We got it!")
     this.delete()
 
-  def delete() =
+  private def delete() =
     parentCanvas.requestFocus()
     Try(parentCanvas.children.remove(this))
+
   /*// Handle the ESC key separately
   this.editor.value.onKeyPressed = (event) =>
     println("Yarrr??")

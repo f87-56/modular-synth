@@ -5,6 +5,7 @@ import scalafx.scene.layout.{HBox, StackPane, VBox}
 import SynthLogic.SynthComponent
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
+import scalafx.application.Platform
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
@@ -39,6 +40,36 @@ class GUISynthComponent[T](val canvas:SynthCanvas) extends VBox:
       |    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);
       |""".stripMargin
 
+  // Check if the stage this is in has been drawn
+  private def isSceneDrawn:Boolean =
+    val scene = Option(this.getScene)
+    val window = scene.map(_.getWindow)
+    val showing = window.map(_.isShowing)
+    scene.isDefined && window.isDefined && showing.forall(_ == true)
+
+  // Prevent from being created outside bounds
+  // Don't do this if we have yet to draw anything
+  if (isSceneDrawn) then
+    canvas.restrictToBounds(this)
+  // And from going out of bounds
+  this.width.onInvalidate(
+    if(isSceneDrawn) then
+      canvas.restrictToBounds(this)
+  )
+  this.height.onInvalidate(
+    if(isSceneDrawn) then
+      canvas.restrictToBounds(this)
+  )
+  this.translateX.onInvalidate(
+    if (isSceneDrawn) then
+      canvas.restrictToBounds(this)
+  )
+  this.translateY.onInvalidate(
+    if (isSceneDrawn) then
+      canvas.restrictToBounds(this)
+  )
+
+
   // Make the node draggable. From https://docs.oracle.com/javafx/2/events/filters.htm#BCFFCAIH
   this.onMousePressed = event =>
     val posInParent = localToParent(event.getX, event.getY)
@@ -48,13 +79,14 @@ class GUISynthComponent[T](val canvas:SynthCanvas) extends VBox:
     DragContext.initialTranslateY = this.getTranslateY
     event.consume()
 
+  // Nodes can be dragged off-screen
   this.onMouseDragged = event =>
     val posInParent = localToParent(event.getX, event.getY)
     this.translateX = DragContext.initialTranslateX + posInParent.x - DragContext.mouseAnchorX
     this.translateY = DragContext.initialTranslateY + posInParent.y - DragContext.mouseAnchorY
 
-    event.consume()
     canvas.restrictToBounds(this)
+    event.consume()
 
 end GUISynthComponent
 object GUISynthComponent:
