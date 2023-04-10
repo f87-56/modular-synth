@@ -1,19 +1,21 @@
 package SynthGUI
 
 import SynthGUI.MainGUI.stage
-import javafx.scene.layout.{Background, BackgroundFill}
+import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Point2D, Pos}
 import scalafx.scene.{Group, Node}
 import scalafx.scene.canvas.Canvas
-import scalafx.scene.control.{Button, ScrollPane}
-import scalafx.scene.input.MouseButton
+import scalafx.scene.control.{Button, ComboBox, ScrollPane}
+import scalafx.scene.input.{KeyCode, KeyEvent, MouseButton}
 import scalafx.scene.paint.Color.*
 import scalafx.scene.layout.{CornerRadii, Pane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.transform.*
 import scalafx.stage.FileChooser
+import scalafx.Includes.*
 
+import java.awt.{MouseInfo, Point}
 import scala.util.Try
 
 
@@ -48,6 +50,7 @@ class GUIWorkspace extends ScrollPane:
   this.fitToHeight = true
 
 
+
   // Set initial scroll bar positions
   private val hStartPos = 0.9
   //this.hvalue = this.hmax.value * hStartPos
@@ -57,6 +60,9 @@ class GUIWorkspace extends ScrollPane:
   // We wrap our canvas in this construct.
   def outerNode(node:Node):Node =
     val outrNode = centeredNode(node)
+    // Request keyboard focus on left click
+    outrNode.onMouseClicked = event =>
+      outrNode.requestFocus()
     // The lambda that gets executed on scroll.
     outrNode.setOnScroll(
       event =>
@@ -65,6 +71,11 @@ class GUIWorkspace extends ScrollPane:
           event.consume()
           onScroll(event.getTextDeltaY,            // event.getdeltay/event.getmultipliery
             Point2D(event.getX, event.getY)))
+    //Adding new components
+    outrNode.onKeyPressed = event =>
+      if event.code == KeyCode.Space then
+        event.consume()
+        showFinder()
     outrNode
 
   // A node within a VBox that is centered in the middle
@@ -152,7 +163,66 @@ class GUIWorkspace extends ScrollPane:
 
   end onScroll
 
+  //this.onContextMenuRequested = event => ()
+
+  private def showFinder(): Unit =
+    println("YARR__")
+    val a = new ComponentSearchBox():
+      private val pos: Point = MouseInfo.getPointerInfo.
+      println(pos)
+      translateX = pos. pos.x
+      translateY = pos.y
+    synthCanvas.children += a
+    a.show()
+    a.editor.value.requestFocus()
+    println(a.editor.value.isFocused)
+
+
 end GUIWorkspace
 
-// A class to handle our positions
-case class Vec2(x:Double, y:Double)
+class ComponentSearchBox extends ComboBox[String]:
+  val testList:ObservableBuffer[String] = ObservableBuffer("Item0","Item1", "Humphrey Davey", "Weezer","Weezer1","Item2","Item3")
+  this.items = testList
+  this.editable = true
+
+  private var oldTextVal = ""
+  this.show()
+  this.editor.value.requestFocus()
+
+  //this.onAction = event =>
+    //println(event.getSource)
+
+/*
+  this.editor.value.onKeyTyped = event =>
+    this.hide()
+    val newStr = editor.value.textProperty.getValue.trim.toLowerCase
+    println(newStr)
+    if(newStr == "") then this.hide()
+    if(!(oldTextVal == newStr) && !event.code.isWhitespaceKey) then
+      this.getSelectionModel.clearSelection()
+      oldTextVal = newStr
+      this.items = testList.filter(_.trim.toLowerCase.contains(newStr))
+    this.show()*/
+
+  private var valueChangedFlag = false
+
+  this.editor.value.textProperty.onChange{(source, oldValue, newValue) =>
+    // Reset value if it corresponds to nothing
+    // Prevent from refiltering if we are scrolling down the list
+    if(!(oldValue.trim == newValue.trim) && !valueChangedFlag) then
+      this.getSelectionModel.clearSelection()
+      this.value.value = newValue
+      val newStr = editor.value.textProperty.getValue.trim.toLowerCase
+      this.items = testList.filter(_.toLowerCase.contains(newStr))
+      this.hide()
+    this.show()
+    valueChangedFlag = false
+  }
+
+  // Literally nothing's changed.
+  // The selected value
+  this.value.onChange { (source, oldValue, newValue) =>
+    valueChangedFlag = true
+  }
+
+end ComponentSearchBox

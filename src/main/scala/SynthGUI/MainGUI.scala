@@ -43,7 +43,6 @@ object MainGUI extends JFXApp3:
 
     // The main synth runtime.
     val mainRuntime = AudioResourceHandler.defaultRuntime
-    val keys = AudioResourceHandler.keyboardControl
     mainRuntime.openOutput()
 
     val topBar = new MenuBar:

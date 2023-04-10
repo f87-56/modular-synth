@@ -5,9 +5,9 @@ import scala.collection.mutable
 import scalafx.Includes.*
 import javafx.scene.input.KeyEvent.{KEY_PRESSED, KEY_RELEASED, KEY_TYPED}
 
-// We implement an observer pattern that noifies observers of changes in keyboard input state.
+// We implement an observer pattern that notifies observers of changes in keyboard input state.
 // Observe, JavaFX events exhibit strange behaviour when nonstandard characters are pressed,
-// as well as when the keys k and p are pressed simultaniously with others for some reason?
+// as well as when the keys k and p are pressed simultaneously with others for some reason?
 
 object MKBInputHandler {
 

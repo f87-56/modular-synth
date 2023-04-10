@@ -49,36 +49,5 @@ class SynthCanvas extends Pane:
 
 
 
-
-  /*
-    override protected def layoutChildren(): Unit =
-      // Insets for a prettier UI?
-      val top:Int = this.snappedTopInset().toInt
-      val right:Int = this.snappedRightInset().toInt
-      val bottom:Int = this.snappedBottomInset().toInt
-      val left:Int = this.snappedLeftInset().toInt
-      // Transformation
-      val w = this.getWidth.toInt - left - right
-      val h = this.getHeight.toInt - top - bottom
-      canvas.setLayoutX(left)
-      canvas.setLayoutY(top)
-      // If we aren't aligned, update the canvas
-      if( w != canvas.getWidth || h != canvas.getHeight) then
-        canvas.setWidth(w)
-        canvas.setHeight(h)
-        // fill the grid
-        val g = canvas.getGraphicsContext2D
-        g.clearRect(0,0,w,h)
-        g.setFill(Color.gray(0,0.2))
-
-        val a = LazyList.iterate(0.0)(_ + XSpacing)
-        val b = LazyList.iterate(0.0)(_ + YSpacing)
-        for x <- a.takeWhile(_ < w)
-            y <- b.takeWhile(_ < h) do
-          val offsetY = if (y % (2*YSpacing)) == 0 then XSpacing/2 else 0
-          // We have a dotted background for the meantime
-          g.fillOval(x - LineThickness + offsetY,
-            y -LineThickness, 2*LineThickness, 2*LineThickness) */
-
 end SynthCanvas
 
