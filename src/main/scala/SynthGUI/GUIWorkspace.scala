@@ -168,9 +168,9 @@ class GUIWorkspace extends ScrollPane:
   private def showFinder(): Unit =
     println("YARR__")
     val a = new ComponentSearchBox():
-      private val pos: Point = MouseInfo.getPointerInfo.
-      println(pos)
-      translateX = pos. pos.x
+      private val pos: Point = MouseInfo.getPointerInfo.getLocation
+      println(pos.x)
+      translateX = pos.x
       translateY = pos.y
     synthCanvas.children += a
     a.show()
