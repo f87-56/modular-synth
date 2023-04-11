@@ -92,7 +92,7 @@ class GUIWorkspace extends ScrollPane:
     synthCanvas.setScaleX(zoomScale)
     synthCanvas.setScaleY(zoomScale)
 
-  val comp =  new GUISynthParameter[Int]()
+  val comp =  new GUISynthParameter[Int](synthCanvas)
   this.layout()
 
   synthCanvas.children += new GUISynthComponent[Int](synthCanvas):

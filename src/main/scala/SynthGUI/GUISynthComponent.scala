@@ -9,9 +9,11 @@ import scalafx.application.Platform
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
+import scalafx.scene.input.TransferMode
 import scalafx.scene.paint.Color
 import scalafx.scene.paint.Color.*
-import scalafx.scene.shape.{Circle, Rectangle}
+import scalafx.scene.shape.{Circle, Line, Rectangle}
+import scalafx.Includes.*
 
 import java.net.Socket
 import scala.util.Try
@@ -28,7 +30,8 @@ class GUISynthComponent[T](val canvas:SynthCanvas) extends VBox:
           text = s"out (${classOf[Int].toString})"
           padding = Insets(5)
       children +=
-        new LineSocket()
+        // the output socket
+        new LineSocket(true, canvas, GUISynthComponent.this)
         alignment = Pos.BaselineRight
   style =
     """
@@ -52,6 +55,7 @@ class GUISynthComponent[T](val canvas:SynthCanvas) extends VBox:
   if (isSceneDrawn) then
     canvas.restrictToBounds(this)
   // And from going out of bounds
+
   this.width.onInvalidate(
     if(isSceneDrawn) then
       canvas.restrictToBounds(this)
@@ -99,10 +103,10 @@ object GUISynthComponent:
   }
 end GUISynthComponent
 
-class GUISynthParameter[T]() extends HBox:
+class GUISynthParameter[T](val canvas:SynthCanvas) extends HBox:
   this.padding = Insets(20)
   spacing = 5
-  private val inputSocket = new LineSocket():
+  private val inputSocket = new LineSocket(false, canvas, this):
     alignment = Pos.BaselineLeft
   this.children += inputSocket
   this.children += new Label:
@@ -120,7 +124,17 @@ class GUISynthParameter[T]() extends HBox:
 
 end GUISynthParameter
 
-class LineSocket extends StackPane:
+/**
+ * TODO: Use a union type for the parent value: GUISynthocmponent OR GUIComponentParameter
+ * @param isOutput Is this an output or an input socket?
+ */
+class LineSocket(val isOutput:Boolean, val canvas: SynthCanvas, val parentNode:GUISynthParameter[_]|GUISynthComponent[_]) extends StackPane:
+
+  // The style of line used to connect these sockets
+  val line:Line = new Line()
+  line.stroke = Color.Black
+  line.strokeWidth = 5.0
+
   private val SocketSize = 3.0
   private val plugSocket = Circle(SocketSize)
   plugSocket.stroke = Color.Black
@@ -132,9 +146,41 @@ class LineSocket extends StackPane:
       |    -fx-padding: 5px;
       |""".stripMargin
 
+  // center position of our socket in the canvas
+  private def circPosInCanvas  = canvas.sceneToLocal(plugSocket.localToScene(plugSocket.getCenterY, plugSocket.getCenterY))
+
   this.children = plugSocket
+  this.canvas.children += line
   def plug() =
     plugSocket.fill = Color.Black
   def unplug() =
     plugSocket.fill = Color.White
+
+  this.onDragDetected = event =>
+    this.startFullDrag()
+    println("Starting drag operation")
+    line.toFront()
+    line.startX = circPosInCanvas.x
+    line.startY = circPosInCanvas.y
+    line.endX = circPosInCanvas.x + 500.0
+    line.endY = circPosInCanvas.y + 500.0
+    event.consume()
+
+  //this.onMouseDragOver  = event => ()
+
+  this.onMouseDragReleased = event =>
+    println("Received package.")
+    () // Mouse is dropped over this node
+
+  // We don't want to drag the component node if we have pressed on the socket
+  this.onMouseDragged = event => event.consume()
+
+  this.localToSceneTransformProperty.onChange {
+    println("Yarrrrr")
+    line.startX = circPosInCanvas.x
+    line.startY = circPosInCanvas.y
+    line.endX = circPosInCanvas.x + 500.0
+    line.endY = circPosInCanvas.y + 500.0
+  }
+
 end LineSocket
