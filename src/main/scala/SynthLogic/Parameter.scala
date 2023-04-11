@@ -40,17 +40,39 @@ case class Parameter[+T](name: String, description: String, takesInput: Boolean 
    *
    * @param newInput The new input component
    */
+  /*
   @targetName("connect")
-  infix def <==(newInput:SynthComponent[_]):Try[Int] =
+  infix def <==(newInput:SynthComponent[T]):Try[Int] =
     if(!takesInput || (newInput.host != parent.host)) then Failure(IllegalArgumentException())
     else
-      Try{
-      newInput.initialValue match
-        case _:T =>
-          newInput.addConnection(this)
-          input = Some(newInput.asInstanceOf[SynthComponent[T]])
-          1
-        case _ => throw InvalidParameterException()
+      newInput.addConnection(this)
+      input = Some(newInput.asInstanceOf[SynthComponent[T]])
+      Success(1)*/
+
+  /**
+   * TODO: Refaactor this class????
+   * @param newInput
+   * @tparam A
+   * @return
+   */
+  @targetName("connect")
+  infix def <==[A](newInput: SynthComponent[A]): Try[Int] =
+    if (!takesInput || (newInput.host != parent.host)) then Failure(IllegalArgumentException())
+    else
+      /*if(newInput.host.getClass == this.defaultValue.getClass) then Success(1) else Failure(InvalidParameterException()) // Awful?
+      if(newInput.isInstanceOf(classOf(this.defaultValue))) then println("Yes")
+      else println("NO")
+      newInput match
+        case a: SynthComponent[T] => println("OK")
+        case _ => println("Not ok!")*/
+      Try {
+        newInput.initialValue match
+          // WARNING: THIS TYPE TEST CANNOT BE DONE ??!??!?!?!
+          case _: T =>
+            newInput.addConnection(this)
+            input = Some(newInput.asInstanceOf[SynthComponent[T]])
+            1
+          case _ => throw InvalidParameterException()
       }
 
   /**

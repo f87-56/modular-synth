@@ -45,6 +45,14 @@ object ComponentLibrary {
     def compute: Double =
       input.value * gain.value
 
+  /*
+  class TestComp(host: ModularSynthesizer) extends SynthComponent[String](host):
+
+    val input: Parameter[String] = Parameter[String]("gain", "", true, "Zero", this)
+    val gain: Parameter[String] = Parameter[String]("input", "", true, "One", this)
+    def compute: String =
+      input.value + gain.value*/
+
 
   // Provides a time-varying multiplier, from 0 to 1.
   class Envelope(host:ModularSynthesizer) extends SynthComponent[Double](host):

@@ -16,7 +16,7 @@ class SynthCanvas extends Pane:
   private val XSpacing = 50.0
   private val YSpacing = 40.0
   private val LineThickness = 3
-  val canvasSize: (Int, Int) = (10000,10000)
+  val canvasSize: (Int, Int) = (4000,3000)
   this.setMinSize(canvasSize._1, canvasSize._2)
   this.makeGrid()
 
