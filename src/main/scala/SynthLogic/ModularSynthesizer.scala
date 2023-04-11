@@ -74,8 +74,16 @@ object ModularSynthesizer:
     val a = ComponentLibrary.Oscillator(aa)
     val b = ComponentLibrary.Amplifier(aa)
     val c = ComponentLibrary.Envelope(aa)
+
+    //-------------TEST
+    //val testStr = ComponentLibrary.TestComp(aa)
+    //-------------TEST
+
     aa.outputComponent.input <== b
     b.gain <== c
+    //--------------TEST
+    //b.gain <== testStr
+    //--------------TEST
     b.input <== a
     aa
 
