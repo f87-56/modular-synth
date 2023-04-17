@@ -71,3 +71,23 @@ I am severely behind the original plan. The features now present reflect a state
 An approximate 12 hours has been used on this project during the last two weeks, a fair part of it fixing the issue with <==.
 I have not been able to work much on this project during the last two weeks. I have had my focus on a project for another course.
 Expect this number to grow dramatically for the next two weeks. If things go awry, expect me to be in contact.
+
+Weeks 7 and 8:
+To a great extent, the GUI has been implemented: The program now features a pannable, zoomable canvas with the ability of adding nodes to (A search
+menu can be requested, and a component selected).
+GUI analogues have been partially implemented.
+Such classes as SynthCanvas and GUIWorkspace have been created, and the SynthComponents' analogues in the GUI.
+
+Little has been systematically tested, but basic use testing has been conducted on SynthCanvas and GUIWorkspace in terms of the panning and zooming functionality,
+as well as the function of the search box.
+
+It turns out the issue with type erasure was not fixed. For the meantime, I choose to let it be, seeing as it is not a crucial issue in the program's function.
+
+The main lacking features are the coupling of the synthesizer logic with the GUI (Editing the active synth using the GUI) and file handling (saving and loading synths).
+The library of components is also minimal, and not very vast in the possibilities it offers.
+
+I am still behind the planned schedule (According to it, I would be ready), and it seems the overall scope of the project will have to be restricted to meet the
+imposed deadline.
+
+Time in excess of 35 hours has been used on the project during the timespan.
+
