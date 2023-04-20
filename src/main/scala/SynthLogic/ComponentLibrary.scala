@@ -6,11 +6,27 @@ import javax.sound.midi.{MidiMessage, ShortMessage}
 
 object ComponentLibrary {
 
+  // A list of tuples: first member is a name, second is a method that returns a synthcomponent by that name.
+  /*val a = List(
+    /**
+     * An identity operation. A component that passes through its input unchanged.
+     */
+    ("Passthrough",
+    (host:ModularSynthesizer) =>
+      class PassThrough(host:ModularSynthesizer) extends SynthComponent[Double](host):
+        val input: Parameter[Double] = Parameter("input","", true, 0.5, this)
+
+        // I am fairly satisfied as to how this looks.
+        override def compute: Double =
+          input.value
+
+      PassThrough(host)))*/
+
   /**
    * An identity operation. A component that passes through its input unchanged.
    */
-  class PassThrough(host:ModularSynthesizer) extends SynthComponent[Double](host):
-    val input: Parameter[Double] = Parameter("input","", true, 0.5, this)
+  class PassThrough(host: ModularSynthesizer) extends SynthComponent[Double](host):
+    val input: Parameter[Double] = Parameter("input", "", true, 0.5, this)
 
     // I am fairly satisfied as to how this looks.
     override def compute: Double =

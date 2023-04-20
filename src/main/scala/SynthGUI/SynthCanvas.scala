@@ -18,7 +18,7 @@ class SynthCanvas extends Pane:
   private val LineThickness = 3
   val canvasSize: (Int, Int) = (4000,3000)
   this.setMinSize(canvasSize._1, canvasSize._2)
-  this.makeGrid()
+  val grid = this.makeGrid()
 
   // prevent children from going out of bounds
   private val clip:Rectangle = Rectangle(this.getWidth + 500, this.getHeight + 500)
@@ -26,7 +26,8 @@ class SynthCanvas extends Pane:
 
   // If the node is out of bounds, set it into bounds.
   def restrictToBounds(node:Region) =
-    val bounds = this.getLayoutBounds
+    // Bounds of background grid in local coords
+    val bounds =  this.sceneToLocal(grid.localToScene(grid.getLayoutBounds))
     node.translateX = math.max(math.min(node.getTranslateX, bounds.getMaxX - node.getWidth), bounds.getMinX)
     node.translateY = math.max(math.min(node.getTranslateY, bounds.getMaxY - node.getHeight), bounds.getMinY)
 
@@ -35,7 +36,7 @@ class SynthCanvas extends Pane:
   private var localMousePos_ = (0.0,0.0)
   def localMousePos = localMousePos_
 
-  private def makeGrid(): Unit =
+  private def makeGrid() =
     // We know beforehand how big the pane is.
     val w = canvasSize._1
     val h = canvasSize._2
@@ -52,6 +53,7 @@ class SynthCanvas extends Pane:
     g.fillRect(0,0,w,h)
     g.setFill(Color(1,1,1,0.2))
 
+
     val a = LazyList.iterate(0.0)(_ + XSpacing)
     val b = LazyList.iterate(0.0)(_ + YSpacing)
     for x <- a.takeWhile(_ < w)
@@ -65,6 +67,7 @@ class SynthCanvas extends Pane:
 
     this.children += grid
     grid.toBack()
+    grid
   end makeGrid
 
   this.onMouseMoved = event =>

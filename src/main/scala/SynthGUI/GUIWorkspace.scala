@@ -92,27 +92,11 @@ class GUIWorkspace extends ScrollPane:
     synthCanvas.setScaleX(zoomScale)
     synthCanvas.setScaleY(zoomScale)
 
-  val comp =  new GUISynthParameter[Int](synthCanvas)
   this.layout()
 
   synthCanvas.children += new GUISynthComponent[Int](synthCanvas):
-    this.children += comp
     translateX = 400
     translateY = 400
-
-  synthCanvas.children += new Rectangle:
-    x = 100
-    y = 100
-    width = 50
-    height = 50
-    fill = Red
-
-  synthCanvas.children += new Rectangle:
-    x = 200
-    y = 200
-    width = 50
-    height = 50
-    fill = Red
 
   val button = Button("I'm a button!")
   button.onAction = event => {
@@ -171,7 +155,6 @@ class GUIWorkspace extends ScrollPane:
   //this.onContextMenuRequested = event => ()
 
   private def showFinder()=
-    println("YARR__")
     val a = new ComponentSearchBox(synthCanvas):
       private val pos = synthCanvas.localMousePos
       translateX = pos._1
@@ -232,7 +215,6 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
         translateY = pos._2
       this.parentCanvas.children += a
       a.layout()
-      println("We got it!")
     this.delete()
 
   private def delete() =
@@ -241,7 +223,6 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
 
   /*// Handle the ESC key separately
   this.editor.value.onKeyPressed = (event) =>
-    println("Yarrr??")
     if(event.code == KeyCode.Escape) then
       this.value.value = ""
       this.editor.value.textProperty.value = ""*/
