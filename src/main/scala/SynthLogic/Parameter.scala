@@ -16,8 +16,8 @@ import scala.util.{Failure, Success, Try}
  * @param input The (optional) SynthComponent that feeds data to this parameter. WARNING! THIS FIELD IS MUTABLE
  * @tparam T  The signal type of this parameter
  */
-case class Parameter[+T](name: String, description: String, takesInput: Boolean = true,
-                                     defaultValue: T,
+case class Parameter[T](name: String, description: String, takesInput: Boolean = true,
+                         private var _defaultValue: T,
                                      parent: SynthComponent[_],
                                      private[this] var input: Option[SynthComponent[T]] = None):
 
@@ -26,11 +26,25 @@ case class Parameter[+T](name: String, description: String, takesInput: Boolean 
   // a bit of a mouthful
   def value:T = input.map(_.output.getOrElse(defaultValue)).getOrElse(defaultValue)
 
+
   /**
    * A getter for input.
    * @return
    */
   def getInput:Option[SynthComponent[T]] = input
+
+  // Getter, setter For defaultValue
+  def defaultValue: T = _defaultValue
+
+  // NOT TYPE-SAFE
+  def defaultValue_= (newVal:Any): Unit =
+    // A hack to circumvent compile errors. We'll have to trust that the data is of the right type.
+    // Since the defaultValue is not used in program logic, the sin may not be quite so cardinal.
+    // Sorry scala :(
+    newVal match
+      case a:T=>
+        _defaultValue = a
+        println("The new default: " + _defaultValue)
 
   /**
    * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.
@@ -69,6 +83,7 @@ case class Parameter[+T](name: String, description: String, takesInput: Boolean 
         newInput.initialValue match
           // WARNING: THIS TYPE TEST CANNOT BE DONE ??!??!?!?!
           case _: T =>
+            println(newInput)
             newInput.addConnection(this)
             input = Some(newInput.asInstanceOf[SynthComponent[T]])
             1

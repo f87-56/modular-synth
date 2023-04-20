@@ -99,9 +99,8 @@ object MainGUI extends JFXApp3:
 
     bottomBar.alignment = Pos.BaselineRight
 
-    val workspace = GUIWorkspace()
+    val workspace = GUIWorkspace(mainRuntime.activeSynth)
 
-    val bg = SynthCanvas()
 
     root.center = workspace
     root.top = topBar

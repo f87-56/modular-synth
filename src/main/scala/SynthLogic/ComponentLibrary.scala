@@ -7,20 +7,36 @@ import javax.sound.midi.{MidiMessage, ShortMessage}
 object ComponentLibrary {
 
   // A list of tuples: first member is a name, second is a method that returns a synthcomponent by that name.
-  /*val a = List(
+  val components: Map[String, ModularSynthesizer => SynthComponent[Any]] = Map(
     /**
      * An identity operation. A component that passes through its input unchanged.
      */
     ("Passthrough",
-    (host:ModularSynthesizer) =>
-      class PassThrough(host:ModularSynthesizer) extends SynthComponent[Double](host):
-        val input: Parameter[Double] = Parameter("input","", true, 0.5, this)
+      (host:ModularSynthesizer) =>
+        PassThrough(host)
+    ),
 
-        // I am fairly satisfied as to how this looks.
-        override def compute: Double =
-          input.value
+    ("Oscillator",
+      (host:ModularSynthesizer) =>
+        Oscillator(host)
+    ),
 
-      PassThrough(host)))*/
+    ("Amplifier",
+      (host:ModularSynthesizer) =>
+        Amplifier(host)
+    ),
+
+    ("TestStringComponent",
+      (host:ModularSynthesizer) =>
+        TestComp(host)
+    ),
+
+    ("Envelopoe",
+      (host:ModularSynthesizer) =>
+        Envelope(host)
+    )
+
+  )
 
   /**
    * An identity operation. A component that passes through its input unchanged.
@@ -37,7 +53,7 @@ object ComponentLibrary {
    */
   class Oscillator(host:ModularSynthesizer) extends SynthComponent[Double](host):
     val oscillatorType:Parameter[Int] =
-      new Parameter("type", "", false,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
+      new Parameter("type", "", true,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
 
     private var freq = 0.0
     // What part of the oscillator cycle are we on?

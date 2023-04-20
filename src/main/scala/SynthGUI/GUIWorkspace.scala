@@ -1,6 +1,7 @@
 package SynthGUI
 
 import SynthGUI.MainGUI.stage
+import SynthLogic.{ModularSynthesizer, SynthComponent}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Point2D, Pos}
 import scalafx.scene.{Group, Node}
@@ -29,7 +30,7 @@ import scala.util.Try
  * Zoomable and pannable ScrollPane, adapted from
  * https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
  */
-class GUIWorkspace extends ScrollPane:
+class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
 
   private val MinZoom = 0.1
   private val MaxZoom = 4.0
@@ -38,7 +39,7 @@ class GUIWorkspace extends ScrollPane:
   private var zoomScale = 1.0
 
   // Constructing
-  val synthCanvas = SynthCanvas()
+  val synthCanvas = SynthCanvas(synth)
   //synthCanvas.setBackground(new Background(new BackgroundFill(Color.Gold, CornerRadii.Empty, Insets.Empty)))
 
   private val zoomNode:Node = Group(synthCanvas)
@@ -94,11 +95,11 @@ class GUIWorkspace extends ScrollPane:
 
   this.layout()
 
-  synthCanvas.children += new GUISynthComponent[Int](synthCanvas):
+  /*synthCanvas.children += new GUISynthComponent[Int](synthCanvas):
     translateX = 400
-    translateY = 400
+    translateY = 400*/
 
-  val button = Button("I'm a button!")
+  /*val button = Button("I'm a button!")
   button.onAction = event => {
     println("Click")
     // Make the user choose a file!
@@ -110,7 +111,7 @@ class GUIWorkspace extends ScrollPane:
   synthCanvas.children += new VBox:
     children = button
     this.translateX = 300
-    this.translateY = 250
+    this.translateY = 250*/
 
   // Reset zoom and position
   def reset() = ???
@@ -169,8 +170,10 @@ class GUIWorkspace extends ScrollPane:
 end GUIWorkspace
 
 class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
-  val testList:ObservableBuffer[String] = ObservableBuffer("Item0","Item1", "Humphrey Davey", "Weezer","Weezer1","Item2","Item3")
-  this.items = testList
+  val components:Map[String, ModularSynthesizer => SynthComponent[_]] = SynthLogic.ComponentLibrary.components
+  val componentList:ObservableBuffer[String] = ObservableBuffer.from(components.keys)
+  //ObservableBuffer("Item0","Item1", "Humphrey Davey", "Weezer","Weezer1","Item2","Item3")
+  this.items = componentList
   this.editable = true
 
   private var oldTextVal = ""
@@ -188,7 +191,7 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
       this.getSelectionModel.clearSelection()
       this.value.value = newValue
       val newStr = editor.value.textProperty.getValue.trim.toLowerCase
-      this.items = testList.filter(_.toLowerCase.contains(newStr))
+      this.items = componentList.filter(_.toLowerCase.contains(newStr))
     this.show()
     valueChangedFlag = false
   }
@@ -208,13 +211,18 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
   // User has made descision.
   // Observe: Even esc key will provoke this.
   this.onHidden = (event) =>
-    if (testList.contains(this.value.value)) then
+    if (componentList.contains(this.value.value)) then
+      // The created synth component
+      val comp = components.get(this.value.value)
       val pos = (this.getTranslateX, this.getTranslateY)
-      val a = new GUISynthComponent[Int](parentCanvas):
-        translateX = pos._1
-        translateY = pos._2
-      this.parentCanvas.children += a
-      a.layout()
+      comp.foreach(cmp =>
+        val a = new GUISynthComponent[Int](parentCanvas,cmp(parentCanvas.synth)):
+          translateX = pos._1
+          translateY = pos._2
+        this.parentCanvas.children += a
+        a.layout()
+        println(parentCanvas.synth.components)
+      )
     this.delete()
 
   private def delete() =

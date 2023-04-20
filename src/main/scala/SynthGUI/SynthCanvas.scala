@@ -1,5 +1,6 @@
 package SynthGUI
 
+import SynthLogic.ModularSynthesizer
 import scalafx.scene.Node
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.canvas.Canvas
@@ -12,13 +13,16 @@ import scalafx.scene.layout.Pane
 import scalafx.scene.paint.Color
 
 // from http://fxexperience.com/2014/05/resizable-grid-using-canvas/
-class SynthCanvas extends Pane:
+class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
   private val XSpacing = 50.0
   private val YSpacing = 40.0
   private val LineThickness = 3
   val canvasSize: (Int, Int) = (4000,3000)
   this.setMinSize(canvasSize._1, canvasSize._2)
   val grid = this.makeGrid()
+
+  // accessor
+  def synth: ModularSynthesizer = _synth
 
   // prevent children from going out of bounds
   private val clip:Rectangle = Rectangle(this.getWidth + 500, this.getHeight + 500)
