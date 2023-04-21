@@ -6,9 +6,10 @@ import scala.util.{Failure, Success, Try}
 // Suggestion: Value classes may be a good fit for creating "signal types"
 
 /**
- * @tparam T The type of signal this component outputs
+ * 
+ * @tparam T
  */
-trait SynthComponent[+T](val host:ModularSynthesizer) {
+trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Option[String] = None) {
   
   host.addComponent(this)
 
@@ -75,6 +76,5 @@ trait SynthComponent[+T](val host:ModularSynthesizer) {
 }
 
 object SynthComponent:
-
 end SynthComponent
 

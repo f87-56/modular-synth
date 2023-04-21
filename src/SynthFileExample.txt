@@ -1,0 +1,14 @@
+This is a (structural, not literal) example of what a serialized synth looks like.
+
+The structure of the files is as follows:
+    The file contains a list of tuples. Each of those tuples holds:
+        -The name of a synth component
+        -Its position on the canvas
+        -The serialized parameters of the SynthComponent. This is also a tuple.
+
+    The file contains the output synth component separately. It holds the same data as
+    all the other components.
+
+A serialized SynthParameter contains:
+    -The index in the toplevel list of the SynthComponent it was connected to. (-1 if none)
+    -If the user can edit it (only for certain types), the set default value prior to serialization.

@@ -7,41 +7,46 @@ import javax.sound.midi.{MidiMessage, ShortMessage}
 object ComponentLibrary {
 
   // A list of tuples: first member is a name, second is a method that returns a synthcomponent by that name.
-  val components: Map[String, ModularSynthesizer => SynthComponent[Any]] = Map(
+  private val components: Map[String, (ModularSynthesizer, String) => SynthComponent[Any]] = Map(
     /**
      * An identity operation. A component that passes through its input unchanged.
      */
     ("Passthrough",
-      (host:ModularSynthesizer) =>
-        PassThrough(host)
+      (host: ModularSynthesizer, serialID: String) =>
+        Oscillator(host, Some(serialID))
     ),
 
     ("Oscillator",
-      (host:ModularSynthesizer) =>
-        Oscillator(host)
+      (host:ModularSynthesizer, serialID:String) =>
+        Oscillator(host, Some(serialID))
     ),
 
     ("Amplifier",
-      (host:ModularSynthesizer) =>
-        Amplifier(host)
+      (host:ModularSynthesizer, serialID:String) =>
+        Amplifier(host, Some(serialID))
     ),
 
     ("TestStringComponent",
-      (host:ModularSynthesizer) =>
-        TestComp(host)
+      (host:ModularSynthesizer, serialID:String) =>
+        TestComp(host, Some(serialID))
     ),
 
-    ("Envelopoe",
-      (host:ModularSynthesizer) =>
-        Envelope(host)
+    ("Envelope",
+      (host:ModularSynthesizer, serialID:String) =>
+        Envelope(host, Some(serialID))
     )
-
   )
+
+  def componentNames: Iterable[String] = components.keys
+  def createComponent(name:String,host:ModularSynthesizer): Option[SynthComponent[_]] =
+    components.get(name).map(_(host, name))
+
 
   /**
    * An identity operation. A component that passes through its input unchanged.
    */
-  class PassThrough(host: ModularSynthesizer) extends SynthComponent[Double](host):
+  class PassThrough(host: ModularSynthesizer,
+                    override val serializationTag: Option[String]) extends SynthComponent[Double](host):
     val input: Parameter[Double] = Parameter("input", "", true, 0.5, this)
 
     // I am fairly satisfied as to how this looks.
@@ -51,7 +56,8 @@ object ComponentLibrary {
   /**
    * A simple oscillator
    */
-  class Oscillator(host:ModularSynthesizer) extends SynthComponent[Double](host):
+  class Oscillator(host:ModularSynthesizer,
+                   override val serializationTag: Option[String]) extends SynthComponent[Double](host):
     val oscillatorType:Parameter[Int] =
       new Parameter("type", "", true,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
 
@@ -70,7 +76,8 @@ object ComponentLibrary {
   /**
    * Scales the input signal by the parameter gain.
    */
-  class Amplifier(host:ModularSynthesizer) extends SynthComponent[Double](host):
+  class Amplifier(host:ModularSynthesizer,
+                  override val serializationTag: Option[String]) extends SynthComponent[Double](host):
 
     val input: Parameter[Double] = Parameter[Double]("gain", "", true, 1.0, this)
     val gain: Parameter[Double] = Parameter[Double]("input", "", true, 1.0, this)
@@ -78,7 +85,8 @@ object ComponentLibrary {
       input.value * gain.value
 
   
-  class TestComp(host: ModularSynthesizer) extends SynthComponent[String](host):
+  class TestComp(host: ModularSynthesizer,
+                 override val serializationTag: Option[String]) extends SynthComponent[String](host):
 
     val input: Parameter[String] = Parameter[String]("gain", "", true, "Zero", this)
     val gain: Parameter[String] = Parameter[String]("input", "", true, "One", this)
@@ -87,7 +95,8 @@ object ComponentLibrary {
 
 
   // Provides a time-varying multiplier, from 0 to 1.
-  class Envelope(host:ModularSynthesizer) extends SynthComponent[Double](host):
+  class Envelope(host:ModularSynthesizer,
+                 override val serializationTag: Option[String]) extends SynthComponent[Double](host):
     val attack = Parameter[Double]("attack", "", false, 0.1, this)
     val decay = Parameter[Double]("decay", "", false, 0.1, this)
     val sustain = Parameter[Double]("sustain", "", false, 0.1, this)
@@ -149,7 +158,5 @@ object ComponentLibrary {
       previous = out
       out
   end Envelope
-
-  def passthrough(host:ModularSynthesizer): PassThrough = PassThrough(host)
 
 }

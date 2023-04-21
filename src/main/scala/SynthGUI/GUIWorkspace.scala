@@ -1,7 +1,7 @@
 package SynthGUI
 
 import SynthGUI.MainGUI.stage
-import SynthLogic.{ModularSynthesizer, SynthComponent}
+import SynthLogic.{ComponentLibrary, ModularSynthesizer, SynthComponent}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Point2D, Pos}
 import scalafx.scene.{Group, Node}
@@ -170,8 +170,7 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
 end GUIWorkspace
 
 class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
-  val components:Map[String, ModularSynthesizer => SynthComponent[_]] = SynthLogic.ComponentLibrary.components
-  val componentList:ObservableBuffer[String] = ObservableBuffer.from(components.keys)
+  val componentList:ObservableBuffer[String] = ObservableBuffer.from(ComponentLibrary.componentNames)
   //ObservableBuffer("Item0","Item1", "Humphrey Davey", "Weezer","Weezer1","Item2","Item3")
   this.items = componentList
   this.editable = true
@@ -213,10 +212,10 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
   this.onHidden = (event) =>
     if (componentList.contains(this.value.value)) then
       // The created synth component
-      val comp = components.get(this.value.value)
+      val comp = ComponentLibrary.createComponent(this.value.value, parentCanvas.synth)
       val pos = (this.getTranslateX, this.getTranslateY)
       comp.foreach(cmp =>
-        val a = new GUISynthComponent[Int](parentCanvas,cmp(parentCanvas.synth)):
+        val a = new GUISynthComponent[Int](parentCanvas,cmp):
           translateX = pos._1
           translateY = pos._2
         this.parentCanvas.children += a

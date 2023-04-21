@@ -35,7 +35,7 @@ class ModularSynthesizer(val sampleRate:Int) {
     cmp.xAll()
     components_ -= cmp
 
-  final val outputComponent = ComponentLibrary.passthrough(this)
+  final val outputComponent = ComponentLibrary.PassThrough(this, None)
 
   val deltaTime: Double = 1.0/sampleRate
   
@@ -71,9 +71,9 @@ object ModularSynthesizer:
 
   def default: ModularSynthesizer =
     val aa = ModularSynthesizer(44100)
-    val a = ComponentLibrary.Oscillator(aa)
-    val b = ComponentLibrary.Amplifier(aa)
-    val c = ComponentLibrary.Envelope(aa)
+    val a = ComponentLibrary.Oscillator(aa, None)
+    val b = ComponentLibrary.Amplifier(aa, None)
+    val c = ComponentLibrary.Envelope(aa, None)
 
     //-------------TEST
     //val testStr = ComponentLibrary.TestComp(aa)

@@ -1,5 +1,7 @@
 package SynthLogic
 
+import io.circe.Codec
+
 import java.security.InvalidParameterException
 import scala.annotation.targetName
 import scala.util.{Failure, Success, Try}
@@ -103,6 +105,7 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
 
 end Parameter
 object Parameter:
+  //given Codec[Parameter[_]] = Encoder[Parameter[_]]
 end Parameter
 
 /**
