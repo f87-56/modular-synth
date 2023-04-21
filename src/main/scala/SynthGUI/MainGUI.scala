@@ -19,6 +19,8 @@ import scalafx.Includes.*
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{HPos, Pos}
 
+import io.circe.syntax.*
+
 import javax.sound.midi.{MidiDevice, MidiDeviceTransmitter}
 
 
@@ -112,6 +114,9 @@ object MainGUI extends JFXApp3:
     scene.onKeyReleased = (event) => {
       MKBInputHandler.keyInput(event)
     }
+
+    println(mainRuntime.activeSynth.asJson)
+    println(workspace.synthCanvas.asJson)
 
   end start
 

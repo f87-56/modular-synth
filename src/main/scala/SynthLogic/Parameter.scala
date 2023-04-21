@@ -1,6 +1,6 @@
 package SynthLogic
 
-import io.circe.Codec
+import io.circe.{Codec, Decoder, Encoder, HCursor, Json}
 
 import java.security.InvalidParameterException
 import scala.annotation.targetName
@@ -105,7 +105,22 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
 
 end Parameter
 object Parameter:
-  //given Codec[Parameter[_]] = Encoder[Parameter[_]]
+  given Encoder[Parameter[_]] = (a: Parameter[_]) => Json.obj(
+    // Index of the input. If none, -1.
+    ("Index", Json.fromInt(a.getInput.map(b => b.host.components.indexOf(b)).getOrElse(-1))),
+    // Encode them all, worry about validity when decoding
+    ("DefaultValue", Json.fromString(a.defaultValue.toString))
+  )
+
+  // Only gives info, does not construct a Parameter.
+  given Decoder[(Int,String)] = (c: HCursor) => for
+    index <- c.downField("Index").as[Int]
+    defaultVal <- c.downField("DefaultValue").as[String]
+  yield
+    (index, defaultVal)
+
+
+
 end Parameter
 
 /**

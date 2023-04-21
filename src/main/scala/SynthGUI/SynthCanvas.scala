@@ -1,6 +1,9 @@
 package SynthGUI
 
 import SynthLogic.ModularSynthesizer
+import io.circe.{Encoder, Json}
+import io.circe.syntax.*
+
 import scalafx.scene.Node
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.canvas.Canvas
@@ -20,6 +23,17 @@ class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
   val canvasSize: (Int, Int) = (4000,3000)
   this.setMinSize(canvasSize._1, canvasSize._2)
   val grid = this.makeGrid()
+
+  private val components:scala.collection.mutable.Set[GUISynthComponent[_]] =
+    scala.collection.mutable.Set()
+
+  def addComponent(comp:GUISynthComponent[_]):Unit =
+    this.children += comp
+    components += comp
+
+  def removeComponent(comp:GUISynthComponent[_]):Unit =
+    this.children -= comp
+    components -= comp
 
   // accessor
   def synth: ModularSynthesizer = _synth
@@ -78,4 +92,10 @@ class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
     this.localMousePos_ = (event.getX, event.getY)
 
 end SynthCanvas
+object SynthCanvas:
+  given Encoder[SynthCanvas] = (a:SynthCanvas) => Json.obj(
+    ("Components", a.components.asJson)
+  )
+end SynthCanvas
+
 

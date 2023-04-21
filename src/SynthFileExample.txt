@@ -12,3 +12,62 @@ The structure of the files is as follows:
 A serialized SynthParameter contains:
     -The index in the toplevel list of the SynthComponent it was connected to. (-1 if none)
     -If the user can edit it (only for certain types), the set default value prior to serialization.
+
+For example, a sine synth with a simple volume envelope:
+{
+  "Components" : [
+    {
+      "IdentifyingName" : "",
+      "Parameters" : [
+        {
+          "Index" : -1,
+          "DefaultValue" : "0"
+        }
+      ]
+    },
+    {
+      "IdentifyingName" : "",
+      "Parameters" : [
+        {
+          "Index" : 2,
+          "DefaultValue" : "0.5"
+        }
+      ]
+    },
+    {
+      "IdentifyingName" : "",
+      "Parameters" : [
+        {
+          "Index" : 0,
+          "DefaultValue" : "1.0"
+        },
+        {
+          "Index" : 3,
+          "DefaultValue" : "1.0"
+        }
+      ]
+    },
+    {
+      "IdentifyingName" : "",
+      "Parameters" : [
+        {
+          "Index" : -1,
+          "DefaultValue" : "0.1"
+        },
+        {
+          "Index" : -1,
+          "DefaultValue" : "0.1"
+        },
+        {
+          "Index" : -1,
+          "DefaultValue" : "0.1"
+        },
+        {
+          "Index" : -1,
+          "DefaultValue" : "0.1"
+        }
+      ]
+    }
+  ]
+}
+

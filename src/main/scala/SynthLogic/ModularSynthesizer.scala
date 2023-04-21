@@ -1,6 +1,8 @@
 package SynthLogic
 
 import SynthLogic.ModularSynthesizer.uproot
+import io.circe.{Encoder, Json, syntax}
+import io.circe.syntax.*
 
 import javax.sound.midi.{MidiMessage, ShortMessage}
 import scala.collection.mutable
@@ -86,6 +88,10 @@ object ModularSynthesizer:
     //--------------TEST
     b.input <== a
     aa
+
+  given Encoder[ModularSynthesizer] = (a:ModularSynthesizer) => Json.obj(
+    ("Components", a.components.asJson)
+  )
 
 end ModularSynthesizer
 

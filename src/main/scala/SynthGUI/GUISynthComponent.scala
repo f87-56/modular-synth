@@ -4,6 +4,9 @@ import SynthGUI.GUISynthComponent.DragContext
 import SynthGUI.LineSocket.{lastDragSource, setLastDragSource}
 import scalafx.scene.layout.{HBox, Pane, StackPane, VBox}
 import SynthLogic.{Parameter, SynthComponent}
+import io.circe.{Encoder, Json}
+import io.circe.syntax.*
+
 import javafx.scene.control.CheckBox
 import javafx.util.StringConverter
 import javafx.util.converter.IntegerStringConverter
@@ -124,7 +127,7 @@ class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthCompo
     parameters.foreach(_.disconnect())
     outputSocket.removeConnections()
     canvas.requestFocus()
-    Try(canvas.children.remove(this))
+    Try(canvas.removeComponent(this))
 
 end GUISynthComponent
 object GUISynthComponent:
@@ -135,6 +138,13 @@ object GUISynthComponent:
     var initialTranslateX: Double = 0.0
     var initialTranslateY: Double = 0.0
   }
+
+  // The encoder
+  given Encoder[GUISynthComponent[_]] = (a: GUISynthComponent[_]) => Json.obj(
+    ("SynthComponent", a.synthComponent.asJson(SynthComponent.given_Encoder_SynthComponent)),
+    ("Position", List(a.getTranslateX, a.getTranslateY).asJson)
+  )
+
 end GUISynthComponent
 
 class GUISynthParameter[T](val canvas:SynthCanvas,
@@ -201,8 +211,9 @@ end GUISynthParameter
 class LineSocket(val canvas: SynthCanvas, val parentNode:GUISynthParameter[_]|GUISynthComponent[_]) extends StackPane:
 
   private val (isOutput: Boolean,
-  parentGUISynthComponent:GUISynthComponent[?],
-  parentGUISynthParam:Option[GUISynthParameter[?]]) =
+  parentGUISynthComponent:GUISynthComponent[_],
+  parentGUISynthParam:Option[GUISynthParameter[_]]) =
+    // Some issue here, might be unsafe
     parentNode match
       case a: GUISynthComponent[_] => (true, a, None)
       case b: GUISynthParameter[_] => (false, b.parentComponent, Some(b))
