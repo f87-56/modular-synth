@@ -15,7 +15,7 @@
         "Parameters" : [
           {
             "Index" : -1,
-            "DefaultValue" : "1"
+            "DefaultValue" : "0"
           }
         ]
       },
@@ -27,7 +27,7 @@
             "DefaultValue" : "1.0"
           },
           {
-            "Index" : 1,
+            "Index" : 4,
             "DefaultValue" : "1.0"
           }
         ]
@@ -41,15 +41,28 @@
           },
           {
             "Index" : -1,
-            "DefaultValue" : "0.5"
+            "DefaultValue" : "2.0"
           },
           {
             "Index" : -1,
-            "DefaultValue" : "0.1"
+            "DefaultValue" : "0.2"
           },
           {
             "Index" : -1,
-            "DefaultValue" : "0.1"
+            "DefaultValue" : "0.3"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
           }
         ]
       }
@@ -57,6 +70,20 @@
     "OutputComponentIndex" : 0
   },
   "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        1292.5635986328125,
+        824.4100952148438
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        929.3975830078125,
+        435.685791015625
+      ]
+    },
     {
       "SynthComponentIndex" : 0,
       "Position" : [
@@ -67,22 +94,15 @@
     {
       "SynthComponentIndex" : 2,
       "Position" : [
-        1498.62744140625,
-        632.5859375
-      ]
-    },
-    {
-      "SynthComponentIndex" : 3,
-      "Position" : [
-        1064.9586181640625,
-        799.0200805664062
+        1547.631103515625,
+        618.06640625
       ]
     },
     {
       "SynthComponentIndex" : 1,
       "Position" : [
-        1071.626708984375,
-        482.7783508300781
+        864.0636596679688,
+        825.1160278320312
       ]
     }
   ]

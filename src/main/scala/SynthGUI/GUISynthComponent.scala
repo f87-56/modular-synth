@@ -169,6 +169,7 @@ class GUISynthParameter[T](val canvas:SynthCanvas,
   if(parameter.takesInput) then
     this.children += inputSocket
 
+  // TODO: FIX HANDLING OF ERRONEOUS INPUTS
   // Populate this node depending on the data type
   parameter.defaultValue match
     case a:Int =>

@@ -102,10 +102,6 @@ object ComponentLibrary {
     val sustain = Parameter[Double]("sustain", "", false, 0.1, this)
     val release = Parameter[Double]("release", "", false, 0.1, this)
 
-    private val attackRate = 1.0/attack.defaultValue
-    private val decayRate = 1.0/decay.defaultValue
-    private val releaseRate = 1.0/release.defaultValue
-
     enum State:
       case Attack, DecaySustain, Release, Dead
 
@@ -118,6 +114,11 @@ object ComponentLibrary {
 
     // A trapezoidal model. The method is a bit of a mess.
     override def compute: Double =
+
+      val attackRate = 1.0 / attack.defaultValue
+      val decayRate = 1.0 / decay.defaultValue
+      val releaseRate = 1.0 / release.defaultValue
+
       val time = SoundMath.sampleToTime(host.voice.sample, host.voice.sampleRate)
       val deltaTime = SoundMath.sampleToTime(1, host.voice.sampleRate)
 
@@ -150,6 +151,7 @@ object ComponentLibrary {
       val out = state match
         case State.Attack => previous + deltaTime * attackRate
         case State.DecaySustain =>
+          println(sustain.defaultValue)
           if(previous <= sustain.defaultValue) then previous
           else previous - deltaTime * decayRate
         case State.Release => previous - deltaTime * releaseRate

@@ -115,6 +115,7 @@ object MainGUI extends JFXApp3:
         event.consume()
         // TODO: fix this nonsense
         SynthSerializer.saveCanvas(workspace.synthCanvas, "Bongler")
+
       else if (event.code == KeyCode.L && event.isControlDown) then
         // TODO: Replace with save function
         event.consume()
@@ -125,6 +126,8 @@ object MainGUI extends JFXApp3:
           case Success(value) =>
             println(value.synth.components.mkString(","))
             workspace.replaceCanvas(value)
+            value.requestFocus()
+            mainRuntime.activeSynth = value.synth
           case Failure(exception) =>
             OutputLog.log("Could not load file: " + exception.toString)
             System.err.println("Could not load file: " + exception.toString)

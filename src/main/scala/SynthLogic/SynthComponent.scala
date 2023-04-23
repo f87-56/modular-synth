@@ -17,8 +17,8 @@ trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Optio
   
   host.addComponent(this)
 
-  private val _parameters:scala.collection.mutable.Set[Parameter[_]]
-    = scala.collection.mutable.Set()
+  private val _parameters:scala.collection.mutable.Buffer[Parameter[_]]
+    = scala.collection.mutable.Buffer()
   final def parameters: Vector[Parameter[_]] = _parameters.toVector
   def compute:T
   

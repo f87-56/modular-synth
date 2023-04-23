@@ -18,7 +18,7 @@ class SynthRuntime extends Receiver:
 
   // 16 midi channels, 16 (possible) synths.
   //private val activeSynths:Array[Option[ModularSynthesizer]] = Array.fill(16)(None)
-  val activeSynth: ModularSynthesizer = ModularSynthesizer.default
+  var activeSynth: ModularSynthesizer = ModularSynthesizer.default
 
 
   private val messageQueue:mutable.Queue[MidiMessage] = mutable.Queue()
