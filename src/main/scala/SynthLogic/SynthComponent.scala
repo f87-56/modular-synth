@@ -2,6 +2,7 @@ package SynthLogic
 
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.syntax.*
+import Parameter.{given_Decoder_Int_String, *}
 
 import java.util.OptionalInt
 import scala.util.{Failure, Success, Try}
@@ -12,7 +13,7 @@ import scala.util.{Failure, Success, Try}
  *
  * @tparam T
  */
-trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Option[String] = None) {
+trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Option[String] = None):
   
   host.addComponent(this)
 
@@ -76,19 +77,22 @@ trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Optio
   // remove all
     this._connections.foreach(_.x())
     this._connections.clear()
-}
+
+end SynthComponent
 object SynthComponent:
+
+
   given Encoder[SynthComponent[_]] = (a: SynthComponent[_]) => Json.obj(
     // The identifier in the ComponentLibrary
     ("IdentifyingName", Json.fromString(a.serializationTag.getOrElse(""))),
     ("Parameters", a.parameters.asJson)
   )
-  //TODO: you were working on this
-  /*given Decoder[SynthComponent[_]] = (c:HCursor) => for
-      identifier <- c.downField("IdentifyingName").as[String]
-    yield*/
-
-
+  // The decoder
+  given compDataDecoder:Decoder[(String, List[(Int, String)])] = (c: HCursor) => for
+    identifier <- c.downField("IdentifyingName").as[String]
+    params <- c.downField("Parameters").as[List[(Int, String)]]
+  yield
+    (identifier, params)
 
 end SynthComponent
 

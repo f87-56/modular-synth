@@ -1,14 +1,15 @@
 package SynthGUI
 
 import SynthLogic.ModularSynthesizer
-import io.circe.{Encoder, Json}
+import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.syntax.*
-
 import scalafx.scene.Node
 import scalafx.scene.canvas.GraphicsContext
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.layout.Region
 import scalafx.scene.shape.Rectangle
+import ModularSynthesizer.{given_Decoder_ModularSynthesizer, *}
+import GUISynthComponent.given_Decoder_Int_Double_Double
 
 import scala.util.Try
 // LayoutChildren does not work in the scala wrapper
@@ -17,12 +18,12 @@ import scalafx.scene.paint.Color
 
 // from http://fxexperience.com/2014/05/resizable-grid-using-canvas/
 class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
-  private val XSpacing = 50.0
-  private val YSpacing = 40.0
-  private val LineThickness = 3
-  val canvasSize: (Int, Int) = (4000,3000)
-  this.setMinSize(canvasSize._1, canvasSize._2)
-  val grid = this.makeGrid()
+
+  this.setMinSize(SynthCanvas.canvasSize._1, SynthCanvas.canvasSize._2)
+  val grid = SynthCanvas.bgGrid
+
+  this.children += grid
+  grid.toBack()
 
   private val components:scala.collection.mutable.Set[GUISynthComponent[_]] =
     scala.collection.mutable.Set()
@@ -43,7 +44,7 @@ class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
   //this.setClip(clip)
 
   // If the node is out of bounds, set it into bounds.
-  def restrictToBounds(node:Region) =
+  def restrictToBounds(node:Region): Unit =
     // Bounds of background grid in local coords
     val bounds =  this.sceneToLocal(grid.localToScene(grid.getLayoutBounds))
     node.translateX = math.max(math.min(node.getTranslateX, bounds.getMaxX - node.getWidth), bounds.getMinX)
@@ -52,9 +53,22 @@ class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
 
   // The latest known mouse position
   private var localMousePos_ = (0.0,0.0)
-  def localMousePos = localMousePos_
+  def localMousePos: (Double, Double) = localMousePos_
 
-  private def makeGrid() =
+
+
+  this.onMouseMoved = event =>
+    this.localMousePos_ = (event.getX, event.getY)
+
+end SynthCanvas
+object SynthCanvas:
+
+  private val XSpacing = 50.0
+  private val YSpacing = 40.0
+  private val LineThickness = 3
+  val canvasSize: (Int, Int) = (4000, 3000)
+
+  private val bgGrid = {
     // We know beforehand how big the pane is.
     val w = canvasSize._1
     val h = canvasSize._2
@@ -68,34 +82,60 @@ class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
     val g = grid.getGraphicsContext2D
     g.clearRect(0, 0, w, h)
     g.setFill(Color.gray(0, 0.5))
-    g.fillRect(0,0,w,h)
-    g.setFill(Color(1,1,1,0.2))
+    g.fillRect(0, 0, w, h)
+    g.setFill(Color(1, 1, 1, 0.2))
 
 
     val a = LazyList.iterate(0.0)(_ + XSpacing)
     val b = LazyList.iterate(0.0)(_ + YSpacing)
     for x <- a.takeWhile(_ < w)
         y <- b.takeWhile(_ < h) do
-       // 1.6180... is the Golden ratio. Such an offset Looks prettier and more coherent!A
+      // 1.6180... is the Golden ratio. Such an offset Looks prettier and more coherent!A
       val offsetY = if (y % (2 * YSpacing)) == 0 then XSpacing / 1.618034 else 0
       //val offsetY = 0
       // We have a dotted background for the meantime
       g.fillOval(x - LineThickness + offsetY,
         y - LineThickness, 2 * LineThickness, 2 * LineThickness)
 
-    this.children += grid
-    grid.toBack()
     grid
-  end makeGrid
+  }
 
-  this.onMouseMoved = event =>
-    this.localMousePos_ = (event.getX, event.getY)
 
-end SynthCanvas
-object SynthCanvas:
   given Encoder[SynthCanvas] = (a:SynthCanvas) => Json.obj(
-    ("Components", a.components.asJson)
+    ("Synth", a.synth.asJson),
+    // Houses the optional info of where the nodes lie
+    ("VisualComponents", a.components.asJson)
   )
+  given Decoder[SynthCanvas] = (c: HCursor) => for
+    synth <- c.downField("Synth").as[ModularSynthesizer](given_Decoder_ModularSynthesizer)
+    visualComponents <- c.downField("VisualComponents").as[List[(Int,(Double,Double))]]
+  yield
+    val canvas = SynthCanvas(synth)
+    val guiComps = synth.components.map(a => GUISynthComponent(canvas, a))
+    guiComps.foreach(canvas.addComponent(_))  // Add the components to canvas
+
+    // Set the right positions
+    visualComponents.foreach(a => guiComps.lift(a._1).foreach{ b =>
+      val posInParent = b.localToParent(a._2._1, a._2._2)
+      b.translateX = posInParent.x
+      b.translateY = posInParent.y
+
+      // The lines
+      val componentBros = synth.components zip guiComps
+      val paramBros = synth.components.lift(a._1).map(_.parameters zip b.parameters)
+
+      paramBros.foreach(
+        _.foreach(
+          pr =>
+            val inputComp = pr._1.getInput
+            val guiInputComp =
+              inputComp.flatMap(c => componentBros.find(_._1 eq c).map(_._2))
+            guiInputComp.foreach(a =>
+              ConnectorLine(a.outputSocket, pr._2.inputSocket,canvas)
+            )))
+    })
+    canvas
+
 end SynthCanvas
 
 

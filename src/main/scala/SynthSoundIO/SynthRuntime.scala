@@ -1,5 +1,6 @@
 package SynthSoundIO
 import SynthLogic.ModularSynthesizer
+import SynthSoundIO.SynthRuntime.{BIT_DEPTH, BIT_RATE, BYTE_BUFFER_SIZE, SYNTH_BUFFER_SIZE}
 import SynthUtilities.MathUtilities
 
 import javax.sound.midi
@@ -19,12 +20,6 @@ class SynthRuntime extends Receiver:
   //private val activeSynths:Array[Option[ModularSynthesizer]] = Array.fill(16)(None)
   val activeSynth: ModularSynthesizer = ModularSynthesizer.default
 
-  private val SYNTH_BUFFER_SIZE = 256
-  private val OUT_BUFFER_SIZE = 2048
-  private val BIT_RATE = 44100
-  private val BIT_DEPTH = 16
-  private val BYTE_SIZE = 8
-  private val BYTE_BUFFER_SIZE = BIT_DEPTH/BYTE_SIZE*SYNTH_BUFFER_SIZE
 
   private val messageQueue:mutable.Queue[MidiMessage] = mutable.Queue()
 
@@ -37,7 +32,7 @@ class SynthRuntime extends Receiver:
   // format.issupported etc. etc.
   val line:SourceDataLine = AudioSystem.getSourceDataLine(format)
   println(line.getBufferSize)
-  line.open(format, OUT_BUFFER_SIZE)
+  line.open(format, SynthRuntime.OUT_BUFFER_SIZE)
   println(line.getBufferSize)
   line.start()
 
@@ -83,4 +78,12 @@ class SynthRuntime extends Receiver:
 
   def close(): Unit = line.close()
 
+end SynthRuntime
+object SynthRuntime:
+  val SYNTH_BUFFER_SIZE: Int = 256
+  val OUT_BUFFER_SIZE: Int = 2048
+  val BIT_RATE: Int = 44100
+  val BIT_DEPTH: Int = 16
+  val BYTE_SIZE: Int = 8
+  val BYTE_BUFFER_SIZE: Int = BIT_DEPTH / BYTE_SIZE * SYNTH_BUFFER_SIZE
 end SynthRuntime

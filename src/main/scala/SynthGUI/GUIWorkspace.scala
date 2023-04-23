@@ -39,26 +39,34 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
   private var zoomScale = 1.0
 
   // Constructing
-  val synthCanvas = SynthCanvas(synth)
+  private var _synthCanvas = SynthCanvas(synth)
   //synthCanvas.setBackground(new Background(new BackgroundFill(Color.Gold, CornerRadii.Empty, Insets.Empty)))
+  def synthCanvas: SynthCanvas = _synthCanvas
+  def replaceCanvas(newCanvas:SynthCanvas): Unit =
+    _synthCanvas = newCanvas
+    refreshZoomNode
+    this.setup()
 
-  private val zoomNode:Node = Group(synthCanvas)
-  this.setContent(outerNode(zoomNode))
+  private var zoomNode:Node = Group(_synthCanvas)
+  def refreshZoomNode = zoomNode = Group(_synthCanvas)
 
-  this.pannable = true
-  // Subject to change
-  this.hbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
-  this.vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
-  this.fitToWidth = true
-  this.fitToHeight = true
+  this.setup()
 
+  private def setup(): Unit =
+    this.setContent(outerNode(zoomNode))
 
+    this.pannable = true
+    this.hbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
+    this.vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
+    this.fitToWidth = true
+    this.fitToHeight = true
 
-  // Set initial scroll bar positions
-  private val hStartPos = 0.9
-  //this.hvalue = this.hmax.value * hStartPos
-  //this.vvalue = this.vmax.value / 2
-  this.layout()
+    // Set initial scroll bar positions
+    val hStartPos = 0.9
+    this.hvalue = this.hmax.value * hStartPos
+    this.vvalue = this.vmax.value / 2
+
+    this.layout()
 
   // We wrap our canvas in this construct.
   def outerNode(node:Node):Node =
@@ -90,10 +98,9 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
     vBox
 
   def updateScale() =
-    synthCanvas.setScaleX(zoomScale)
-    synthCanvas.setScaleY(zoomScale)
+    _synthCanvas.setScaleX(zoomScale)
+    _synthCanvas.setScaleY(zoomScale)
 
-  this.layout()
 
   /*synthCanvas.children += new GUISynthComponent[Int](synthCanvas):
     translateX = 400
@@ -139,10 +146,10 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
       this.layout()     // refresh ScrollPane scroll positions and target bounds
 
       // convert canvas coordinates to zoomTarget coordinates
-      val posInZoomTarget = synthCanvas.parentToLocal(zoomNode.parentToLocal(mousePoint))
+      val posInZoomTarget = _synthCanvas.parentToLocal(zoomNode.parentToLocal(mousePoint))
 
       // calculate adjustment of scroll position in pixels
-      val adjustment = synthCanvas.getLocalToParentTransform.deltaTransform(
+      val adjustment = _synthCanvas.getLocalToParentTransform.deltaTransform(
         posInZoomTarget.multiply(zoomFactor - 1))
 
       // convert back to range [0,1] (range of the scrollbars's values)
@@ -156,8 +163,8 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
   //this.onContextMenuRequested = event => ()
 
   private def showFinder()=
-    val a = new ComponentSearchBox(synthCanvas):
-      private val pos = synthCanvas.localMousePos
+    val a = new ComponentSearchBox(_synthCanvas):
+      private val pos = _synthCanvas.localMousePos
       translateX = pos._1
       translateY = pos._2
     a.show()

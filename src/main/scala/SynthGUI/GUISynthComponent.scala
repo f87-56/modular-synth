@@ -4,9 +4,8 @@ import SynthGUI.GUISynthComponent.DragContext
 import SynthGUI.LineSocket.{lastDragSource, setLastDragSource}
 import scalafx.scene.layout.{HBox, Pane, StackPane, VBox}
 import SynthLogic.{Parameter, SynthComponent}
-import io.circe.{Encoder, Json}
+import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.syntax.*
-
 import javafx.scene.control.CheckBox
 import javafx.util.StringConverter
 import javafx.util.converter.IntegerStringConverter
@@ -29,6 +28,8 @@ class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthCompo
 
   val parameters = synthComponent.parameters.map(a => GUISynthParameter[Any](canvas, this, a))
 
+  val isOutputComp = canvas.synth.outputComponent == this.synthComponent
+
   val outputSocket =
     // the output socket
     new LineSocket(canvas, GUISynthComponent.this):
@@ -40,11 +41,12 @@ class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthCompo
       padding = Insets(5)
   this.children +=
     new HBox():
-      children +=
-        new Label():
-          text = s"out (${classOf[Int].toString})"
-          padding = Insets(5)
-      children += outputSocket
+      if(!isOutputComp) then
+        children +=
+          new Label():
+            text = s"out (${classOf[Int].toString})"
+            padding = Insets(5)
+        children += outputSocket
       this.alignment = Pos.BaselineRight
 
     parameters.foreach(this.children += _)
@@ -75,19 +77,19 @@ class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthCompo
   // And from going out of bounds
 
   this.width.onInvalidate(
-    if(isSceneDrawn) then
+    if isSceneDrawn then
       canvas.restrictToBounds(this)
   )
   this.height.onInvalidate(
-    if(isSceneDrawn) then
+    if isSceneDrawn then
       canvas.restrictToBounds(this)
   )
   this.translateX.onInvalidate(
-    if (isSceneDrawn) then
+    if isSceneDrawn then
       canvas.restrictToBounds(this)
   )
   this.translateY.onInvalidate(
-    if (isSceneDrawn) then
+    if isSceneDrawn then
       canvas.restrictToBounds(this)
   )
 
@@ -119,15 +121,16 @@ class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthCompo
       this.delete()
       event.consume()
 
-  // TODO: handle synth logic here
   private def delete() =
-    // Synth logic side
-    canvas.synth.removeComponent(this.synthComponent)
-    // GUI side
-    parameters.foreach(_.disconnect())
-    outputSocket.removeConnections()
-    canvas.requestFocus()
-    Try(canvas.removeComponent(this))
+    // Can't delete the output component...
+    if !isOutputComp then
+      // Synth logic side
+      canvas.synth.removeComponent(this.synthComponent)
+      // GUI side
+      parameters.foreach(_.disconnect())
+      outputSocket.removeConnections()
+      canvas.requestFocus()
+      Try(canvas.removeComponent(this))
 
 end GUISynthComponent
 object GUISynthComponent:
@@ -141,9 +144,18 @@ object GUISynthComponent:
 
   // The encoder
   given Encoder[GUISynthComponent[_]] = (a: GUISynthComponent[_]) => Json.obj(
-    ("SynthComponent", a.synthComponent.asJson(SynthComponent.given_Encoder_SynthComponent)),
+    // Index of the component in the original list
+    ("SynthComponentIndex", Json.fromInt(a.synthComponent.host.components.indexOf(
+      a.synthComponent))),
     ("Position", List(a.getTranslateX, a.getTranslateY).asJson)
   )
+  // Decodes into (Index, position)
+  given Decoder[(Int,(Double,Double))] = (c: HCursor) => for
+    index <- c.downField("SynthComponentIndex").as[Int]
+    position <- c.downField("Position").as[(Double,Double)]
+  yield
+    (index, position)
+
 
 end GUISynthComponent
 
@@ -152,10 +164,11 @@ class GUISynthParameter[T](val canvas:SynthCanvas,
                            val parameter: Parameter[_]) extends HBox:
   this.padding = Insets(20)
   spacing = 5
-  private val inputSocket = new LineSocket(canvas, this):
+  val inputSocket: LineSocket = new LineSocket(canvas, this):
     alignment = Pos.BaselineLeft
   if(parameter.takesInput) then
     this.children += inputSocket
+
   // Populate this node depending on the data type
   parameter.defaultValue match
     case a:Int =>

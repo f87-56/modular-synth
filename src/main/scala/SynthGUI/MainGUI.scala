@@ -1,5 +1,6 @@
 package SynthGUI
 
+import SynthFileIO.SynthSerializer
 import SynthSoundIO.AudioResourceHandler
 import javafx.application.Platform
 import javafx.event.{Event, EventHandler}
@@ -9,7 +10,7 @@ import scalafx.scene.AccessibleRole.CheckBox
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, CheckBox, CheckMenuItem, Label, Menu, MenuBar, MenuItem}
 import scalafx.scene.effect.BlendMode.Blue
-import scalafx.scene.input.KeyEvent
+import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.scene.layout.{Background, BackgroundFill, BorderPane, CornerRadii, HBox, Pane, VBox}
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
@@ -18,10 +19,10 @@ import scalafx.stage.FileChooser
 import scalafx.Includes.*
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{HPos, Pos}
-
 import io.circe.syntax.*
 
 import javax.sound.midi.{MidiDevice, MidiDeviceTransmitter}
+import scala.util.{Failure, Success}
 
 
 object MainGUI extends JFXApp3:
@@ -109,14 +110,31 @@ object MainGUI extends JFXApp3:
     root.bottom = bottomBar
 
     scene.onKeyPressed = (event) => {
-      MKBInputHandler.keyInput(event)
+      // The save feature
+      if(event.code == KeyCode.S && event.isControlDown) then
+        event.consume()
+        // TODO: fix this nonsense
+        SynthSerializer.saveCanvas(workspace.synthCanvas, "Bongler")
+      else if (event.code == KeyCode.L && event.isControlDown) then
+        // TODO: Replace with save function
+        event.consume()
+        // TODO: Fix this nonsense also
+        println("Loading")
+        val a = SynthSerializer.loadCanvas("./Bongler")
+        a match
+          case Success(value) =>
+            println(value.synth.components.mkString(","))
+            workspace.replaceCanvas(value)
+          case Failure(exception) =>
+            OutputLog.log("Could not load file: " + exception.toString)
+            System.err.println("Could not load file: " + exception.toString)
+      else
+        MKBInputHandler.keyInput(event)
     }
-    scene.onKeyReleased = (event) => {
+    scene.onKeyReleased = event => {
       MKBInputHandler.keyInput(event)
     }
 
-    println(mainRuntime.activeSynth.asJson)
-    println(workspace.synthCanvas.asJson)
 
   end start
 

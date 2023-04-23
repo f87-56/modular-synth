@@ -1,9 +1,12 @@
 package SynthLogic
 
 import SynthLogic.ModularSynthesizer.uproot
-import io.circe.{Encoder, Json, syntax}
+import SynthSoundIO.SynthRuntime
+import io.circe.{Decoder, Encoder, HCursor, Json, syntax}
 import io.circe.syntax.*
+import SynthComponent.compDataDecoder
 
+import java.util.zip.DataFormatException
 import javax.sound.midi.{MidiMessage, ShortMessage}
 import scala.collection.mutable
 
@@ -23,19 +26,23 @@ import scala.collection.mutable
  * @param finalGather The component that connects to the output. May be missing.
  */
 class ModularSynthesizer(val sampleRate:Int) {
+
   /**
    * Gahter all the components that are actually part of the synth tree
    * (plus the extra ones specified in comonents that may not be part of it.
    */
-  private val components_ = mutable.Set[SynthComponent[_]]()
+  private val components_ = mutable.Buffer[SynthComponent[_]]()
     //mutable.Set(pComponents.flatMap(uproot(_, Set())).toSet ++ Set(finalGather).flatten)
   final def components: Vector [SynthComponent[_]] = components_.toVector
   
   final def addComponent(cmp:SynthComponent[_]):Unit =
-    components_ += cmp
+    if !components_.contains(cmp) then
+      components_ += cmp
   final def removeComponent(cmp:SynthComponent[_]):Unit=
-    cmp.xAll()
-    components_ -= cmp
+    // Don't remove the output component.
+    if !(outputComponent == cmp) then
+      cmp.xAll()
+      components_ -= cmp
 
   final val outputComponent = ComponentLibrary.PassThrough(this, None)
 
@@ -73,9 +80,9 @@ object ModularSynthesizer:
 
   def default: ModularSynthesizer =
     val aa = ModularSynthesizer(44100)
-    val a = ComponentLibrary.Oscillator(aa, None)
-    val b = ComponentLibrary.Amplifier(aa, None)
-    val c = ComponentLibrary.Envelope(aa, None)
+    val a = ComponentLibrary.Oscillator(aa, Some("Oscillator"))
+    val b = ComponentLibrary.Amplifier(aa, Some("Amplifier"))
+    val c = ComponentLibrary.Envelope(aa, Some("Envelope"))
 
     //-------------TEST
     //val testStr = ComponentLibrary.TestComp(aa)
@@ -90,8 +97,48 @@ object ModularSynthesizer:
     aa
 
   given Encoder[ModularSynthesizer] = (a:ModularSynthesizer) => Json.obj(
-    ("Components", a.components.asJson)
+    ("Components", a.components.asJson),
+    ("OutputComponentIndex", Json.fromInt(a.components.indexOf(a.outputComponent)))
   )
+
+  given Decoder[ModularSynthesizer] = (c:HCursor) => for
+    // List(Id, param list)
+    comps <- c.downField("Components").as[List[(String,List[(Int,String)])]]
+    outIndex <- c.downField("OutputComponentIndex").as[Int]
+  yield
+    val synth = ModularSynthesizer(SynthRuntime.BIT_RATE)
+    val components = comps.zipWithIndex.map { a =>
+      // Get the output component that automatically gets construced
+      if (a._2 != outIndex) then
+        ComponentLibrary.createComponent(a._1._1, synth)
+      else
+        Some(synth.outputComponent)
+    }
+    // Some component could not be read. throw.
+    if(components.exists(_.isEmpty)) then throw DataFormatException()
+
+    val paramInfo = comps.map(_._2)
+    val realParams = components.map(_.map(_.parameters))
+    // (Option(Vector(param)), Vector(paaramInfo))
+    (realParams zip paramInfo).foreach(
+            // (param), paramInfo)
+      a =>
+        (a._1.getOrElse(Vector()) zip a._2).foreach(
+        // Set them up
+        b =>
+          // We only allowed certain custom types
+          // Not a very good design choice, we have to specify allowed types in several places
+          b._1.defaultValue =
+            b._1.defaultValue match
+              case i:Int => b._2._2.toIntOption.getOrElse(b._1.defaultValue)
+              case d:Double =>  b._2._2.toDoubleOption.getOrElse(b._1.defaultValue)
+              case bo:Boolean => b._2._2.toBooleanOption.getOrElse(b._1.defaultValue)
+              case s:String => b._2._2
+              case _ => ()
+          synth.components.lift(b._2._1).foreach(b._1 <== _)
+      )
+    )
+    synth
 
 end ModularSynthesizer
 
