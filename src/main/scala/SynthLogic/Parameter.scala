@@ -46,7 +46,6 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
     newVal match
       case a:T=>
         _defaultValue = a
-        println("The new default: " + _defaultValue)
 
   /**
    * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.

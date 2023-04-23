@@ -37,7 +37,7 @@ class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthCompo
 
   this.children +=
     new Label():
-      text = "Name of node"
+      text = synthComponent.serializationTag.getOrElse("Component name")
       padding = Insets(5)
   this.children +=
     new HBox():
@@ -181,7 +181,6 @@ class GUISynthParameter[T](val canvas:SynthCanvas,
           if """\d+""".r.findFirstIn(newValue).isEmpty then
             editor.value.text = "0"
           else if(newValue.toIntOption.isEmpty) then
-            println("AAAAARGGGH")
             editor.value.text = oldValue}
         this.value.onChange{(src, oldVal, newVal) =>
           parameter.defaultValue = newVal
@@ -201,7 +200,7 @@ class GUISynthParameter[T](val canvas:SynthCanvas,
     case d:String =>
       this.children += new TextField()
   this.children += new Label:
-    text = "Hello!"
+    text = parameter.name
 
   style =
     """
