@@ -26,7 +26,7 @@ trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Optio
   lazy val initialValue: T = compute
 
   // What is the number of the previous computed sample?
-  protected var prevSample = -1
+  protected var prevSample: Int = -1
 
   private[this] var prevValue:Option[T] = None
 

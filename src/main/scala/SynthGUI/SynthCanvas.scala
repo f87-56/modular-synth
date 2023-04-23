@@ -114,25 +114,34 @@ object SynthCanvas:
     val guiComps = synth.components.map(a => GUISynthComponent(canvas, a))
     guiComps.foreach(canvas.addComponent(_))  // Add the components to canvas
 
+    // The lines
+    val componentBros = synth.components zip guiComps
+    //val paramBros = componentBros.map(a => (a._1.parameters, a._2.parameters))
+
+    componentBros.foreach(
+      a =>
+        val paramBros = a._1.parameters zip a._2.parameters
+        paramBros.foreach(pr =>
+          val inputComp = pr._1.getInput
+          val guiInputComp = inputComp.flatMap(c => componentBros.find(_._1 eq c).map(_._2))
+          guiInputComp.foreach(cc =>
+            ConnectorLine(cc.outputSocket, pr._2.inputSocket, canvas)
+          )
+        )
+        /*pr =>
+          val inputComp = pr._1.getInput
+          val guiInputComp =
+            inputComp.flatMap(c => componentBros.find(_._1 eq c).map(_._2))
+          guiInputComp.foreach(a =>
+            ConnectorLine(a.outputSocket, pr._2.inputSocket, canvas)
+          ))*/)
+
     // Set the right positions
     visualComponents.foreach(a => guiComps.lift(a._1).foreach{ b =>
       val posInParent = b.localToParent(a._2._1, a._2._2)
       b.translateX = posInParent.x
       b.translateY = posInParent.y
 
-      // The lines
-      val componentBros = synth.components zip guiComps
-      val paramBros = synth.components.lift(a._1).map(_.parameters zip b.parameters)
-
-      paramBros.foreach(
-        _.foreach(
-          pr =>
-            val inputComp = pr._1.getInput
-            val guiInputComp =
-              inputComp.flatMap(c => componentBros.find(_._1 eq c).map(_._2))
-            guiInputComp.foreach(a =>
-              ConnectorLine(a.outputSocket, pr._2.inputSocket,canvas)
-            )))
     })
     canvas
 
