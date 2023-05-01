@@ -1,21 +1,26 @@
 package SynthFileIO
 
-import SynthGUI.SynthCanvas
+import SynthGUI.{OutputLog, SynthCanvas}
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import io.circe.parser.decode
 import SynthLogic.{ModularSynthesizer, SynthComponent}
 
+import java.io.File
 import scala.util.{Success, Try}
 
 object SynthSerializer:
 
-  def loadCanvas(fileName:String):Try[SynthCanvas] =
-    val fileText = FileManager.readFile(fileName).map(_.mkString("\n"))
+  def loadCanvas(file:File):Try[SynthCanvas] =
+    val fileText = FileManager.readFile(file).map(_.mkString("\n"))
     val canvas = fileText.flatMap(decode[SynthCanvas](_).toTry)
+    OutputLog.log("Loading synth from: " + file)
     canvas
-  def saveCanvas(synthCanvas: SynthCanvas, fileName:String) =
-    FileManager.writeFile(fileName, synthCanvas.asJson.toString)
+    
+  // Side effects here
+  def saveCanvas(synthCanvas: SynthCanvas, file:File): Unit =
+    FileManager.writeFile(file, synthCanvas.asJson.toString)
+    OutputLog.log("Saving synth to: " + file)
   def decodeComponents(synthJSON:String) =
     decode[List[String]](synthJSON).toTry
 

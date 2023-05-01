@@ -10,8 +10,8 @@ object FileManager:
 
   // Just get the lines from the file.
   // From https://dotty.epfl.ch/api/scala/util/Using$.html
-  def readFile(fileName: String): Try[Seq[String]] =
-    Using(new BufferedReader(new FileReader(fileName))) { reader =>
+  def readFile(file: File): Try[Seq[String]] =
+    Using(new BufferedReader(new FileReader(file))) { reader =>
       Iterator.continually(reader.readLine()).takeWhile(_!=null).toSeq
     }
 
@@ -19,10 +19,9 @@ object FileManager:
   // From https://alvinalexander.com/scala/how-to-write-text-files-in-scala-printwriter-filewriter/
   // Will create a new file if it does not already exist.
   // You might say having different signatures for read and right is bad, and you would be right.
-  def writeFile(fileName: String, content: String): Unit =
+  def writeFile(file: File, content: String): Unit =
   // Java facilities, we'll (begrudgingly) use try-catch.
     try
-      val file = File(fileName)
       // throws
       val fw = new FileWriter(file)
       // does not throw
