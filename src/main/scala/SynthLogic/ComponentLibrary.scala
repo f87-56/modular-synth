@@ -26,6 +26,11 @@ object ComponentLibrary {
         Amplifier(host, Some(serialID))
     ),
 
+    ("Average filter",
+      (host: ModularSynthesizer, serialID: String) =>
+        AvgFilter(host, Some(serialID))
+    ),
+
     ("TestStringComponent",
       (host:ModularSynthesizer, serialID:String) =>
         TestComp(host, Some(serialID))
@@ -69,7 +74,13 @@ object ComponentLibrary {
       if msg.isDefined then
         if(msg.forall(_.getStatus == ShortMessage.NOTE_ON)) then
           freq = this.host.voice.message.map(SoundMath.noteFrequency).getOrElse(0.0)
-      val ret = MathUtilities.parametricSin(1, 0, phase, 0, 0)
+      val ret =
+        this.oscillatorType.value match
+          case 0 => MathUtilities.parametricSin(1, 0, phase, 0, 0)
+          case 1 => MathUtilities.squareWave(1,phase)
+          case 2 => MathUtilities.saw(1, phase)
+          case 3 => MathUtilities.noise(1)
+          case _ => 0
       phase = (phase + 2*math.Pi*freq*host.deltaTime)%(2*math.Pi)
       ret
 
@@ -79,12 +90,30 @@ object ComponentLibrary {
   class Amplifier(host:ModularSynthesizer,
                   override val serializationTag: Option[String]) extends SynthComponent[Double](host):
 
-    val input: Parameter[Double] = Parameter[Double]("gain", "", true, 1.0, this)
-    val gain: Parameter[Double] = Parameter[Double]("input", "", true, 1.0, this)
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 1.0, this)
+    val gain: Parameter[Double] = Parameter[Double]("gain", "", true, 1.0, this)
     def compute: Double =
       input.value * gain.value
 
-  
+  class AvgFilter(host: ModularSynthesizer,
+                  override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+
+    val bufferSize: Parameter[Int] = new Parameter[Int]("Buffer size", "", false, 1, this):
+      override def defaultValue_=(newVal: Any): Unit =
+        super.defaultValue_=(newVal)
+        prevValBuffer = SynthUtilities.MaxSizeQueue[Double](this.value)
+
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
+
+    private var prevValBuffer = SynthUtilities.MaxSizeQueue[Double](bufferSize.value)
+    override def compute: Double =
+      prevValBuffer.append(this.input.value)
+      val out = prevValBuffer.values.sum/prevValBuffer.size
+      //prevValBuffer.append(out)
+      out
+
+
   class TestComp(host: ModularSynthesizer,
                  override val serializationTag: Option[String]) extends SynthComponent[String](host):
 
@@ -151,7 +180,6 @@ object ComponentLibrary {
       val out = state match
         case State.Attack => previous + deltaTime * attackRate
         case State.DecaySustain =>
-          println(sustain.defaultValue)
           if(previous <= sustain.defaultValue) then previous
           else previous - deltaTime * decayRate
         case State.Release => previous - deltaTime * releaseRate

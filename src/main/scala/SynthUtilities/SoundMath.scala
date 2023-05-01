@@ -2,7 +2,11 @@ import scala.math.*
 
 package SynthUtilities:
 
+  import SynthLogic.ComponentLibrary.Amplifier
+
+  import java.nio.DoubleBuffer
   import javax.sound.midi.MidiMessage
+  import scala.collection.mutable
 
   object SoundMath:
 
@@ -64,9 +68,20 @@ package SynthUtilities:
     def parametricCos(amplitude:Double, angularVelocity:Double, phase:Double, offset:Double, x:Double): Double =
       parametricSin(amplitude, angularVelocity:Double, phase+Math.PI/2, offset, x:Double)
 
+    def saw(amplitude:Double, phase:Double): Double =
+      lerp(-amplitude,amplitude,(phase/(2*Pi))%1)
+
+    def squareWave(amplitude:Double, phase:Double): Double =
+      if(phase%(2*Pi) <= Pi) then 1.0 else -1.0
+
+    // (white?) noise based on scala.util.Random
+    def noise(amplitude:Double) =
+      scala.util.Random.between(-amplitude,amplitude)
+
+
     def lerp(a:Double, b:Double, alpha:Double) =
       val cAlpha = clamp(0,1,alpha)
-      a * alpha + b*(1-alpha)
+      a * cAlpha + b*(1-alpha)
 
     // Break the short into two, separate bytes.
     def breakToBytes(s:Short):Seq[Byte] =
@@ -85,3 +100,19 @@ package SynthUtilities:
       result
 
   end LogUtilities
+
+  class MaxSizeQueue[A](val size:Int):
+    // Initialize
+    private val internalQueue = mutable.Queue[A]()
+
+    // This may be subject to optimization
+    def values: Seq[A] = internalQueue.toVector
+
+    // Add value to be last, remove first if size exceeded.
+    def append(value:A):Unit =
+      internalQueue += value
+      if internalQueue.size > size then
+        internalQueue.dequeue()
+    def dequeue(): A =
+      internalQueue.dequeue()
+
