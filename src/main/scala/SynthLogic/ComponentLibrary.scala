@@ -3,6 +3,7 @@ package SynthLogic
 import SynthUtilities.*
 
 import javax.sound.midi.{MidiMessage, ShortMessage}
+import scala.util.{Success, Try}
 
 object ComponentLibrary {
 
@@ -13,7 +14,7 @@ object ComponentLibrary {
      */
     ("Passthrough",
       (host: ModularSynthesizer, serialID: String) =>
-        Oscillator(host, Some(serialID))
+        PassThrough(host, Some(serialID))
     ),
 
     ("Oscillator",
@@ -31,6 +32,32 @@ object ComponentLibrary {
         AvgFilter(host, Some(serialID))
     ),
 
+    ("Average",
+      (host: ModularSynthesizer, serialID: String) =>
+        Average(host, Some(serialID))
+    ),
+
+    ("Sum",
+      (host: ModularSynthesizer, serialID: String) =>
+        Sum(host, Some(serialID))
+    ),
+
+    ("Product",
+      (host: ModularSynthesizer, serialID: String) =>
+        Sum(host, Some(serialID))
+    ),
+
+    /*
+        ("Low-pass filter",
+          (host: ModularSynthesizer, serialID: String) =>
+            LowPass(host, Some(serialID))
+        ),*/
+
+    ("Delay",
+      (host: ModularSynthesizer, serialID: String) =>
+        Delay(host, Some(serialID))
+    ),
+
     ("TestStringComponent",
       (host:ModularSynthesizer, serialID:String) =>
         TestComp(host, Some(serialID))
@@ -39,7 +66,13 @@ object ComponentLibrary {
     ("Envelope",
       (host:ModularSynthesizer, serialID:String) =>
         Envelope(host, Some(serialID))
+    ),
+
+    ("Timed envelope",
+      (host: ModularSynthesizer, serialID: String) =>
+        TimedEnvelope(host, Some(serialID))
     )
+
   )
 
   def componentNames: Iterable[String] = components.keys
@@ -75,6 +108,7 @@ object ComponentLibrary {
         if(msg.forall(_.getStatus == ShortMessage.NOTE_ON)) then
           freq = this.host.voice.message.map(SoundMath.noteFrequency).getOrElse(0.0)
       val ret =
+        //println("Oscillator type: " + this.oscillatorType.value)
         this.oscillatorType.value match
           case 0 => MathUtilities.parametricSin(1, 0, phase, 0, 0)
           case 1 => MathUtilities.squareWave(1,phase)
@@ -98,20 +132,75 @@ object ComponentLibrary {
   class AvgFilter(host: ModularSynthesizer,
                   override val serializationTag: Option[String]) extends SynthComponent[Double](host):
 
-
     val bufferSize: Parameter[Int] = new Parameter[Int]("Buffer size", "", false, 1, this):
       override def defaultValue_=(newVal: Any): Unit =
-        super.defaultValue_=(newVal)
-        prevValBuffer = SynthUtilities.MaxSizeQueue[Double](this.value)
+        newVal match
+          case a:Int =>
+            if(a >= 1) then
+              super.defaultValue_=(newVal)
+              prevValBuffer = SynthUtilities.MaxSizeQueue[Double](this.value, 0.0)
+          case _ => ()
 
     val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
 
-    private var prevValBuffer = SynthUtilities.MaxSizeQueue[Double](bufferSize.value)
+    private var prevValBuffer = SynthUtilities.MaxSizeQueue[Double](bufferSize.value, 0.0)
     override def compute: Double =
       prevValBuffer.append(this.input.value)
       val out = prevValBuffer.values.sum/prevValBuffer.size
       //prevValBuffer.append(out)
       out
+
+  /*class LowPassFilter(host: ModularSynthesizer,
+                  override val serializationTag: Option[String]) extends SynthComponent[Double](host):*/
+  class Delay(host: ModularSynthesizer,
+                      override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
+
+    val bufferSize: Parameter[Int] = new Parameter[Int]("Buffer size", "", false, 1, this):
+      override def defaultValue_=(newVal: Any): Unit =
+        newVal match
+          case a:Int =>
+            if(a >= 1) then
+              super.defaultValue_=(newVal)
+              prevValBuffer = SynthUtilities.MaxSizeQueue[Double](this.value, 0.0)
+          case _ => ()
+
+
+    private var prevValBuffer = SynthUtilities.MaxSizeQueue[Double](bufferSize.value, 0.0)
+    override def compute: Double =
+      val out = Try(prevValBuffer.dequeue())
+      val in = this.input.value
+      prevValBuffer.append(in)
+      out.getOrElse(0.0)
+
+
+  class Average(host: ModularSynthesizer,
+                 override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+    val input1: Parameter[Double] = Parameter[Double]("input 1", "", true, 0.0, this)
+    val input2: Parameter[Double] = Parameter[Double]("input 2", "", true, 0.0, this)
+
+    override def compute: Double =
+      (input1.value + input2.value)/2
+
+  class Sum(host: ModularSynthesizer,
+                override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+    val input1: Parameter[Double] = Parameter[Double]("input 1", "", true, 0.0, this)
+    val input2: Parameter[Double] = Parameter[Double]("input 2", "", true, 0.0, this)
+
+    override def compute: Double =
+      val out = input1.value + input2.value
+      out
+
+  class Product(host: ModularSynthesizer,
+            override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+    val input1: Parameter[Double] = Parameter[Double]("input 1", "", true, 0.0, this)
+    val input2: Parameter[Double] = Parameter[Double]("input 2", "", true, 0.0, this)
+
+    override def compute: Double =
+      input1.value * input2.value
 
 
   class TestComp(host: ModularSynthesizer,
@@ -188,5 +277,32 @@ object ComponentLibrary {
       previous = out
       out
   end Envelope
+
+  // 1 if time from note start < time, 0 otherwise.
+  class TimedEnvelope(host: ModularSynthesizer,
+                 override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    val sampleTime = Parameter[Int]("sample time", "", false, 1, this)
+
+    private var time = 0
+    private var active = false
+    override def compute: Double =
+
+      val msg = host.voice.message
+      val messageStatus = msg.map(_.getStatus)
+      val msgVelocity = msg.flatMap(_.getMessage.lift(2))
+
+      if messageStatus.contains(ShortMessage.NOTE_ON) && msgVelocity.exists(_ != 0) then
+        time = 0
+        active = true
+
+      val out = {
+      if(time < sampleTime.value) then 1.0
+      else
+        active = false
+        0.0 }
+      time += 1
+      out
+
+
 
 }

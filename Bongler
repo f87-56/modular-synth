@@ -5,7 +5,7 @@
         "IdentifyingName" : "",
         "Parameters" : [
           {
-            "Index" : 2,
+            "Index" : 5,
             "DefaultValue" : "0.5"
           }
         ]
@@ -15,7 +15,7 @@
         "Parameters" : [
           {
             "Index" : -1,
-            "DefaultValue" : "0"
+            "DefaultValue" : "3"
           }
         ]
       },
@@ -52,16 +52,85 @@
             "DefaultValue" : "0.1"
           }
         ]
+      },
+      {
+        "IdentifyingName" : "Product",
+        "Parameters" : [
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Sum",
+        "Parameters" : [
+          {
+            "Index" : 4,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : 6,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 7,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 8,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "3"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          }
+        ]
       }
     ],
     "OutputComponentIndex" : 0
   },
   "VisualComponents" : [
     {
-      "SynthComponentIndex" : 1,
+      "SynthComponentIndex" : 7,
       "Position" : [
-        2051.73291015625,
-        1153.0811767578125
+        2397.274658203125,
+        1668.017822265625
       ]
     },
     {
@@ -72,17 +141,52 @@
       ]
     },
     {
-      "SynthComponentIndex" : 3,
+      "SynthComponentIndex" : 1,
       "Position" : [
-        1992.955322265625,
-        1605.305908203125
+        2051.73291015625,
+        1153.0811767578125
       ]
     },
     {
       "SynthComponentIndex" : 0,
       "Position" : [
-        3146.791015625,
-        1324.1002197265625
+        3527.38623046875,
+        1560.7701416015625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        2848.66162109375,
+        1386.3695068359375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        2086.87060546875,
+        1398.3736572265625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 5,
+      "Position" : [
+        3174.193603515625,
+        1449.811767578125
+      ]
+    },
+    {
+      "SynthComponentIndex" : 6,
+      "Position" : [
+        2746.473388671875,
+        1646.1771240234375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 8,
+      "Position" : [
+        2453.371337890625,
+        1831.728515625
       ]
     }
   ]

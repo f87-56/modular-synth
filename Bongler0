@@ -1,0 +1,89 @@
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          }
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1580.6336883544936,
+        589.6504507064819
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        2093.1046508789077,
+        750.1835594177246
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        1611.5055297851577,
+        947.7627620697021
+      ]
+    },
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2722.6266235351577,
+        743.7477989196777
+      ]
+    }
+  ]
+}

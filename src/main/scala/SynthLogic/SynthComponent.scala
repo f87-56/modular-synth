@@ -8,10 +8,10 @@ import java.util.OptionalInt
 import scala.util.{Failure, Success, Try}
 
 // Suggestion: Value classes may be a good fit for creating "signal types"
-
+// TODO: Prevent feedback
 /**
  *
- * @tparam T
+ * @tparam T The type of the synth component's output
  */
 trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Option[String] = None):
   
@@ -27,19 +27,30 @@ trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Optio
 
   // What is the number of the previous computed sample?
   protected var prevSample: Int = -1
+  // A boolean flag which tells if this is currently being computed.
+  private var _beingComputed:Boolean = false
+  def beingComputed: Boolean = _beingComputed
 
   private[this] var prevValue:Option[T] = None
 
   protected val tickTime = 1
 
+
   // We may want helper functions for easily getting info from the host's voice.
 
   // Recalculate only if time has advanced and we want to tick.
-  def output: Option[T] =
-    if (host.voice.sample == prevSample || host.voice.sample % tickTime != 0) then
-      prevValue
-    else
-      Some(compute)
+  final def output: Option[T] =
+    val out = {
+      if host.voice.sample == prevSample || host.voice.sample % tickTime != 0 then
+        prevValue
+      else
+        _beingComputed = true
+        prevSample = host.voice.sample
+        val ret = Some(compute)
+        _beingComputed = false
+        ret }
+    prevValue = out
+    out
 
   // The parameters (of other components) this component outputs to
   // Here, we don't care about the types, since that is handled by
