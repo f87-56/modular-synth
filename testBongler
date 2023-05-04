@@ -1,0 +1,113 @@
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 4,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "IIR low-pass filter",
+        "Parameters" : [
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "100000.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "4.0"
+          }
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        2385.2360249271933,
+        776.5327765036845
+      ]
+    },
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2722.626708984375,
+        743.747802734375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1580.6336669921875,
+        589.6504516601562
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        1611.5054931640625,
+        947.7627563476562
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        2093.104736328125,
+        750.1835327148438
+      ]
+    }
+  ]
+}
