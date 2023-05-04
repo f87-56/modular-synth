@@ -24,9 +24,10 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
                                      private[this] var input: Option[SynthComponent[T]] = None):
 
   parent.addParameter(this)
-  
-  // a bit of a mouthful
-  def value:T = input.map(_.output.getOrElse(defaultValue)).getOrElse(defaultValue)
+
+  def value:T =
+    // Input is being computed, cannot use it for a value (stack overflow)
+    input.map(_.output.getOrElse(defaultValue)).getOrElse(defaultValue)
 
 
   /**

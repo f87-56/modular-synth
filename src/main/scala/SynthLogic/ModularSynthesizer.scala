@@ -151,7 +151,7 @@ end ModularSynthesizer
  * @param primary Is this the primary voice? One such voice will NOT be terminated.
  */
 case class Voice(sample:Int, keyFrequency:Double, message:Option[MidiMessage], sampleRate:Int, primary:Boolean):
-  def stepTime(midiMessage: Option[MidiMessage]) = Voice(sample + 1, keyFrequency, midiMessage, sampleRate, primary)
+  def stepTime(midiMessage: Option[MidiMessage]): Voice = Voice(sample + 1, keyFrequency, midiMessage, sampleRate, primary)
 object Voice:
   def initPrimary(sampleRate:Int) = Voice(0, 0.0, None, sampleRate, true)
   def init(sampleRate:Int) = Voice(1, 0.0, None, sampleRate, false)

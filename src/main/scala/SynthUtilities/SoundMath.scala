@@ -101,9 +101,9 @@ package SynthUtilities:
 
   end LogUtilities
 
-  class MaxSizeQueue[A](val size:Int):
+  class MaxSizeQueue[A](val size:Int, val fillVal:A):
     // Initialize
-    private val internalQueue = mutable.Queue[A]()
+    private val internalQueue = mutable.Queue.tabulate(size)(a => fillVal)
 
     // This may be subject to optimization
     def values: Seq[A] = internalQueue.toVector
@@ -113,6 +113,8 @@ package SynthUtilities:
       internalQueue += value
       if internalQueue.size > size then
         internalQueue.dequeue()
+        
+    // WARNING: THROWS
     def dequeue(): A =
       internalQueue.dequeue()
 
