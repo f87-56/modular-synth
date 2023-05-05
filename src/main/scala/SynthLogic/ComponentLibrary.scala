@@ -2,6 +2,7 @@ package SynthLogic
 
 import SynthUtilities.*
 
+import javax.imageio.spi.ServiceRegistry.Filter
 import javax.sound.midi.{MidiMessage, ShortMessage}
 import scala.util.{Success, Try}
 
@@ -32,6 +33,11 @@ object ComponentLibrary {
         AvgFilter(host, Some(serialID))
     ),
 
+    ("IIR low-pass filter",
+      (host: ModularSynthesizer, serialID: String) =>
+        LowPassIIR(host, Some(serialID))
+    ),
+
     ("Average",
       (host: ModularSynthesizer, serialID: String) =>
         Average(host, Some(serialID))
@@ -46,12 +52,6 @@ object ComponentLibrary {
       (host: ModularSynthesizer, serialID: String) =>
         Sum(host, Some(serialID))
     ),
-
-    /*
-        ("Low-pass filter",
-          (host: ModularSynthesizer, serialID: String) =>
-            LowPass(host, Some(serialID))
-        ),*/
 
     ("Delay",
       (host: ModularSynthesizer, serialID: String) =>
@@ -150,8 +150,63 @@ object ComponentLibrary {
       //prevValBuffer.append(out)
       out
 
-  /*class LowPassFilter(host: ModularSynthesizer,
-                  override val serializationTag: Option[String]) extends SynthComponent[Double](host):*/
+  // TODO: Document this properly
+  // Works somehow, parameters a bit sketchy. Can acquire unusable state.
+  // https://github.com/philburk/listenup/blob/master/src/com/softsynth/dsp/BiquadFilter.java
+  class LowPassIIR(host: ModularSynthesizer,
+                  override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
+
+    val cutoff: Parameter[Double] = new Parameter[Double]("cutoff", "", true, 4000, this):
+      override def defaultValue_=(newVal: Any): Unit =
+        newVal match
+          case a:Double =>
+              super.defaultValue_=(newVal)
+              calculateCoefficients()
+          case _ => ()
+
+    val resonance: Parameter[Double] = new Parameter[Double]("resonance", "", true, 1.0, this):
+      override def defaultValue_=(newVal: Any): Unit =
+        newVal match
+          case a: Double =>
+            super.defaultValue_=(newVal)
+            calculateCoefficients()
+          case _ => ()
+
+    // filter coefficients
+    private var b0, b1, b2, a1, a2 = 0.0
+    // internal state
+    private var w1, w2 = 0.0
+    calculateCoefficients()
+
+    private def calculateCoefficients(): Unit =
+      val g = math.tan(math.Pi * cutoff.value)
+      val r = 1.0 / (1.0 + g * (g + resonance.value))
+      b0 = g * g * r
+      b1 = 2.0 * b0
+      b2 = b0
+      a1 = 2.0 * r * (g * g - 1.0)
+      a2 = r * (1.0 - g * (g - resonance.value))
+      println("---------")
+      println(this.a1)
+      println(this.a2)
+      println(this.b0)
+      println(this.b1)
+      println(this.b2)
+      println("-----------")
+
+
+    def filter(x:Double): Double =
+      val y = b0 * x + w1
+      w1 = b1 * x + w2 - a1 * y
+      w2 = b2 * x - a2 * y
+      y
+    override def compute: Double =
+      filter(input.value)
+
+  end LowPassIIR
+
   class Delay(host: ModularSynthesizer,
                       override val serializationTag: Option[String]) extends SynthComponent[Double](host):
     val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
@@ -296,7 +351,7 @@ object ComponentLibrary {
         active = true
 
       val out = {
-      if(time < sampleTime.value) then 1.0
+      if(time < sampleTime.value && active) then 1.0
       else
         active = false
         0.0 }
