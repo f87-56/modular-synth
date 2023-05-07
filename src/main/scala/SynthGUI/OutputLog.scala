@@ -1,14 +1,15 @@
 package SynthGUI
+import scala.annotation.unused
 import scala.collection.mutable
 import scala.collection.mutable.Buffer
 
 // a log to output info to the user
 object OutputLog {
 
-  val LOG_SIZE = 256
+  private val LOG_SIZE = 256
   val listeners:mutable.Buffer[LogListener] = mutable.Buffer()
 
-  val history:mutable.Queue[String] = mutable.Queue()
+  private val history:mutable.Queue[String] = mutable.Queue()
 
   def log(s:String):Unit =
     if(history.size >= LOG_SIZE) then
@@ -18,10 +19,11 @@ object OutputLog {
       history += s
     listeners.foreach(_.onNewMessage())
 
-  def lastLog =
+  def lastLog: String =
     history.last
   
-  def wholeLog = history.toVector
+  @unused
+  def wholeLog: Seq[String] = history.toVector
 }
 
 trait LogListener:

@@ -1,9 +1,12 @@
 package SynthGUI
 
 import scalafx.scene.input.{KeyCode, KeyEvent}
+
 import scala.collection.mutable
 import scalafx.Includes.*
 import javafx.scene.input.KeyEvent.{KEY_PRESSED, KEY_RELEASED, KEY_TYPED}
+
+import scala.annotation.unused
 
 // We implement an observer pattern that notifies observers of changes in keyboard input state.
 // Observe, JavaFX events exhibit strange behaviour when nonstandard characters are pressed,
@@ -15,21 +18,33 @@ object MKBInputHandler {
   private val listeners:mutable.Set[KeyPressListener] = mutable.Set()
 
   // stores the keys that are "currently" held down
-  val pressedKeys:mutable.Set[KeyCode] = mutable.Set()
+  private val pressedKeys:mutable.Set[KeyCode] = mutable.Set()
 
-  def addListener(ls:KeyPressListener) = listeners += ls
-  def removeListener(ls:KeyPressListener) = listeners -= ls
+  def addListener(ls:KeyPressListener):Unit = listeners += ls
+  @unused
+  def removeListener(ls:KeyPressListener):Unit = listeners -= ls
 
-  def keyInput(keyEvent: KeyEvent) =
+  // Handle a key event
+  def keyInput(keyEvent: KeyEvent):Unit =
     keyEvent.eventType match
       case a if a == KEY_PRESSED => keyDown(keyEvent.code)
       case b if b == KEY_RELEASED => keyUp(keyEvent.code)
 
 
-  def keyDown(keyCode: KeyCode) =
-    if(!pressedKeys.contains(keyCode)) then notifyKeyDown(keyCode)
+  /**
+   * registers a key press
+   * @param keyCode the key that was pressed
+   * @return
+   */
+  def keyDown(keyCode: KeyCode):Unit =
+    if !pressedKeys.contains(keyCode) then notifyKeyDown(keyCode)
     pressedKeys += keyCode
-  def keyUp(keyCode: KeyCode) =
+
+  /**
+   * Releases a key
+   * @param keyCode the key that was released
+   */
+  def keyUp(keyCode: KeyCode):Unit =
     notifyKeyUp(keyCode)
     pressedKeys -= keyCode
 
@@ -39,10 +54,6 @@ object MKBInputHandler {
     listeners.foreach(_.onKeyUp(keyCode))
 }
 
-
-/**
- *   override def onNewKeyDown = ???
- */
 trait KeyPressListener:
   // Called when a change in the keyboard state occurs
   def onNewKeyDown(keyCode: KeyCode):Unit

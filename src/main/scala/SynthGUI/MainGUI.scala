@@ -50,6 +50,7 @@ object MainGUI extends JFXApp3:
     val mainRuntime = AudioResourceHandler.defaultRuntime
     mainRuntime.openOutput()
 
+    // The "workbench" where synths are built
     val workspace = GUIWorkspace(mainRuntime.activeSynth)
 
     // The last directory the user has saved to
@@ -72,7 +73,7 @@ object MainGUI extends JFXApp3:
     end synthLoadSetup
 
     // Ask the user if they want to save their current synth
-    def savePrompt =
+    def savePrompt(): Unit =
       val yButton = new ButtonType("Yes")
       val nButton = new ButtonType("No")
 
@@ -122,18 +123,20 @@ object MainGUI extends JFXApp3:
         // Files, opeining and saving
         new Menu("File"){
           items += new MenuItem("Load synth"):
-            this.onAction = event => {
-              savePrompt
+            this.onAction = * => {
+              savePrompt()
               getFile.foreach(a =>
                 synthLoadSetup(a))
               }
           items += new MenuItem("Save synth"):
-            this.onAction = event => {
+            this.onAction = * => {
               saveFile.foreach(a => saveSynth(a))
             }
           items += new MenuItem("Load default synth"):
-            this.onAction = event => {
-              synthLoadSetup(File("./Bongler"))
+            this.onAction = * => {
+              synthLoadSetup(File("./DefaultSynth"))
+              // We don't want to accidentally overwrite the default.
+              currentSynthDir = None
             }
         },
         new Menu("Midi input"){
@@ -141,7 +144,7 @@ object MainGUI extends JFXApp3:
 
           onShowing = _ => items = makeMidiDeviceList
 
-          // "recalcualte" the list of available devices without changing the existing state.
+          // "recalculate" the list of available devices without changing the existing state.
           def makeMidiDeviceList: Array[MenuItem] =
             val devices =
               AudioResourceHandler.MIDIInputs
@@ -176,9 +179,9 @@ object MainGUI extends JFXApp3:
       )
 
     // The bottom bar displays log messages.
-    val bottomBar = new HBox() with LogListener:
+    val bottomBar: HBox with LogListener = new HBox() with LogListener:
       this.setBackground(new Background(Array(new BackgroundFill(Color.Gray, CornerRadii.Empty, Insets.EMPTY))))
-      val messageText = new Label:
+      val messageText: Label = new Label:
         text = "Log messages appear here"
       children = messageText
       override def onNewMessage(): Unit =
@@ -190,19 +193,21 @@ object MainGUI extends JFXApp3:
     root.top = topBar
     root.bottom = bottomBar
 
-    scene.onKeyPressed = (event) => {
+    scene.onKeyPressed = event => {
       // The save feature
       if(event.code == KeyCode.S && event.isControlDown) then
         event.consume()
         currentSynthDir.foreach(saveSynth)
-
-      // Load defualt synth
+        
+        
+      // Load default synth, a debugging shortcut
+      /*
       else if (event.code == KeyCode.L && event.isControlDown) then
         // TODO: Replace with save function
         event.consume()
         // TODO: Fix this nonsense also
         savePrompt
-        synthLoadSetup(File("./Bongler"))
+        synthLoadSetup(File("./DefaultSynth"))*/
 
       else
         MKBInputHandler.keyInput(event)

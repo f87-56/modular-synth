@@ -48,7 +48,7 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
     this.setup()
 
   private var zoomNode:Node = Group(_synthCanvas)
-  def refreshZoomNode = zoomNode = Group(_synthCanvas)
+  private def refreshZoomNode = zoomNode = Group(_synthCanvas)
 
   this.setup()
 
@@ -69,7 +69,7 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
     this.layout()
 
   // We wrap our canvas in this construct.
-  def outerNode(node:Node):Node =
+  private def outerNode(node:Node):Node =
     val outrNode = centeredNode(node)
     // Request keyboard focus on left click
     outrNode.onMouseClicked = event =>
@@ -92,33 +92,14 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
     outrNode
 
   // A node within a VBox that is centered in the middle
-  def centeredNode(node:Node):Node =
+  private def centeredNode(node:Node):Node =
     val vBox = new VBox(node)
     vBox.setAlignment(Pos.Center)
     vBox
 
-  def updateScale() =
+  private def updateScale() =
     _synthCanvas.setScaleX(zoomScale)
     _synthCanvas.setScaleY(zoomScale)
-
-
-  /*synthCanvas.children += new GUISynthComponent[Int](synthCanvas):
-    translateX = 400
-    translateY = 400*/
-
-  /*val button = Button("I'm a button!")
-  button.onAction = event => {
-    println("Click")
-    // Make the user choose a file!
-    val fileChooser = new FileChooser
-    val selectedFile = fileChooser.showOpenDialog(stage)
-    println(selectedFile)
-  }
-
-  synthCanvas.children += new VBox:
-    children = button
-    this.translateX = 300
-    this.translateY = 250*/
 
   // Reset zoom and position
   def reset() = ???
@@ -177,7 +158,7 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
 end GUIWorkspace
 
 class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
-  val componentList:ObservableBuffer[String] = ObservableBuffer.from(ComponentLibrary.componentNames)
+  private val componentList:ObservableBuffer[String] = ObservableBuffer.from(ComponentLibrary.componentNames)
   //ObservableBuffer("Item0","Item1", "Humphrey Davey", "Weezer","Weezer1","Item2","Item3")
   this.items = componentList
   this.editable = true
@@ -216,7 +197,7 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
 
   // User has made descision.
   // Observe: Even esc key will provoke this.
-  this.onHidden = (event) =>
+  this.onHidden = * =>
     if (componentList.contains(this.value.value)) then
       // The created synth component
       val comp = ComponentLibrary.createComponent(this.value.value, parentCanvas.synth)
@@ -234,11 +215,5 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
   private def delete() =
     parentCanvas.requestFocus()
     Try(parentCanvas.children.remove(this))
-
-  /*// Handle the ESC key separately
-  this.editor.value.onKeyPressed = (event) =>
-    if(event.code == KeyCode.Escape) then
-      this.value.value = ""
-      this.editor.value.textProperty.value = ""*/
 
 end ComponentSearchBox

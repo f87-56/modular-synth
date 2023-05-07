@@ -96,7 +96,7 @@ object ComponentLibrary {
    */
   class Oscillator(host:ModularSynthesizer,
                    override val serializationTag: Option[String]) extends SynthComponent[Double](host):
-    val oscillatorType:Parameter[Int] =
+    private val oscillatorType:Parameter[Int] =
       new Parameter("type", "", true,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
 
     private var freq = 0.0

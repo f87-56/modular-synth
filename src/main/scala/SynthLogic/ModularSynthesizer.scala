@@ -11,10 +11,6 @@ import javax.sound.midi.{MidiMessage, ShortMessage}
 import scala.collection.mutable
 
 /**
- * Does not support polyphony yet
- */
-
-/**
  * Represents our modular synthesizer.
  *
  * The only way a ModularSynthesizer object can be modified is by changing the
@@ -28,8 +24,8 @@ import scala.collection.mutable
 class ModularSynthesizer(val sampleRate:Int) {
 
   /**
-   * Gahter all the components that are actually part of the synth tree
-   * (plus the extra ones specified in comonents that may not be part of it.
+   * Gather all the components that are actually part of the synth tree
+   * (plus the extra ones specified in components that may not be part of it.
    */
   private val components_ = mutable.Buffer[SynthComponent[_]]()
     //mutable.Set(pComponents.flatMap(uproot(_, Set())).toSet ++ Set(finalGather).flatten)
@@ -153,6 +149,6 @@ end ModularSynthesizer
 case class Voice(sample:Int, keyFrequency:Double, message:Option[MidiMessage], sampleRate:Int, primary:Boolean):
   def stepTime(midiMessage: Option[MidiMessage]): Voice = Voice(sample + 1, keyFrequency, midiMessage, sampleRate, primary)
 object Voice:
-  def initPrimary(sampleRate:Int) = Voice(0, 0.0, None, sampleRate, true)
-  def init(sampleRate:Int) = Voice(1, 0.0, None, sampleRate, false)
+  //def initPrimary(sampleRate:Int) = Voice(0, 0.0, None, sampleRate, true)
+  def init(sampleRate:Int): Voice = Voice(1, 0.0, None, sampleRate, false)
 

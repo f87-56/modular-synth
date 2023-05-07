@@ -55,8 +55,6 @@ class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
   private var localMousePos_ = (0.0,0.0)
   def localMousePos: (Double, Double) = localMousePos_
 
-
-
   this.onMouseMoved = event =>
     this.localMousePos_ = (event.getX, event.getY)
 
@@ -66,7 +64,7 @@ object SynthCanvas:
   private val XSpacing = 50.0
   private val YSpacing = 40.0
   private val LineThickness = 3
-  val canvasSize: (Int, Int) = (4000, 3000)
+  private val canvasSize: (Int, Int) = (4000, 3000)
 
   private val bgGrid = {
     // We know beforehand how big the pane is.
@@ -128,13 +126,7 @@ object SynthCanvas:
             ConnectorLine(cc.outputSocket, pr._2.inputSocket, canvas)
           )
         )
-        /*pr =>
-          val inputComp = pr._1.getInput
-          val guiInputComp =
-            inputComp.flatMap(c => componentBros.find(_._1 eq c).map(_._2))
-          guiInputComp.foreach(a =>
-            ConnectorLine(a.outputSocket, pr._2.inputSocket, canvas)
-          ))*/)
+    )
 
     // Set the right positions
     visualComponents.foreach(a => guiComps.lift(a._1).foreach{ b =>

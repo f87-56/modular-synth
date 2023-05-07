@@ -31,9 +31,7 @@ class SynthRuntime extends Receiver:
   //val info = new DataLine.Info(classOf[SourceDataLine], format)
   // format.issupported etc. etc.
   val line:SourceDataLine = AudioSystem.getSourceDataLine(format)
-  println(line.getBufferSize)
   line.open(format, SynthRuntime.OUT_BUFFER_SIZE)
-  println(line.getBufferSize)
   line.start()
 
   private var kill = false
@@ -45,16 +43,9 @@ class SynthRuntime extends Receiver:
         val data = buildOutput(Try(Some(messageQueue.dequeue())).getOrElse(None))
         line.write(data, 0, BYTE_BUFFER_SIZE)
 
-    /*
-    Future(
-      while !kill do
-        writeToAudio()
-    )*/
     val a = LazyList.continually(writeToAudio())
     Future(a.takeWhile(* => !kill).foreach(_ => ()))
 
-      //println(buildOutput.mkString(","))
-      //println("\n\n")
 
   def closeOutput() =
     kill = true

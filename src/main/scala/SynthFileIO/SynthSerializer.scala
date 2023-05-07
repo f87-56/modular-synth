@@ -18,6 +18,7 @@ object SynthSerializer:
     canvas
     
   // Side effects here
+  // TODO: Save with file extension
   def saveCanvas(synthCanvas: SynthCanvas, file:File): Unit =
     FileManager.writeFile(file, synthCanvas.asJson.toString)
     OutputLog.log("Saving synth to: " + file)

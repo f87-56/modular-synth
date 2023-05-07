@@ -26,11 +26,11 @@ import scala.util.{Failure, Try}
 
 class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthComponent[_]) extends VBox:
 
-  val parameters = synthComponent.parameters.map(a => GUISynthParameter[Any](canvas, this, a))
+  val parameters: Seq[GUISynthParameter[Any]] = synthComponent.parameters.map(a => GUISynthParameter[Any](canvas, this, a))
 
-  val isOutputComp = canvas.synth.outputComponent == this.synthComponent
+  private val isOutputComp = canvas.synth.outputComponent == this.synthComponent
 
-  val outputSocket =
+  val outputSocket: LineSocket =
     // the output socket
     new LineSocket(canvas, GUISynthComponent.this):
       alignment = Pos.BaselineRight
@@ -38,6 +38,7 @@ class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthCompo
   this.children +=
     new Label():
       text = synthComponent.serializationTag.getOrElse("Component name")
+      if(isOutputComp) then text = "Output"
       padding = Insets(5)
   this.children +=
     new HBox():
@@ -142,14 +143,14 @@ object GUISynthComponent:
     var initialTranslateY: Double = 0.0
   }
 
-  // The encoder
+  // JSON encoder
   given Encoder[GUISynthComponent[_]] = (a: GUISynthComponent[_]) => Json.obj(
     // Index of the component in the original list
     ("SynthComponentIndex", Json.fromInt(a.synthComponent.host.components.indexOf(
       a.synthComponent))),
     ("Position", List(a.getTranslateX, a.getTranslateY).asJson)
   )
-  // Decodes into (Index, position)
+  // JSON decoder, Decodes into (Index, position)
   given Decoder[(Int,(Double,Double))] = (c: HCursor) => for
     index <- c.downField("SynthComponentIndex").as[Int]
     position <- c.downField("Position").as[(Double,Double)]
@@ -178,7 +179,6 @@ class GUISynthParameter[T](val canvas:SynthCanvas,
       this.children += new Spinner[Int](Int.MinValue, Int.MaxValue, a, 1):
         this.editor.value.textProperty().onChange {(src, oldValue, newValue) =>
           // Set to 0 if no numbers present
-          println(newValue)
           if """\d+""".r.findFirstIn(newValue).isEmpty then
             editor.value.text = "0"
           else if(newValue.toIntOption.isEmpty) then
