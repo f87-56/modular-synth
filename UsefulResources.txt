@@ -40,3 +40,6 @@ Ask about anonymous types:
       title = "Hello Stage"
       width = 600
       height = 450
+
+
+Observe! Audio bugging when using other apps

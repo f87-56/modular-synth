@@ -57,13 +57,17 @@ object MainGUI extends JFXApp3:
     var currentSynthDir:Option[File] = None
 
     // Loads and sets up a synth
-    def synthLoadSetup(filePath: File): Unit =
-      currentSynthDir = Some(filePath)
-      val a = SynthSerializer.loadCanvas(filePath)
+    def synthLoadSetup(toBeLoaded: File|String): Unit =
+      val a = {toBeLoaded match
+        case f:File =>
+          currentSynthDir = Some(f)
+          SynthSerializer.loadCanvas(f)
+        case s:String =>
+          SynthSerializer.loadCanvas(s)}
+
       a match
         case Success(value) =>
-          OutputLog.log("Loading synth from: " + filePath)
-          println(value.synth.components.mkString(","))
+          OutputLog.log("Loading synth from: " + toBeLoaded)
           workspace.replaceCanvas(value)
           value.requestFocus()
           mainRuntime.activeSynth = value.synth
@@ -71,6 +75,9 @@ object MainGUI extends JFXApp3:
           OutputLog.log("Could not load file: " + exception.toString)
           System.err.println("Could not load file: " + exception.toString)
     end synthLoadSetup
+
+    // Setup a workspace ready for editing
+    synthLoadSetup(SynthSerializer.EmptyWorkspace)
 
     // Ask the user if they want to save their current synth
     def savePrompt(): Unit =
@@ -94,22 +101,18 @@ object MainGUI extends JFXApp3:
     def saveSynth(path:File): Unit =
       currentSynthDir = Some(path)
       SynthSerializer.saveCanvas(workspace.synthCanvas, path)
-      println("Yarr")
       OutputLog.log("Saved synth to: " + path)
 
     // TODO: Add some logging here
     def saveFile: Option[File] =
-      println(currentSynthDir)
       val fileChooser = new FileChooser:
         currentSynthDir.foreach(a => initialDirectory = File(a.getParent))
         title = "Where to save the current synth?"
       val sFile = Option(fileChooser.showSaveDialog(stage))
-      println(sFile)
       sFile
 
     // TODO: Add some logging here
     def getFile: Option[File] =
-      println(currentSynthDir)
       val fileChoose = new FileChooser:
         currentSynthDir.foreach(a => initialDirectory = File(a.getParent))
       val selectedFile = Option(fileChoose.showOpenDialog(stage))
@@ -132,9 +135,9 @@ object MainGUI extends JFXApp3:
             this.onAction = * => {
               saveFile.foreach(a => saveSynth(a))
             }
-          items += new MenuItem("Load default synth"):
+          items += new MenuItem("Create empty"):
             this.onAction = * => {
-              synthLoadSetup(File("./DefaultSynth"))
+              synthLoadSetup(SynthSerializer.EmptyWorkspace)
               // We don't want to accidentally overwrite the default.
               currentSynthDir = None
             }
@@ -197,6 +200,9 @@ object MainGUI extends JFXApp3:
       // The save feature
       if(event.code == KeyCode.S && event.isControlDown) then
         event.consume()
+        currentSynthDir match
+          case Some(a) => saveSynth(a)
+          case None => saveFile.foreach(saveSynth)
         currentSynthDir.foreach(saveSynth)
         
         

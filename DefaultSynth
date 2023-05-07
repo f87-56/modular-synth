@@ -58,17 +58,17 @@
   },
   "VisualComponents" : [
     {
-      "SynthComponentIndex" : 1,
+      "SynthComponentIndex" : 0,
       "Position" : [
-        1334.9393310546875,
-        941.5479125976562
+        2700.2861328125,
+        1239.808837890625
       ]
     },
     {
       "SynthComponentIndex" : 2,
       "Position" : [
         1929.2115478515625,
-        1178.1171264648438
+        1178.1171875
       ]
     },
     {
@@ -79,10 +79,10 @@
       ]
     },
     {
-      "SynthComponentIndex" : 0,
+      "SynthComponentIndex" : 1,
       "Position" : [
-        2700.2861328125,
-        1239.8088989257812
+        1334.9393310546875,
+        941.5479125976562
       ]
     }
   ]

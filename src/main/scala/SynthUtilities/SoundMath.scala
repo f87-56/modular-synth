@@ -118,3 +118,39 @@ package SynthUtilities:
     def dequeue(): A =
       internalQueue.dequeue()
 
+
+  // Straight from (Apache licence 2.0)
+  /*
+  trait BiquadFilter:
+    // filter coefficients
+    private var b0, b1, b2, a1, a2 = 0.0
+    // internal state
+    private var x1, x2, y1, y2 = 0.0
+    calculateCoefficients()
+
+    // Calculate coefficients common to all types of filters
+    private def calculateCommon(): Unit =
+      val g = math.tan(math.Pi * cutoff.value)
+      val r = 1.0 / (1.0 + g * (g + resonance.value))
+      b0 = g * g * r
+      b1 = 2.0 * b0
+      b2 = b0
+      a1 = 2.0 * r * (g * g - 1.0)
+      a2 = r * (1.0 - g * (g - resonance.value))
+      println("---------")
+      println(this.a1)
+      println(this.a2)
+      println(this.b0)
+      println(this.b1)
+      println(this.b2)
+      println("-----------")
+
+
+    def filter(x: Double): Double =
+      val y = b0 * x + w1
+      w1 = b1 * x + w2 - a1 * y
+      w2 = b2 * x - a2 * y
+      y
+
+  end BiquadFilter
+*/

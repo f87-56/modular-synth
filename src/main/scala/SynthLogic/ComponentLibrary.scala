@@ -152,6 +152,7 @@ object ComponentLibrary {
 
   // TODO: Document this properly
   // Works somehow, parameters a bit sketchy. Can acquire unusable state.
+  // https://arachnoid.com/BiQuadDesigner/index.html
   // https://github.com/philburk/listenup/blob/master/src/com/softsynth/dsp/BiquadFilter.java
   class LowPassIIR(host: ModularSynthesizer,
                   override val serializationTag: Option[String]) extends SynthComponent[Double](host):
