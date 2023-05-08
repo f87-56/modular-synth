@@ -1,6 +1,7 @@
 package SynthLogic
 
 import SynthUtilities.*
+import com.sun.javafx.binding.DoubleConstant
 
 import javax.imageio.spi.ServiceRegistry.Filter
 import javax.sound.midi.{MidiMessage, ShortMessage}
@@ -71,6 +72,11 @@ object ComponentLibrary {
     ("Timed envelope",
       (host: ModularSynthesizer, serialID: String) =>
         TimedEnvelope(host, Some(serialID))
+    ),
+
+    ("Constant",
+      (host: ModularSynthesizer, serialID: String) =>
+        ConstDouble(host, Some(serialID))
     )
 
   )
@@ -99,6 +105,9 @@ object ComponentLibrary {
     private val oscillatorType:Parameter[Int] =
       new Parameter("type", "", true,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
 
+    // For FM
+    val timeScale: Parameter[Double] = Parameter[Double]("time scale", "", true, 1, this)
+
     private var freq = 0.0
     // What part of the oscillator cycle are we on?
     private var phase = 0.0
@@ -115,7 +124,7 @@ object ComponentLibrary {
           case 2 => MathUtilities.saw(1, phase)
           case 3 => MathUtilities.noise(1)
           case _ => 0
-      phase = (phase + 2*math.Pi*freq*host.deltaTime)%(2*math.Pi)
+      phase = (phase + 2*math.Pi*freq*host.deltaTime*timeScale.value)%(2*math.Pi)
       ret
 
   /**
@@ -259,6 +268,15 @@ object ComponentLibrary {
       input1.value * input2.value
 
 
+  // A constant
+  class ConstDouble(host: ModularSynthesizer,
+                override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+    val doubleValue: Parameter[Double] = Parameter[Double]("value", "", true, 0.0, this)
+    override def compute: Double =
+      doubleValue.value
+
+
   class TestComp(host: ModularSynthesizer,
                  override val serializationTag: Option[String]) extends SynthComponent[String](host):
 
@@ -289,9 +307,9 @@ object ComponentLibrary {
     // A trapezoidal model. The method is a bit of a mess.
     override def compute: Double =
 
-      val attackRate = 1.0 / attack.defaultValue
-      val decayRate = 1.0 / decay.defaultValue
-      val releaseRate = 1.0 / release.defaultValue
+      val attackRate = 1.0 / math.min(attack.defaultValue,0.0001)
+      val decayRate = 1.0 / math.min(decay.defaultValue, 0.0001)
+      val releaseRate = 1.0 / math.min(release.defaultValue, 0.0001)
 
       val time = SoundMath.sampleToTime(host.voice.sample, host.voice.sampleRate)
       val deltaTime = SoundMath.sampleToTime(1, host.voice.sampleRate)

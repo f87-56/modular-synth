@@ -22,7 +22,7 @@ import scalafx.Includes.*
 
 import java.net.Socket
 import scala.collection.mutable
-import scala.util.{Failure, Try}
+import scala.util.{Failure, Success, Try}
 
 class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthComponent[_]) extends VBox:
 
@@ -165,6 +165,10 @@ class GUISynthParameter[T](val canvas:SynthCanvas,
                            val parameter: Parameter[_]) extends HBox:
   this.padding = Insets(20)
   spacing = 5
+
+  private val invalidValueStyle = "-fx-border-color: red; -fx-border-width: 2px;"
+  private val defaultStyle = this.getStyle
+
   val inputSocket: LineSocket = new LineSocket(canvas, this):
     alignment = Pos.BaselineLeft
   if(parameter.takesInput) then
@@ -177,20 +181,57 @@ class GUISynthParameter[T](val canvas:SynthCanvas,
       // For some reason, automatic input filtering works on Double spinners, but not integer ones.
       // Man I hate scalaFX...
       this.children += new Spinner[Int](Int.MinValue, Int.MaxValue, a, 1):
+        // the converter. Returns the previous value if the new one is invalid.
+        this.valueFactory.value.converter =
+          new StringConverter[Int]:
+            override def toString(t: Int): String =
+              t.toString
+            def fromString(s:String): Int =
+              // The previous value of the parameter
+              val prev = value.value
+              s.toIntOption.getOrElse(prev)
+
+
         this.editor.value.textProperty().onChange {(src, oldValue, newValue) =>
-          // Set to 0 if no numbers present
-          if """\d+""".r.findFirstIn(newValue).isEmpty then
-            editor.value.text = "0"
-          else if(newValue.toIntOption.isEmpty) then
-            editor.value.text = oldValue}
+          // Repetition
+          val a = Try(newValue.toInt)
+          a match
+            case Success(_) =>
+              this.style = defaultStyle
+            case Failure(_) =>
+              this.style = invalidValueStyle
+        }
         this.value.onChange{(src, oldVal, newVal) =>
+          OutputLog.log("Set value of " + parameter.name + ": " + newVal)
           parameter.defaultValue = newVal
         }
         editable = true
     case b:Double =>
       this.children += new Spinner[Double](Double.MinValue, Double.MaxValue, b, 0.01):
         editable = true
+        // Sanitizing input
+        this.valueFactory.value.converter =
+          new StringConverter[Double]:
+            override def toString(t: Double): String =
+              t.toString
+
+            def fromString(s: String): Double =
+              // The previous value of the parameter
+              val prev = value.value
+              s.toDoubleOption.getOrElse(prev)
+
+        this.editor.value.textProperty().onChange { (src, oldValue, newValue) =>
+          // Repetition
+          val a = Try(newValue.toDouble)
+          a match
+            case Success(_) =>
+              this.style = defaultStyle
+            case Failure(_) =>
+              this.style = invalidValueStyle
+        }
+
         this.value.onChange { (src, oldVal, newVal) =>
+          OutputLog.log("Set value of " + parameter.name + ": " + newVal)
           parameter.defaultValue = newVal
         }
     case c:Boolean =>
@@ -306,7 +347,7 @@ class LineSocket(val canvas: SynthCanvas, val parentNode:GUISynthParameter[_]|GU
     // SynthoLogic side
     this.parentGUISynthParam.foreach(_.parameter.x())
     if(this.isOutput) then
-      this.parentGUISynthComponent.synthComponent.xAll()
+      this.parentGUISynthComponent.synthComponent.xOutputs()
     // GUI side
     this.connections.toVector.foreach(_.delete())
 

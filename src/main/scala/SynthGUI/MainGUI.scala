@@ -67,7 +67,6 @@ object MainGUI extends JFXApp3:
 
       a match
         case Success(value) =>
-          OutputLog.log("Loading synth from: " + toBeLoaded)
           workspace.replaceCanvas(value)
           value.requestFocus()
           mainRuntime.activeSynth = value.synth
@@ -185,7 +184,12 @@ object MainGUI extends JFXApp3:
     val bottomBar: HBox with LogListener = new HBox() with LogListener:
       this.setBackground(new Background(Array(new BackgroundFill(Color.Gray, CornerRadii.Empty, Insets.EMPTY))))
       val messageText: Label = new Label:
+        this.prefHeight = 10
         text = "Log messages appear here"
+        this.text.onChange{(src, oldVal, newVal) =>
+          this.text = newVal.split('\n').mkString(" ")
+          println(newVal.split('\n').mkString(" "))
+        }
       children = messageText
       override def onNewMessage(): Unit =
         messageText.text = OutputLog.lastLog
