@@ -137,6 +137,7 @@ object MainGUI extends JFXApp3:
             }
           items += new MenuItem("Create empty"):
             this.onAction = * => {
+              savePrompt()
               synthLoadSetup(SynthSerializer.EmptyWorkspace)
               // We don't want to accidentally overwrite the default.
               currentSynthDir = None

@@ -86,11 +86,15 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
       Try {
         // Type check
         if newInput.signalType == this.signalType then
+          // Disconnect old one
+          this.x()
+
           //println(newInput)
           newInput.addConnection(this)
+
           // anti-pattern
           input = Some(newInput.asInstanceOf[SynthComponent[T]])
-          println("NEW INPUT: " + input)
+          //println("NEW INPUT: " + input)
           1
         else
           println("ARRRR ME HEART STOPPED")
@@ -104,8 +108,9 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
    */
   @targetName("cut")
   def x(): Unit =
-    println("DISCONNECTING:" + name)
+    //println("DISCONNECTING:" + name + ", " + input.getOrElse("..."))
     input.foreach(_.disconnect(this))
+    //println("Remaining conns: " + input.map(_.connections).getOrElse("..."))
     input = None
 
   override def toString: String =

@@ -49,6 +49,17 @@ object ComponentLibrary {
         LowPassIIR(host, Some(serialID))
     ),
 
+    ("RC high-pass filter",
+      (host: ModularSynthesizer, serialID: String) =>
+        HighPassRC(host, Some(serialID))
+    ),
+
+    ("RC low-pass filter",
+      (host: ModularSynthesizer, serialID: String) =>
+        LowPassRC(host, Some(serialID))
+    ),
+
+
     ("Average",
       (host: ModularSynthesizer, serialID: String) =>
         Average(host, Some(serialID))
@@ -263,6 +274,42 @@ object ComponentLibrary {
 
   end LowPassIIR
 
+  class HighPassRC(host: ModularSynthesizer,
+                   override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
+    val f_c: Parameter[Double] = Parameter[Double]("attenuation frequency", "", true, 0.0, this)
+
+    // State of filter
+    private var yPrev = 0.0
+    private var xPrev = 0.0
+
+    override def compute: Double =
+      val dt = 1.0/host.sampleRate
+      val alpha = 1 / (2*math.Pi*dt* math.max(f_c.value,0) + 1)
+      val out = alpha * yPrev + alpha*(input.value - xPrev)
+      xPrev = input.value
+      yPrev = out
+      yPrev
+
+
+  class LowPassRC(host: ModularSynthesizer,
+                   override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
+    val f_c: Parameter[Double] = Parameter[Double]("attenuation frequency", "", true, 0.0, this)
+
+    // State of filter
+    private var yPrev = 0.0
+    private var xPrev = 0.0
+
+    override def compute: Double =
+      val dt = 1.0 / host.sampleRate
+      val alpha = (2*math.Pi*dt*math.max(f_c.value, 0)) / (2 * math.Pi * dt * math.max(f_c.value, 0) + 1)
+      val out = alpha * input.value + (1.0-alpha) * (yPrev)
+      xPrev = input.value
+      yPrev = out
+      yPrev
+
+
   class Delay(host: ModularSynthesizer,
                       override val serializationTag: Option[String]) extends SynthComponent[Double](host):
     val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
@@ -455,8 +502,8 @@ object ComponentLibrary {
         case State.Release => previous - deltaTime * releaseRate
         case State.Dead => 0.0
 
-      previous = out
-      out
+      previous = MathUtilities.clamp(0.0,1.0,out)
+      previous
   end Envelope
 
   // 1 if time from note start < time, 0 otherwise.
