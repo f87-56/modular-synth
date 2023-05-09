@@ -1,0 +1,105 @@
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 3,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "RC low-pass filter",
+        "Parameters" : [
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "10.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "3"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "440.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 4,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "1000.0"
+          }
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2746.2109375,
+        1216.9788818359375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        2068.4628259562805,
+        1314.4395139515627
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        1786.4944311057707,
+        1424.0461164089502
+      ]
+    },
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        2124.8119916167325,
+        1121.00720267302
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        2451.5849687079663,
+        1203.975363843585
+      ]
+    }
+  ]
+}

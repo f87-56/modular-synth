@@ -1,0 +1,133 @@
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 5,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.001"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.3"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.3"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "3"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "440.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 2,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Average filter",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "3"
+          },
+          {
+            "Index" : 3,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "RC low-pass filter",
+        "Parameters" : [
+          {
+            "Index" : 4,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "3000.0"
+          }
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2659.878173828125,
+        1084.19677734375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 5,
+      "Position" : [
+        2344.6582867861107,
+        1091.8821368694335
+      ]
+    },
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        2102.4215881662203,
+        1094.8393689196346
+      ]
+    },
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1650.320801406146,
+        1173.2320050372432
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        1621.7052496152783,
+        1035.681668255757
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        1871.6374830710356,
+        1092.0179375218545
+      ]
+    }
+  ]
+}
