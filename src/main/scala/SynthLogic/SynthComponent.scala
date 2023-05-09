@@ -57,11 +57,10 @@ trait SynthComponent[T](val host:ModularSynthesizer, val serializationTag:Option
   // The parameters (of other components) this component outputs to
   // Here, we don't care about the types, since that is handled by
   // Parameter
-  final private val _connections:scala.collection.mutable.Set[Parameter[_]] =
-    scala.collection.mutable.Set[Parameter[_]]()
+  final private var _connections:List[Parameter[_]] = List[Parameter[_]]()
 
   // Return the current connections
-  def connections: Seq[Parameter[_]] = _connections.toVector
+  def connections: Seq[Parameter[_]] = _connections
   
   // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
   final def addParameter(p:Parameter[_]):Unit = _parameters += p
@@ -69,18 +68,18 @@ trait SynthComponent[T](val host:ModularSynthesizer, val serializationTag:Option
   // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
   // I haven't figured out how I could prevent this.
   final def addConnection(parameter: Parameter[_]):Unit =
-    _connections += parameter
+    _connections = (_connections :+ parameter).distinct
 
   // NOT TO BE USED OUTSIDE THE CLASS PARAMETER
   final def disconnect(parameter: Parameter[_]):Unit =
-    this._connections -= parameter
+    this._connections = _connections.filter(_ != parameter)
 
   // Disconnects everything from this SynthComponent.
   // EFFECTFUL FUNCTION
   final def xAll(): Unit =
     // cut all connections, forward and back
     this._connections.foreach(_.x())
-    this._connections.clear()
+    this._connections = List()
     this.parameters.foreach(_.x())
 
 
@@ -89,7 +88,7 @@ trait SynthComponent[T](val host:ModularSynthesizer, val serializationTag:Option
   final def xOutputs(): Unit =
   // remove all
     this._connections.foreach(_.x())
-    this._connections.clear()
+    this._connections = List()
 
   override def toString: String =
     this.serializationTag.getOrElse("No name given") + ", " + this._signalType + "\n" +
