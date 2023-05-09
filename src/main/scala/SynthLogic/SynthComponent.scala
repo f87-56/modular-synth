@@ -13,7 +13,8 @@ import scala.util.{Failure, Success, Try}
  *
  * @tparam T The type of the synth component's output
  */
-trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Option[String] = None):
+trait SynthComponent[T](val host:ModularSynthesizer, val serializationTag:Option[String] = None)
+                        (using _signalType:SignalType[T]):
   
   host.addComponent(this)
 
@@ -35,12 +36,13 @@ trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Optio
 
   protected val tickTime = 1
 
+  def signalType: SignalType[T] = _signalType
 
   // We may want helper functions for easily getting info from the host's voice.
 
   // Recalculate only if time has advanced and we want to tick.
   final def output: Option[T] =
-    val out = {
+    val out = Try{
       if host.voice.sample == prevSample || host.voice.sample % tickTime != 0 then
         prevValue
       else
@@ -49,8 +51,8 @@ trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Optio
         val ret = Some(compute)
         _beingComputed = false
         ret }
-    prevValue = out
-    out
+    out.foreach(prevValue = _)
+    prevValue
 
   // The parameters (of other components) this component outputs to
   // Here, we don't care about the types, since that is handled by
@@ -88,6 +90,10 @@ trait SynthComponent[+T](val host:ModularSynthesizer, val serializationTag:Optio
   // remove all
     this._connections.foreach(_.x())
     this._connections.clear()
+
+  override def toString: String =
+    this.serializationTag.getOrElse("No name given") + ", " + this._signalType + "\n" +
+      parameters.map("\t" + _.toString).mkString("\n")
 
 end SynthComponent
 object SynthComponent:

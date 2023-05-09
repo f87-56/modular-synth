@@ -10,7 +10,7 @@ import scala.util.{Success, Try}
 object ComponentLibrary {
 
   // A list of tuples: first member is a name, second is a method that returns a synthcomponent by that name.
-  private val components: Map[String, (ModularSynthesizer, String) => SynthComponent[Any]] = Map(
+  private val components: Map[String, (ModularSynthesizer, String) => SynthComponent[_]] = Map(
     /**
      * An identity operation. A component that passes through its input unchanged.
      */
@@ -19,9 +19,19 @@ object ComponentLibrary {
         PassThrough(host, Some(serialID))
     ),
 
+    ("Probe",
+      (host: ModularSynthesizer, serialID: String) =>
+        Probe(host, Some(serialID))
+    ),
+
     ("Oscillator",
       (host:ModularSynthesizer, serialID:String) =>
         Oscillator(host, Some(serialID))
+    ),
+
+    ("Note frequency",
+      (host: ModularSynthesizer, serialID: String) =>
+        NoteFrequency(host, Some(serialID))
     ),
 
     ("Amplifier",
@@ -49,6 +59,11 @@ object ComponentLibrary {
         Sum(host, Some(serialID))
     ),
 
+    ("Divide",
+      (host: ModularSynthesizer, serialID: String) =>
+        Divide(host, Some(serialID))
+    ),
+
     ("Product",
       (host: ModularSynthesizer, serialID: String) =>
         Sum(host, Some(serialID))
@@ -57,6 +72,21 @@ object ComponentLibrary {
     ("Delay",
       (host: ModularSynthesizer, serialID: String) =>
         Delay(host, Some(serialID))
+    ),
+
+    ("Double -> Int",
+      (host: ModularSynthesizer, serialID: String) =>
+        DoubleToInt(host, Some(serialID))
+    ),
+
+    ("Int -> Double",
+      (host: ModularSynthesizer, serialID: String) =>
+        IntToDouble(host, Some(serialID))
+    ),
+
+    ("Array delay",
+      (host: ModularSynthesizer, serialID: String) =>
+        ArrayDelay(host, Some(serialID))
     ),
 
     ("TestStringComponent",
@@ -97,6 +127,26 @@ object ComponentLibrary {
     override def compute: Double =
       input.value
 
+  // A probe node for easy debugging
+  class Probe(host: ModularSynthesizer,
+                    override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    val input: Parameter[Double] = Parameter("input", "", true, 0.5, this)
+
+    override def compute: Double =
+      println("Probe " + this.toString + ": " + input.value)
+      input.value
+
+
+  class NoteFrequency(host: ModularSynthesizer,
+                   override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    private var freq = 0.0
+    override def compute: Double =
+      val msg = this.host.voice.message
+      if msg.isDefined then
+        if (msg.forall(_.getStatus == ShortMessage.NOTE_ON)) then
+          freq = this.host.voice.message.map(SoundMath.noteFrequency).getOrElse(0.0)
+      freq
+
   /**
    * A simple oscillator
    */
@@ -106,16 +156,12 @@ object ComponentLibrary {
       new Parameter("type", "", true,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
 
     // For FM
-    val timeScale: Parameter[Double] = Parameter[Double]("time scale", "", true, 1, this)
+    val frequency: Parameter[Double] = Parameter[Double]("frequency", "", true, 1, this)
 
     private var freq = 0.0
     // What part of the oscillator cycle are we on?
     private var phase = 0.0
     override def compute: Double =
-      val msg = this.host.voice.message
-      if msg.isDefined then
-        if(msg.forall(_.getStatus == ShortMessage.NOTE_ON)) then
-          freq = this.host.voice.message.map(SoundMath.noteFrequency).getOrElse(0.0)
       val ret =
         //println("Oscillator type: " + this.oscillatorType.value)
         this.oscillatorType.value match
@@ -124,7 +170,7 @@ object ComponentLibrary {
           case 2 => MathUtilities.saw(1, phase)
           case 3 => MathUtilities.noise(1)
           case _ => 0
-      phase = (phase + 2*math.Pi*freq*host.deltaTime*timeScale.value)%(2*math.Pi)
+      phase = (phase + 2*math.Pi*host.deltaTime*frequency.value)%(2*math.Pi)
       ret
 
   /**
@@ -238,6 +284,36 @@ object ComponentLibrary {
       prevValBuffer.append(in)
       out.getOrElse(0.0)
 
+  // Implemented with buffer, "variable size"
+  class ArrayDelay(host: ModularSynthesizer,
+              override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    // Max delay in samples
+    private val MaxSize = 100000
+    // One writes, one reads
+    private var writeCursor = 0
+
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
+    val bufferSize: Parameter[Int] = new Parameter[Int]("Buffer size", "", true, 1, this):
+      override def defaultValue_=(newVal: Any): Unit =
+        newVal match
+          case a: Int =>
+            super.defaultValue_=(math.max(a,1))
+          case _ => ()
+
+
+    // We only use the n first values (n being the delay)
+    private val prevValBuffer = Array.ofDim[Double](MaxSize)
+    override def compute: Double =
+      val in = this.input.value
+      //val size = math.max(bufferSize.value,1)
+      val size = math.max(bufferSize.value,1)
+      Try(prevValBuffer(writeCursor) = in)
+      // Next position of the write cursor
+      writeCursor = ((writeCursor + 1) % (size)) % (MaxSize)
+      val ret = prevValBuffer.lift(writeCursor)
+      ret.getOrElse(0.0)
+
+  end ArrayDelay
 
   class Average(host: ModularSynthesizer,
                  override val serializationTag: Option[String]) extends SynthComponent[Double](host):
@@ -258,6 +334,21 @@ object ComponentLibrary {
       val out = input1.value + input2.value
       out
 
+
+  class Divide(host: ModularSynthesizer,
+            override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+    val input1: Parameter[Double] = Parameter[Double]("input 1", "", true, 0.0, this)
+    val input2: Parameter[Double] = Parameter[Double]("input 2", "", true, 0.0, this)
+
+    override def compute: Double =
+      val out = {
+      if !(input2.value == 0) then
+        input1.value / input2.value
+      else 0.0
+      }
+      out
+
   class Product(host: ModularSynthesizer,
             override val serializationTag: Option[String]) extends SynthComponent[Double](host):
 
@@ -266,6 +357,22 @@ object ComponentLibrary {
 
     override def compute: Double =
       input1.value * input2.value
+
+  class DoubleToInt(host: ModularSynthesizer,
+            override val serializationTag: Option[String]) extends SynthComponent[Int](host):
+
+    val input: Parameter[Double] = Parameter[Double]("input", "", true, 0.0, this)
+
+    override def compute: Int =
+      input.value.toInt
+
+  class IntToDouble(host: ModularSynthesizer,
+                    override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+
+    val input: Parameter[Int] = Parameter[Int]("input", "", true, 0, this)
+
+    override def compute: Double =
+      input.value.toDouble
 
 
   // A constant
@@ -307,9 +414,9 @@ object ComponentLibrary {
     // A trapezoidal model. The method is a bit of a mess.
     override def compute: Double =
 
-      val attackRate = 1.0 / math.min(attack.defaultValue,0.0001)
-      val decayRate = 1.0 / math.min(decay.defaultValue, 0.0001)
-      val releaseRate = 1.0 / math.min(release.defaultValue, 0.0001)
+      val attackRate = 1.0 / math.max(attack.defaultValue,0.0001)
+      val decayRate = 1.0 / math.max(decay.defaultValue, 0.0001)
+      val releaseRate = 1.0 / math.max(release.defaultValue, 0.0001)
 
       val time = SoundMath.sampleToTime(host.voice.sample, host.voice.sampleRate)
       val deltaTime = SoundMath.sampleToTime(1, host.voice.sampleRate)
@@ -355,7 +462,7 @@ object ComponentLibrary {
   // 1 if time from note start < time, 0 otherwise.
   class TimedEnvelope(host: ModularSynthesizer,
                  override val serializationTag: Option[String]) extends SynthComponent[Double](host):
-    val sampleTime = Parameter[Int]("sample time", "", false, 1, this)
+    val sampleTime = Parameter[Int]("sample time", "", true, 1, this)
 
     private var time = 0
     private var active = false

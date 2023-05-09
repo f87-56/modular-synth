@@ -46,7 +46,6 @@ class SynthRuntime extends Receiver:
     val a = LazyList.continually(writeToAudio())
     Future(a.takeWhile(* => !kill).foreach(_ => ()))
 
-
   def closeOutput() =
     kill = true
 

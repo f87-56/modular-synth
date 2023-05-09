@@ -321,15 +321,24 @@ class LineSocket(val canvas: SynthCanvas, val parentNode:GUISynthParameter[_]|GU
           this.parentGUISynthComponent != a._1.parentGUISynthComponent =>
           // Get ordering of start and end right.
           if(this.isOutput) then
-            ConnectorLine(a._1, this, canvas)
             // Make the logical connection
-            a._1.parentGUISynthParam.foreach(
-              _.parameter <== this.parentGUISynthComponent.synthComponent)
+            a._1.parentGUISynthParam.foreach(b =>
+              (b.parameter <== this.parentGUISynthComponent.synthComponent).foreach(
+                // Only create connector if successful
+                _ => ConnectorLine(a._1, this, canvas)
+              )
+              // A hack: adding a connectorline where there already exists one disconnects
+              // the synth components
+              (b.parameter <== this.parentGUISynthComponent.synthComponent)
+            )
           else
-            ConnectorLine(this, a._1, canvas)
             // Make the logical connection
-            this.parentGUISynthParam.foreach{
-              _.parameter <== a._1.parentGUISynthComponent.synthComponent}
+            this.parentGUISynthParam.foreach(b =>
+              (b.parameter <== a._1.parentGUISynthComponent.synthComponent).foreach(
+                _ => ConnectorLine(this, a._1, canvas)
+              )
+              (b.parameter <== a._1.parentGUISynthComponent.synthComponent)
+            )
       case _ => ()
 
   // Disconnect node
@@ -340,7 +349,6 @@ class LineSocket(val canvas: SynthCanvas, val parentNode:GUISynthParameter[_]|GU
   // We don't want to drag the component node if we have pressed on the socket
   this.onMouseDragged = event => event.consume()
 
-  // TODO: Interaction with synth logic
   def disconnect(connectorLine:ConnectorLine):Unit =
     this.connections -= connectorLine
   def removeConnections():Unit=

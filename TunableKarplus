@@ -18,7 +18,7 @@
             "DefaultValue" : "3"
           },
           {
-            "Index" : -1,
+            "Index" : 7,
             "DefaultValue" : "1.0"
           }
         ]
@@ -31,7 +31,7 @@
             "DefaultValue" : "1.0"
           },
           {
-            "Index" : 6,
+            "Index" : 5,
             "DefaultValue" : "1.0"
           }
         ]
@@ -44,7 +44,7 @@
             "DefaultValue" : "2"
           },
           {
-            "Index" : 5,
+            "Index" : 8,
             "DefaultValue" : "0.0"
           }
         ]
@@ -57,21 +57,8 @@
             "DefaultValue" : "0.0"
           },
           {
-            "Index" : 7,
+            "Index" : 6,
             "DefaultValue" : "0.0"
-          }
-        ]
-      },
-      {
-        "IdentifyingName" : "Delay",
-        "Parameters" : [
-          {
-            "Index" : 4,
-            "DefaultValue" : "0.0"
-          },
-          {
-            "Index" : -1,
-            "DefaultValue" : "50"
           }
         ]
       },
@@ -79,7 +66,7 @@
         "IdentifyingName" : "Timed envelope",
         "Parameters" : [
           {
-            "Index" : -1,
+            "Index" : 9,
             "DefaultValue" : "50"
           }
         ]
@@ -96,18 +83,51 @@
             "DefaultValue" : "0.99"
           }
         ]
+      },
+      {
+        "IdentifyingName" : "Note frequency",
+        "Parameters" : [
+        ]
+      },
+      {
+        "IdentifyingName" : "Array delay",
+        "Parameters" : [
+          {
+            "Index" : 4,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : 9,
+            "DefaultValue" : "50"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Double -> Int",
+        "Parameters" : [
+          {
+            "Index" : 10,
+            "DefaultValue" : "50.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Divide",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "44100.0"
+          },
+          {
+            "Index" : 7,
+            "DefaultValue" : "441.0"
+          }
+        ]
       }
     ],
     "OutputComponentIndex" : 0
   },
   "VisualComponents" : [
-    {
-      "SynthComponentIndex" : 5,
-      "Position" : [
-        3153.86669921875,
-        1457.3245849609375
-      ]
-    },
     {
       "SynthComponentIndex" : 2,
       "Position" : [
@@ -118,15 +138,22 @@
     {
       "SynthComponentIndex" : 0,
       "Position" : [
-        3426.69189453125,
-        1268.9400634765625
+        3217.180908203125,
+        1283.7740478515625
       ]
     },
     {
-      "SynthComponentIndex" : 6,
+      "SynthComponentIndex" : 1,
       "Position" : [
-        1959.5491943359375,
-        1514.560791015625
+        2193.203857421875,
+        1257.35546875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        2856.86181640625,
+        1576.3880615234375
       ]
     },
     {
@@ -137,24 +164,45 @@
       ]
     },
     {
+      "SynthComponentIndex" : 6,
+      "Position" : [
+        2858.76513671875,
+        1436.47216796875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 10,
+      "Position" : [
+        2199.214599609375,
+        1557.7049560546875
+      ]
+    },
+    {
       "SynthComponentIndex" : 7,
       "Position" : [
-        2566.3777831488005,
-        1426.3021480867433
+        1962.243896484375,
+        1444.523193359375
       ]
     },
     {
-      "SynthComponentIndex" : 3,
+      "SynthComponentIndex" : 8,
       "Position" : [
-        2816.18212890625,
-        1611.9830322265625
+        2852.16162109375,
+        1721.3504638671875
       ]
     },
     {
-      "SynthComponentIndex" : 1,
+      "SynthComponentIndex" : 5,
       "Position" : [
-        1993.61767578125,
-        1172.181884765625
+        2502.798828125,
+        1410.4517822265625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 9,
+      "Position" : [
+        2205.021240234375,
+        1427.5662841796875
       ]
     }
   ]

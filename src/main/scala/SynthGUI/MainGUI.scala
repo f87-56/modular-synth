@@ -114,6 +114,7 @@ object MainGUI extends JFXApp3:
     def getFile: Option[File] =
       val fileChoose = new FileChooser:
         currentSynthDir.foreach(a => initialDirectory = File(a.getParent))
+        title = "Select synth to load"
       val selectedFile = Option(fileChoose.showOpenDialog(stage))
       selectedFile
 
@@ -208,7 +209,8 @@ object MainGUI extends JFXApp3:
           case Some(a) => saveSynth(a)
           case None => saveFile.foreach(saveSynth)
         currentSynthDir.foreach(saveSynth)
-        
+      else if (event.code == KeyCode.P) then
+        println(workspace.synthCanvas.synth)
         
       // Load default synth, a debugging shortcut
       /*

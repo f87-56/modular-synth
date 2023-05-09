@@ -57,6 +57,9 @@ class ModularSynthesizer(val sampleRate:Int) {
     val out = outputComponent.output
     voice_ = voice_.stepTime(midiMessage)
     out.getOrElse(0)
+
+  override def toString: String =
+    super.toString + "\n" + this.components.mkString("\n") + "\n"
 }
 
 /**

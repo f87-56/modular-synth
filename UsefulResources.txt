@@ -43,3 +43,5 @@ Ask about anonymous types:
 
 
 Observe! Audio bugging when using other apps
+
+Type safety causing problems

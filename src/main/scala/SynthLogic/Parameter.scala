@@ -6,6 +6,12 @@ import java.security.InvalidParameterException
 import scala.annotation.targetName
 import scala.util.{Failure, Success, Try}
 
+sealed trait SignalType[A]
+given intSignal:SignalType[Int]()
+given doubleSignal:SignalType[Double]()
+given boolSignal:SignalType[Boolean]()
+given stringSignal:SignalType[String]()
+given doubleVecSignal:SignalType[Vector[Double]]()
 
 
 // TODO: Add upper and lower bounds
@@ -15,13 +21,14 @@ import scala.util.{Failure, Success, Try}
  * @param description A description for the parameter
  * @param takesInput Can this parameter take input from another SynthComponent?
  * @param defaultValue Default value to be given if no input exists
- * @param input The (optional) SynthComponent that feeds data to this parameter. WARNING! THIS FIELD IS MUTABLE
+ * @param input The () SynthComponent that feeds data to this parameter. WARNING! THIS FIELD IS MUTABLE
  * @tparam T  The signal type of this parameter
  */
 case class Parameter[T](name: String, description: String, takesInput: Boolean = true,
                          private var _defaultValue: T,
                                      parent: SynthComponent[_],
-                                     private[this] var input: Option[SynthComponent[T]] = None):
+                                     private[this] var input: Option[SynthComponent[T]] = None)
+                       (using signalType:SignalType[T]):
 
   parent.addParameter(this)
 
@@ -73,23 +80,21 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
    */
   @targetName("connect")
   infix def <==[A](newInput: SynthComponent[A]): Try[Int] =
-    if (!takesInput || (newInput.host != parent.host)) then Failure(IllegalArgumentException())
+    if (!takesInput || (newInput.host != parent.host)) then
+      Failure(IllegalArgumentException())
     else
-      /*if(newInput.host.getClass == this.defaultValue.getClass) then Success(1) else Failure(InvalidParameterException()) // Awful?
-      if(newInput.isInstanceOf(classOf(this.defaultValue))) then println("Yes")
-      else println("NO")
-      newInput match
-        case a: SynthComponent[T] => println("OK")
-        case _ => println("Not ok!")*/
       Try {
-        newInput.initialValue match
-          // WARNING: THIS TYPE TEST CANNOT BE DONE ??!??!?!?!
-          case _: T =>
-            println(newInput)
-            newInput.addConnection(this)
-            input = Some(newInput.asInstanceOf[SynthComponent[T]])
-            1
-          case _ => throw InvalidParameterException()
+        // Type check
+        if newInput.signalType == this.signalType then
+          //println(newInput)
+          newInput.addConnection(this)
+          // anti-pattern
+          input = Some(newInput.asInstanceOf[SynthComponent[T]])
+          println("NEW INPUT: " + input)
+          1
+        else
+          println("ARRRR ME HEART STOPPED")
+          throw InvalidParameterException()
       }
 
   /**
@@ -99,8 +104,12 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
    */
   @targetName("cut")
   def x(): Unit =
+    println("DISCONNECTING:" + name)
     input.foreach(_.disconnect(this))
     input = None
+
+  override def toString: String =
+    this.name + ", " + this.signalType + ", " + this.input.map(_.serializationTag)
 
 
 end Parameter
