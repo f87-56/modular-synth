@@ -1,0 +1,509 @@
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 5,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "2"
+          },
+          {
+            "Index" : 17,
+            "DefaultValue" : "2.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "2"
+          },
+          {
+            "Index" : 6,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Note frequency",
+        "Parameters" : [
+        ]
+      },
+      {
+        "IdentifyingName" : "Average",
+        "Parameters" : [
+          {
+            "Index" : 1,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 24,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 8,
+            "DefaultValue" : "0.1"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 7,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Sum",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.0029"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.5"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.5"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "RC low-pass filter",
+        "Parameters" : [
+          {
+            "Index" : 4,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "1000.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.05"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.5"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Sum",
+        "Parameters" : [
+          {
+            "Index" : 15,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : 12,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 9,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 10,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 14,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "-1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Sum",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "-1.0"
+          },
+          {
+            "Index" : 10,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 13,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 4,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.9"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 18,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Sum",
+        "Parameters" : [
+          {
+            "Index" : 19,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 16,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 20,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Constant",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.01"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "3"
+          },
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 23,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.03"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Average filter",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "6"
+          },
+          {
+            "Index" : 21,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Sum",
+        "Parameters" : [
+          {
+            "Index" : 11,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : 22,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 9,
+      "Position" : [
+        2052.0039859893895,
+        1018.9246506832142
+      ]
+    },
+    {
+      "SynthComponentIndex" : 14,
+      "Position" : [
+        1989.3696916117624,
+        776.3760724566937
+      ]
+    },
+    {
+      "SynthComponentIndex" : 15,
+      "Position" : [
+        2521.21906229884,
+        750.2043794496876
+      ]
+    },
+    {
+      "SynthComponentIndex" : 19,
+      "Position" : [
+        329.0475123301993,
+        724.6140175584569
+      ]
+    },
+    {
+      "SynthComponentIndex" : 17,
+      "Position" : [
+        885.9133269627487,
+        735.402762534414
+      ]
+    },
+    {
+      "SynthComponentIndex" : 20,
+      "Position" : [
+        61.52979737361409,
+        875.2902398348665
+      ]
+    },
+    {
+      "SynthComponentIndex" : 12,
+      "Position" : [
+        2439.816559641431,
+        1073.2279913422417
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        1400.3554799762846,
+        1117.4509674762185
+      ]
+    },
+    {
+      "SynthComponentIndex" : 8,
+      "Position" : [
+        2622.790157102274,
+        1290.3376133969523
+      ]
+    },
+    {
+      "SynthComponentIndex" : 22,
+      "Position" : [
+        959.3035847759643,
+        1488.3722664001116
+      ]
+    },
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        1668.3494977676792,
+        957.6754105798132
+      ]
+    },
+    {
+      "SynthComponentIndex" : 7,
+      "Position" : [
+        479.24783612651527,
+        1197.924749141946
+      ]
+    },
+    {
+      "SynthComponentIndex" : 11,
+      "Position" : [
+        2786.2120086052637,
+        887.7818421957118
+      ]
+    },
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        3740.649169921875,
+        1166.740478515625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 23,
+      "Position" : [
+        677.2220987551923,
+        1462.9890822539019
+      ]
+    },
+    {
+      "SynthComponentIndex" : 13,
+      "Position" : [
+        2246.5934833316715,
+        734.7915801496647
+      ]
+    },
+    {
+      "SynthComponentIndex" : 16,
+      "Position" : [
+        41.44807511958015,
+        707.9380627538264
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        57.023420727738085,
+        1078.4625278051635
+      ]
+    },
+    {
+      "SynthComponentIndex" : 24,
+      "Position" : [
+        3026.819441901185,
+        1027.9573933152597
+      ]
+    },
+    {
+      "SynthComponentIndex" : 21,
+      "Position" : [
+        402.22389361380283,
+        1473.6950359348043
+      ]
+    },
+    {
+      "SynthComponentIndex" : 10,
+      "Position" : [
+        1727.3201703664472,
+        1185.7360865211358
+      ]
+    },
+    {
+      "SynthComponentIndex" : 18,
+      "Position" : [
+        574.131503713639,
+        699.9262149889723
+      ]
+    },
+    {
+      "SynthComponentIndex" : 5,
+      "Position" : [
+        3455.4027655463633,
+        1260.396252501415
+      ]
+    },
+    {
+      "SynthComponentIndex" : 6,
+      "Position" : [
+        1104.0521753995858,
+        1137.7919552762091
+      ]
+    },
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1159.6783669581955,
+        907.5188464343864
+      ]
+    }
+  ]
+}
