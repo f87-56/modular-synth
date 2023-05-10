@@ -48,12 +48,10 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
 
   // NOT TYPE-SAFE
   def defaultValue_= (newVal:Any): Unit =
-    // A hack to circumvent compile errors. We'll have to trust that the data is of the right type.
-    // Since the defaultValue is not used in program logic, the sin may not be quite so cardinal.
-    // Sorry scala :(
-    newVal match
-      case a:T=>
-        _defaultValue = a
+    // An anti-pattern. May allow invalid assignments. Program structure would need to be revamped
+    // to prevent this
+    Try{_defaultValue = newVal.asInstanceOf[T]}
+
 
   /**
    * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.
