@@ -62,7 +62,7 @@
             "DefaultValue" : "1.0"
           },
           {
-            "Index" : 8,
+            "Index" : 26,
             "DefaultValue" : "0.1"
           }
         ]
@@ -136,11 +136,11 @@
           },
           {
             "Index" : -1,
-            "DefaultValue" : "1.0"
+            "DefaultValue" : "0.5"
           },
           {
             "Index" : -1,
-            "DefaultValue" : "0.5"
+            "DefaultValue" : "0.4"
           },
           {
             "Index" : -1,
@@ -165,7 +165,7 @@
         "IdentifyingName" : "Amplifier",
         "Parameters" : [
           {
-            "Index" : 9,
+            "Index" : 4,
             "DefaultValue" : "1.0"
           },
           {
@@ -208,7 +208,7 @@
             "DefaultValue" : "1.0"
           },
           {
-            "Index" : 4,
+            "Index" : 9,
             "DefaultValue" : "1.0"
           }
         ]
@@ -325,100 +325,69 @@
             "DefaultValue" : "0.0"
           }
         ]
+      },
+      {
+        "IdentifyingName" : "Note velocity",
+        "Parameters" : [
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 8,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 25,
+            "DefaultValue" : "1.0"
+          }
+        ]
       }
     ],
     "OutputComponentIndex" : 0
   },
   "VisualComponents" : [
     {
-      "SynthComponentIndex" : 9,
+      "SynthComponentIndex" : 10,
       "Position" : [
-        2052.0039859893895,
-        1018.9246506832142
-      ]
-    },
-    {
-      "SynthComponentIndex" : 14,
-      "Position" : [
-        1989.3696916117624,
-        776.3760724566937
-      ]
-    },
-    {
-      "SynthComponentIndex" : 15,
-      "Position" : [
-        2521.21906229884,
-        750.2043794496876
-      ]
-    },
-    {
-      "SynthComponentIndex" : 19,
-      "Position" : [
-        329.0475123301993,
-        724.6140175584569
-      ]
-    },
-    {
-      "SynthComponentIndex" : 17,
-      "Position" : [
-        885.9133269627487,
-        735.402762534414
-      ]
-    },
-    {
-      "SynthComponentIndex" : 20,
-      "Position" : [
-        61.52979737361409,
-        875.2902398348665
-      ]
-    },
-    {
-      "SynthComponentIndex" : 12,
-      "Position" : [
-        2439.816559641431,
-        1073.2279913422417
-      ]
-    },
-    {
-      "SynthComponentIndex" : 2,
-      "Position" : [
-        1400.3554799762846,
-        1117.4509674762185
-      ]
-    },
-    {
-      "SynthComponentIndex" : 8,
-      "Position" : [
-        2622.790157102274,
-        1290.3376133969523
+        1727.3201904296875,
+        1185.736083984375
       ]
     },
     {
       "SynthComponentIndex" : 22,
       "Position" : [
-        959.3035847759643,
-        1488.3722664001116
+        959.3035888671875,
+        1488.372314453125
       ]
     },
     {
-      "SynthComponentIndex" : 4,
+      "SynthComponentIndex" : 8,
       "Position" : [
-        1668.3494977676792,
-        957.6754105798132
+        2611.348876953125,
+        1296.6937255859375
       ]
     },
     {
-      "SynthComponentIndex" : 7,
+      "SynthComponentIndex" : 9,
       "Position" : [
-        479.24783612651527,
-        1197.924749141946
+        2091.41259765625,
+        922.3097534179688
       ]
     },
     {
-      "SynthComponentIndex" : 11,
+      "SynthComponentIndex" : 17,
       "Position" : [
-        2786.2120086052637,
-        887.7818421957118
+        885.913330078125,
+        735.4027709960938
+      ]
+    },
+    {
+      "SynthComponentIndex" : 13,
+      "Position" : [
+        2246.593505859375,
+        734.7915649414062
       ]
     },
     {
@@ -429,80 +398,143 @@
       ]
     },
     {
-      "SynthComponentIndex" : 23,
+      "SynthComponentIndex" : 11,
       "Position" : [
-        677.2220987551923,
-        1462.9890822539019
+        2786.2119140625,
+        887.7818603515625
       ]
     },
     {
-      "SynthComponentIndex" : 13,
+      "SynthComponentIndex" : 2,
       "Position" : [
-        2246.5934833316715,
-        734.7915801496647
-      ]
-    },
-    {
-      "SynthComponentIndex" : 16,
-      "Position" : [
-        41.44807511958015,
-        707.9380627538264
-      ]
-    },
-    {
-      "SynthComponentIndex" : 3,
-      "Position" : [
-        57.023420727738085,
-        1078.4625278051635
-      ]
-    },
-    {
-      "SynthComponentIndex" : 24,
-      "Position" : [
-        3026.819441901185,
-        1027.9573933152597
-      ]
-    },
-    {
-      "SynthComponentIndex" : 21,
-      "Position" : [
-        402.22389361380283,
-        1473.6950359348043
-      ]
-    },
-    {
-      "SynthComponentIndex" : 10,
-      "Position" : [
-        1727.3201703664472,
-        1185.7360865211358
+        1400.35546875,
+        1117.450927734375
       ]
     },
     {
       "SynthComponentIndex" : 18,
       "Position" : [
-        574.131503713639,
-        699.9262149889723
+        574.1315307617188,
+        699.9262084960938
       ]
     },
     {
-      "SynthComponentIndex" : 5,
+      "SynthComponentIndex" : 7,
       "Position" : [
-        3455.4027655463633,
-        1260.396252501415
+        479.2478332519531,
+        1197.9248046875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 12,
+      "Position" : [
+        2439.816650390625,
+        1073.22802734375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 15,
+      "Position" : [
+        2521.218994140625,
+        750.2044067382812
+      ]
+    },
+    {
+      "SynthComponentIndex" : 24,
+      "Position" : [
+        3026.8193359375,
+        1027.9573974609375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 14,
+      "Position" : [
+        1989.3697509765625,
+        776.3760986328125
+      ]
+    },
+    {
+      "SynthComponentIndex" : 19,
+      "Position" : [
+        329.0475158691406,
+        724.614013671875
       ]
     },
     {
       "SynthComponentIndex" : 6,
       "Position" : [
-        1104.0521753995858,
-        1137.7919552762091
+        1104.0521240234375,
+        1137.7919921875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 20,
+      "Position" : [
+        61.5297966003418,
+        875.2902221679688
+      ]
+    },
+    {
+      "SynthComponentIndex" : 16,
+      "Position" : [
+        41.44807434082031,
+        707.9380493164062
       ]
     },
     {
       "SynthComponentIndex" : 1,
       "Position" : [
-        1159.6783669581955,
-        907.5188464343864
+        1159.6783447265625,
+        907.5188598632812
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        57.02342224121094,
+        1078.4625244140625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 26,
+      "Position" : [
+        3004.112548828125,
+        1277.1451416015625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 23,
+      "Position" : [
+        677.2221069335938,
+        1462.9891357421875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        1668.3494873046875,
+        957.6754150390625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 25,
+      "Position" : [
+        2690.559814453125,
+        1612.3310546875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 5,
+      "Position" : [
+        3455.40283203125,
+        1260.396240234375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 21,
+      "Position" : [
+        402.2239074707031,
+        1473.695068359375
       ]
     }
   ]

@@ -1,0 +1,113 @@
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 4,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Average filter",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "6"
+          },
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "3"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.05"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.15"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.15"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2324.632080078125,
+        1168.335205078125
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        1668.6955049907674,
+        1234.608998804404
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        1380.056148273974,
+        1084.6519743484942
+      ]
+    },
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1729.5801284508443,
+        1037.297147677261
+      ]
+    },
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        2039.641779703038,
+        1122.9868967646998
+      ]
+    }
+  ]
+}
