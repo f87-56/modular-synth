@@ -25,14 +25,14 @@ class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
   this.children += grid
   grid.toBack()
 
-  private val components:scala.collection.mutable.Set[GUISynthComponent[_]] =
+  private val components:scala.collection.mutable.Set[GUISynthComponent] =
     scala.collection.mutable.Set()
 
-  def addComponent(comp:GUISynthComponent[_]):Unit =
+  def addComponent(comp:GUISynthComponent):Unit =
     this.children += comp
     components += comp
 
-  def removeComponent(comp:GUISynthComponent[_]):Unit =
+  def removeComponent(comp:GUISynthComponent):Unit =
     this.children -= comp
     components -= comp
 

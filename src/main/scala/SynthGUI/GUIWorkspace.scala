@@ -44,11 +44,11 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
   def synthCanvas: SynthCanvas = _synthCanvas
   def replaceCanvas(newCanvas:SynthCanvas): Unit =
     _synthCanvas = newCanvas
-    refreshZoomNode
+    refreshZoomNode()
     this.setup()
 
   private var zoomNode:Node = Group(_synthCanvas)
-  private def refreshZoomNode = zoomNode = Group(_synthCanvas)
+  private def refreshZoomNode() = zoomNode = Group(_synthCanvas)
 
   this.setup()
 
@@ -203,7 +203,7 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
       val comp = ComponentLibrary.createComponent(this.value.value, parentCanvas.synth)
       val pos = (this.getTranslateX, this.getTranslateY)
       comp.foreach(cmp =>
-        val a = new GUISynthComponent[Int](parentCanvas,cmp):
+        val a = new GUISynthComponent(parentCanvas,cmp):
           translateX = pos._1
           translateY = pos._2
         this.parentCanvas.addComponent(a)

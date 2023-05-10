@@ -24,9 +24,9 @@ import java.net.Socket
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
-class GUISynthComponent[T](val canvas:SynthCanvas, val synthComponent:SynthComponent[_]) extends VBox:
+class GUISynthComponent(val canvas:SynthCanvas, val synthComponent:SynthComponent[_]) extends VBox:
 
-  val parameters: Seq[GUISynthParameter[Any]] = synthComponent.parameters.map(a => GUISynthParameter[Any](canvas, this, a))
+  val parameters: Seq[GUISynthParameter] = synthComponent.parameters.map(a => GUISynthParameter(canvas, this, a))
 
   private val isOutputComp = canvas.synth.outputComponent == this.synthComponent
 
@@ -144,7 +144,7 @@ object GUISynthComponent:
   }
 
   // JSON encoder
-  given Encoder[GUISynthComponent[_]] = (a: GUISynthComponent[_]) => Json.obj(
+  given Encoder[GUISynthComponent] = (a: GUISynthComponent) => Json.obj(
     // Index of the component in the original list
     ("SynthComponentIndex", Json.fromInt(a.synthComponent.host.components.indexOf(
       a.synthComponent))),
@@ -160,8 +160,8 @@ object GUISynthComponent:
 
 end GUISynthComponent
 
-class GUISynthParameter[T](val canvas:SynthCanvas,
-                           val parentComponent:GUISynthComponent[_],
+class GUISynthParameter(val canvas:SynthCanvas,
+                           val parentComponent:GUISynthComponent,
                            val parameter: Parameter[_]) extends HBox:
   this.padding = Insets(20)
   spacing = 5
@@ -262,15 +262,15 @@ end GUISynthParameter
 /**
  * @param isOutput Is this an output or an input socket?
  */
-class LineSocket(val canvas: SynthCanvas, val parentNode:GUISynthParameter[_]|GUISynthComponent[_]) extends StackPane:
+class LineSocket(val canvas: SynthCanvas, val parentNode:GUISynthParameter|GUISynthComponent) extends StackPane:
 
   private val (isOutput: Boolean,
-  parentGUISynthComponent:GUISynthComponent[_],
-  parentGUISynthParam:Option[GUISynthParameter[_]]) =
+  parentGUISynthComponent:GUISynthComponent,
+  parentGUISynthParam:Option[GUISynthParameter]) =
     // Some issue here, might be unsafe
     parentNode match
-      case a: GUISynthComponent[_] => (true, a, None)
-      case b: GUISynthParameter[_] => (false, b.parentComponent, Some(b))
+      case a: GUISynthComponent => (true, a, None)
+      case b: GUISynthParameter => (false, b.parentComponent, Some(b))
 
   // The style of line used to connect these sockets
   private val connections:scala.collection.mutable.Buffer[ConnectorLine] = mutable.Buffer()
@@ -300,9 +300,9 @@ class LineSocket(val canvas: SynthCanvas, val parentNode:GUISynthParameter[_]|GU
   def circPosInCanvas: Point2D = canvas.sceneToLocal(plugSocket.localToScene(plugSocket.getCenterY, plugSocket.getCenterY))
 
   this.children = plugSocket
-  def plug() =
+  def plug(): Unit =
     plugSocket.fill = Color.Black
-  def unplug() =
+  def unplug(): Unit =
     plugSocket.fill = Color.White
 
   this.onDragDetected = event =>
