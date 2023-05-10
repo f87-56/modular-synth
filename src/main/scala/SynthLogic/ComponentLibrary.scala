@@ -34,6 +34,11 @@ object ComponentLibrary {
         NoteFrequency(host, Some(serialID))
     ),
 
+    ("Note velocity",
+      (host: ModularSynthesizer, serialID: String) =>
+        NoteVelocity(host, Some(serialID))
+    ),
+
     ("Amplifier",
       (host:ModularSynthesizer, serialID:String) =>
         Amplifier(host, Some(serialID))
@@ -58,7 +63,6 @@ object ComponentLibrary {
       (host: ModularSynthesizer, serialID: String) =>
         LowPassRC(host, Some(serialID))
     ),
-
 
     ("Average",
       (host: ModularSynthesizer, serialID: String) =>
@@ -157,6 +161,18 @@ object ComponentLibrary {
         if (msg.forall(_.getStatus == ShortMessage.NOTE_ON)) then
           freq = this.host.voice.message.map(SoundMath.noteFrequency).getOrElse(0.0)
       freq
+
+  class NoteVelocity(host: ModularSynthesizer,
+                      override val serializationTag: Option[String]) extends SynthComponent[Double](host):
+    private val MAX_VEL: Double = 127.0
+    private var vel = 0.0
+
+    override def compute: Double =
+      val msg = this.host.voice.message
+      if (msg.forall(_.getStatus == ShortMessage.NOTE_ON)) then
+        val msgVelocity = msg.flatMap(_.getMessage.lift(2))
+        msgVelocity.foreach(a => vel = a/MAX_VEL)
+      vel
 
   /**
    * A simple oscillator
