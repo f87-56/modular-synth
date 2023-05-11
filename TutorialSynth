@@ -1,0 +1,105 @@
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0"
+          },
+          {
+            "Index" : 3,
+            "DefaultValue" : "100.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 4,
+            "DefaultValue" : "0.4"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Note frequency",
+        "Parameters" : [
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.01"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.01"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          }
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        1620.803971196954,
+        1256.1531640351704
+      ]
+    },
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1596.011962890625,
+        1036.0487060546875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2326.0654296875,
+        1168.335205078125
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        1419.353759765625,
+        1166.275390625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        1942.521484375,
+        1090.8502197265625
+      ]
+    }
+  ]
+}

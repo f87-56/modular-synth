@@ -23,16 +23,19 @@ class KeyboardMidiControl(private var receiver: Option[Receiver]) extends MidiDe
 
 
   // In accordance with the specification https://docs.oracle.com/javase/8/docs/api/javax/sound/midi/Transmitter.html
+  // In java sound's implementations, getReceiver should be expected to return null.
   override def getReceiver: Receiver =
     receiver match
       case Some(a) => a
       case _ => null
   override def setReceiver(newReceiver: Receiver): Unit =
+    println("New receiver: " + newReceiver)
     receiver = Option(newReceiver)
 
-  override def getMidiDevice: MidiDevice = emptyMidiDevice
+  private val parentDevice = EmptyMidiDevice(this)
+  override def getMidiDevice: MidiDevice = parentDevice
   // Always present when our application runs.
-  override def close(): Unit = ()
+  override def close(): Unit = this.receiver = None
 
   private val KeyNoteMap:Map[KeyCode, Int] =
     Map(KeyCode.Z -> 60,
@@ -55,9 +58,19 @@ class KeyboardMidiControl(private var receiver: Option[Receiver]) extends MidiDe
   private val DefaultVelocity = 127
   private val DefaultChannel = 0
 
+
+  /**
+   * Key that was not pressed before has been pressed
+   * @param keyCode The code of the key
+   */
   override def onNewKeyDown(keyCode: KeyCode): Unit =
     val msg = makeMessage(true, keyCode)
     msg.foreach(a => receiver.foreach(_.send(a, NoTimeStamp)))
+
+  /**
+   * Key that was pressed has been released
+   * @param keyCode The code of the key
+   */
   override def onKeyUp(keyCode: KeyCode): Unit =
     val msg = makeMessage(false, keyCode)
     msg.foreach(a => receiver.foreach(_.send(a, NoTimeStamp)))
@@ -65,7 +78,7 @@ class KeyboardMidiControl(private var receiver: Option[Receiver]) extends MidiDe
   /**
    *
    * @param on Is this a MIDI_ON or a MIDI_OFF message?
-   * @return
+   * @return The wrapped message if successful, Failure if not.
    */
   private def makeMessage(on:Boolean, keyCode: KeyCode):Try[ShortMessage] =
     val note = KeyNoteMap.get(keyCode)
@@ -83,20 +96,27 @@ class KeyboardMidiControl(private var receiver: Option[Receiver]) extends MidiDe
   end makeMessage
 
 
-  private object emptyMidiDevice extends MidiDevice():
-    override def open(): Unit = ()
-    override def close(): Unit = ()
-    override def isOpen: Boolean = true
+  // An empty midi device to serve as the frame for our keyboard
+  private class EmptyMidiDevice(transmitter:MidiDeviceTransmitter) extends MidiDevice():
+    override def open(): Unit =
+      _open = true
+    override def close(): Unit = _open = false
+    override def isOpen: Boolean = _open
+
+    private var _open = true
     private object emptyInfo extends MidiDevice.Info("Computer keyboard","","","")
     override def getDeviceInfo: MidiDevice.Info = emptyInfo
-    override def getTransmitters: util.List[Transmitter] = java.util.List.of[Transmitter]()
+    override def getTransmitters: util.List[Transmitter] =
+      if _open then java.util.List.of[Transmitter](transmitter)
+      else java.util.List.of[Transmitter]()
     override def getReceivers: util.List[Receiver] = java.util.List.of[Receiver]()
-    override def getTransmitter: Transmitter = throw MidiUnavailableException()
+    override def getTransmitter: Transmitter =
+      if isOpen then transmitter else throw MidiUnavailableException()
     override def getReceiver: Receiver = throw MidiUnavailableException()
-    override def getMaxTransmitters: Int = 0
+    override def getMaxTransmitters: Int = 1
     override def getMaxReceivers: Int = 0
     override def getMicrosecondPosition: Long = 0L
-  end emptyMidiDevice
+  end EmptyMidiDevice
 
 end KeyboardMidiControl
 

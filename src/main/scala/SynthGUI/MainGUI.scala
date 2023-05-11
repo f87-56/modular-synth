@@ -21,6 +21,7 @@ import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.{HPos, Pos}
 import io.circe.syntax.*
 import scalafx.scene.control.Alert.AlertType
+import scala.jdk.CollectionConverters.*
 
 import java.io.File
 import javax.sound.midi.{MidiDevice, MidiDeviceTransmitter}
@@ -38,6 +39,7 @@ object MainGUI extends JFXApp3:
       width = 600
       height = 450
 
+
     // Root GUI component gets created and added to scene
     //val root = Pane()   // Pane, a "baseplate-like?" structure?
     val root = new BorderPane()   // Pane, a "baseplate-like?" structure?
@@ -46,9 +48,10 @@ object MainGUI extends JFXApp3:
     val scene = Scene(parent = root)  // A scene contains the scene graph (the data structure that represents the UI)
     stage.scene = scene
 
+
     // The main synth runtime.
     val mainRuntime = AudioResourceHandler.defaultRuntime
-    mainRuntime.openOutput()
+    val outLoop = mainRuntime.openOutput()
 
     // The "workbench" where synths are built
     val workspace = GUIWorkspace(mainRuntime.activeSynth)
@@ -97,12 +100,13 @@ object MainGUI extends JFXApp3:
             saveFile.foreach(saveSynth)
       )
 
+    // Interface with file IO
     def saveSynth(path:File): Unit =
       currentSynthDir = Some(path)
       SynthSerializer.saveCanvas(workspace.synthCanvas, path)
       OutputLog.log("Saved synth to: " + path)
 
-    // TODO: Add some logging here
+    // Get a file to save to
     def saveFile: Option[File] =
       val fileChooser = new FileChooser:
         currentSynthDir.foreach(a => initialDirectory = File(a.getParent))
@@ -110,7 +114,7 @@ object MainGUI extends JFXApp3:
       val sFile = Option(fileChooser.showSaveDialog(stage))
       sFile
 
-    // TODO: Add some logging here
+    // Get a file to load from
     def getFile: Option[File] =
       val fileChoose = new FileChooser:
         currentSynthDir.foreach(a => initialDirectory = File(a.getParent))
@@ -153,9 +157,9 @@ object MainGUI extends JFXApp3:
             val devices =
               AudioResourceHandler.MIDIInputs
             val deviceButtons = devices.map{
-              a => new CheckMenuItem(a.getMidiDevice.getDeviceInfo.toString):
+              a => new CheckMenuItem(a.getDeviceInfo.toString):
                 selected = {
-                  if(a.getReceiver != null) then true
+                  if a.getTransmitters.asScala.nonEmpty then true
                   else false
                 }
 
@@ -164,13 +168,13 @@ object MainGUI extends JFXApp3:
                 selected.onInvalidate {
                   // If we have checked it, set it to send to our synth.
                   if selected.value then
-                    a.setReceiver(mainRuntime)
+                    AudioResourceHandler.connectToSynth(a, mainRuntime) match
+                      case Failure(exception) => OutputLog.log("Could not open midi device: " + exception)
+                      case Success(value) => ()
                   // If not in use in another runtime, set to null
                   // This adheres to the expected behaviour in java sound.
-                  else if a.getReceiver == mainRuntime then
-                    // TODO: THIS SHOULD NOT BE DONE HERE, BUT IN THE AudioResourceHandler CLASS
-                    a.setReceiver(null)
-                    a.close()
+                  else if a.getTransmitters.asScala.exists(_.getReceiver == mainRuntime) then
+                    AudioResourceHandler.freeDevice(a)
                 }
             }
             deviceButtons :+ refreshButton
@@ -178,8 +182,6 @@ object MainGUI extends JFXApp3:
           items = makeMidiDeviceList
           refreshButton.onAction = _ => items = makeMidiDeviceList
         },
-        new Menu("Settings"),
-        new Menu("Help")
       )
 
     // The bottom bar displays log messages.
@@ -190,7 +192,6 @@ object MainGUI extends JFXApp3:
         text = "Log messages appear here"
         this.text.onChange{(src, oldVal, newVal) =>
           this.text = newVal.split('\n').mkString(" ")
-          println(newVal.split('\n').mkString(" "))
         }
       children = messageText
       override def onNewMessage(): Unit =
@@ -212,15 +213,6 @@ object MainGUI extends JFXApp3:
         currentSynthDir.foreach(saveSynth)
       else if (event.code == KeyCode.P) then
         println(workspace.synthCanvas.synth)
-        
-      // Load default synth, a debugging shortcut
-      /*
-      else if (event.code == KeyCode.L && event.isControlDown) then
-        // TODO: Replace with save function
-        event.consume()
-        // TODO: Fix this nonsense also
-        savePrompt
-        synthLoadSetup(File("./DefaultSynth"))*/
 
       else
         MKBInputHandler.keyInput(event)
@@ -228,6 +220,13 @@ object MainGUI extends JFXApp3:
     scene.onKeyReleased = event => {
       MKBInputHandler.keyInput(event)
     }
+
+    // Close all resources that we used
+    stage.onCloseRequest = * =>
+      AudioResourceHandler.freeAllDevices()
+      savePrompt()
+      mainRuntime.close()
+      Platform.exit()
 
   end start
 

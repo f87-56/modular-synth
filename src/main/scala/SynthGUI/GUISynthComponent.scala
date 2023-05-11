@@ -45,7 +45,7 @@ class GUISynthComponent(val canvas:SynthCanvas, val synthComponent:SynthComponen
       if(!isOutputComp) then
         children +=
           new Label():
-            text = s"out (${classOf[Int].toString})"
+            text = s"out\n${synthComponent.initialValue.getClass.getName}"
             padding = Insets(5)
         children += outputSocket
       this.alignment = Pos.BaselineRight
@@ -242,7 +242,7 @@ class GUISynthParameter(val canvas:SynthCanvas,
     case d:String =>
       this.children += new TextField()
   this.children += new Label:
-    text = parameter.name
+    text = f"${parameter.name} \n${parameter.defaultValue.getClass.getName}"
 
   style =
     """

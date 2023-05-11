@@ -12,7 +12,7 @@ import scala.concurrent.Future
 import scala.util.Try
 
 /**
- * The "Executuion ground" for modular synthesizers. Handles passing information between the sound system and modular synthesizers.
+ * The "Execution ground" for modular synthesizers. Handles passing information between the sound system and modular synthesizers.
  */
 class SynthRuntime extends Receiver:
 
@@ -35,18 +35,20 @@ class SynthRuntime extends Receiver:
   line.start()
 
   private var kill = false
+
   // All to-and-fro is to happen here.
   // Initialize thread, etc.
   def openOutput(): Future[Unit] =
     kill = false
+
     def writeToAudio(): Unit =
-        val data = buildOutput(Try(Some(messageQueue.dequeue())).getOrElse(None))
-        line.write(data, 0, BYTE_BUFFER_SIZE)
+      val data = buildOutput(Try(Some(messageQueue.dequeue())).getOrElse(None))
+      line.write(data, 0, BYTE_BUFFER_SIZE)
 
     val a = LazyList.continually(writeToAudio())
     Future(a.takeWhile(* => !kill).foreach(_ => ()))
 
-  def closeOutput() =
+  private def closeOutput(): Unit =
     kill = true
 
   def buildOutput(shortMessage:Option[MidiMessage]):Array[Byte] =
@@ -55,9 +57,7 @@ class SynthRuntime extends Receiver:
         *Short.MaxValue).toShort)
       .flatMap(a => MathUtilities.breakToBytes(a))
 
-  // TODO: Make it run on another thread
-  /**
-   * TODO: Make this do something
+  /*
    * @param msg
    * @param timestamp
    */
@@ -66,7 +66,11 @@ class SynthRuntime extends Receiver:
     if(status == ShortMessage.NOTE_ON ||status == ShortMessage.NOTE_OFF) then
       messageQueue += msg
 
-  def close(): Unit = line.close()
+  // Stops output and frees up audio resources
+  def close(): Unit =
+    closeOutput()
+    line.stop()
+    line.close()
 
 end SynthRuntime
 object SynthRuntime:

@@ -18,7 +18,6 @@ import scalafx.Includes.*
 import scalafx.application.Platform
 
 import java.awt.{MouseInfo, Point}
-import scala.concurrent.Future
 import scala.util.Try
 
 

@@ -87,15 +87,12 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
           // Disconnect old one
           this.x()
 
-          //println(newInput)
           newInput.addConnection(this)
 
           // anti-pattern
           input = Some(newInput.asInstanceOf[SynthComponent[T]])
-          //println("NEW INPUT: " + input)
           1
         else
-          println("ARRRR ME HEART STOPPED")
           throw InvalidParameterException()
       }
 
