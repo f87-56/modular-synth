@@ -16,6 +16,10 @@
           {
             "Index" : -1,
             "DefaultValue" : "0"
+          },
+          {
+            "Index" : 4,
+            "DefaultValue" : "1.0"
           }
         ]
       },
@@ -52,6 +56,11 @@
             "DefaultValue" : "0.1"
           }
         ]
+      },
+      {
+        "IdentifyingName" : "Note frequency",
+        "Parameters" : [
+        ]
       }
     ],
     "OutputComponentIndex" : 0
@@ -60,29 +69,36 @@
     {
       "SynthComponentIndex" : 1,
       "Position" : [
-        1580.6336883544936,
-        589.6504507064819
+        1760.8406982421875,
+        610.5440063476562
       ]
     },
     {
       "SynthComponentIndex" : 2,
       "Position" : [
-        2093.1046508789077,
-        750.1835594177246
+        2121.83349609375,
+        739.7367553710938
       ]
     },
     {
-      "SynthComponentIndex" : 3,
+      "SynthComponentIndex" : 4,
       "Position" : [
-        1611.5055297851577,
-        947.7627620697021
+        1486.029674022082,
+        673.6108912975665
       ]
     },
     {
       "SynthComponentIndex" : 0,
       "Position" : [
-        2722.6266235351577,
-        743.7477989196777
+        2460.125244140625,
+        751.5828857421875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        1809.619384765625,
+        908.5873413085938
       ]
     }
   ]

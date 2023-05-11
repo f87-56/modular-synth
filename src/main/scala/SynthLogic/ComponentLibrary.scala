@@ -179,8 +179,8 @@ object ComponentLibrary {
    */
   class Oscillator(host:ModularSynthesizer,
                    override val serializationTag: Option[String]) extends SynthComponent[Double](host):
-    private val oscillatorType:Parameter[Int] =
-      new Parameter("type", "", true,  0, this) with EnumerableParam("sine", "square", "sawtooth", "noise")
+    private val oscillatorType:Parameter[Int] with EnumerableParam =
+      new Parameter("type", "", true,  0, this) with EnumerableParam(List("sine", "square", "sawtooth", "noise", "triangle"))
 
     // For FM
     val frequency: Parameter[Double] = Parameter[Double]("frequency", "", true, 1, this)
@@ -190,8 +190,12 @@ object ComponentLibrary {
     private var phase = 0.0
     override def compute: Double =
       val ret =
+        // Make it wrap around
+        val i = this.oscillatorType.value
+        val n = oscillatorType.choices.size
+        val modIndex = (i % n + n) % n
         //println("Oscillator type: " + this.oscillatorType.value)
-        this.oscillatorType.value match
+        modIndex match
           case 0 => MathUtilities.parametricSin(1, 0, phase, 0, 0)
           case 1 => MathUtilities.squareWave(1,phase)
           case 2 => MathUtilities.saw(1, phase)

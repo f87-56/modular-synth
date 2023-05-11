@@ -135,7 +135,7 @@ end Parameter
 /**
  * For parameters where discrete choices are presented
  */
-trait EnumerableParam(choices:String*):
+trait EnumerableParam(val choices:List[String]):
   this: Parameter[Int] =>
   def enumValue:String =
     choices.lift(this.value).getOrElse("")
