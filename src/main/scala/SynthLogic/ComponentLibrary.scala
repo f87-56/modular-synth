@@ -196,6 +196,7 @@ object ComponentLibrary {
           case 1 => MathUtilities.squareWave(1,phase)
           case 2 => MathUtilities.saw(1, phase)
           case 3 => MathUtilities.noise(1)
+          case 4 => MathUtilities.tri(1,phase)
           case _ => 0
       phase = (phase + 2*math.Pi*host.deltaTime*frequency.value)%(2*math.Pi)
       ret

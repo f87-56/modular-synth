@@ -71,6 +71,10 @@ package SynthUtilities:
     def saw(amplitude:Double, phase:Double): Double =
       lerp(-amplitude,amplitude,(phase/(2*Pi))%1)
 
+    def tri(amplitude:Double, phase:Double):Double =
+      val pZeroOne = phase/(2.0*Pi)
+      2*math.abs(2*(pZeroOne - math.floor(pZeroOne + 0.5))) - 1.0
+
     def squareWave(amplitude:Double, phase:Double): Double =
       if(phase%(2*Pi) <= Pi) then 1.0 else -1.0
 
