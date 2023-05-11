@@ -5,7 +5,7 @@
         "IdentifyingName" : "",
         "Parameters" : [
           {
-            "Index" : 5,
+            "Index" : 7,
             "DefaultValue" : "0.5"
           }
         ]
@@ -82,51 +82,99 @@
             "DefaultValue" : "3000.0"
           }
         ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.01"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.01"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 5,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 6,
+            "DefaultValue" : "1.0"
+          }
+        ]
       }
     ],
     "OutputComponentIndex" : 0
   },
   "VisualComponents" : [
     {
-      "SynthComponentIndex" : 0,
+      "SynthComponentIndex" : 1,
       "Position" : [
-        2659.878173828125,
-        1084.19677734375
-      ]
-    },
-    {
-      "SynthComponentIndex" : 5,
-      "Position" : [
-        2344.6582867861107,
-        1091.8821368694335
+        1006.8441162109375,
+        1290.5665283203125
       ]
     },
     {
       "SynthComponentIndex" : 4,
       "Position" : [
-        2102.4215881662203,
-        1094.8393689196346
+        1717.6209716796875,
+        1115.6541748046875
       ]
     },
     {
-      "SynthComponentIndex" : 1,
+      "SynthComponentIndex" : 6,
       "Position" : [
-        1650.320801406146,
-        1173.2320050372432
+        2200.1322625037046,
+        1334.65207287076
+      ]
+    },
+    {
+      "SynthComponentIndex" : 7,
+      "Position" : [
+        2505.653323196,
+        1118.246845696824
       ]
     },
     {
       "SynthComponentIndex" : 2,
       "Position" : [
-        1621.7052496152783,
-        1035.681668255757
+        1005.9283447265625,
+        966.6838989257812
+      ]
+    },
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2829.406005859375,
+        1091.1163330078125
+      ]
+    },
+    {
+      "SynthComponentIndex" : 5,
+      "Position" : [
+        2002.322998046875,
+        1118.787353515625
       ]
     },
     {
       "SynthComponentIndex" : 3,
       "Position" : [
-        1871.6374830710356,
-        1092.0179375218545
+        1350.20361328125,
+        1115.7879638671875
       ]
     }
   ]

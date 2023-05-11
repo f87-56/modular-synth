@@ -5,7 +5,7 @@
         "IdentifyingName" : "",
         "Parameters" : [
           {
-            "Index" : 3,
+            "Index" : 8,
             "DefaultValue" : "0.5"
           }
         ]
@@ -18,7 +18,7 @@
             "DefaultValue" : "0"
           },
           {
-            "Index" : -1,
+            "Index" : 7,
             "DefaultValue" : "100.0"
           }
         ]
@@ -75,11 +75,99 @@
             "DefaultValue" : "0"
           }
         ]
+      },
+      {
+        "IdentifyingName" : "Note frequency",
+        "Parameters" : [
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 9,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.01"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.01"
+          }
+        ]
       }
     ],
     "OutputComponentIndex" : 0
   },
   "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1190.1820068359375,
+        1022.4752807617188
+      ]
+    },
+    {
+      "SynthComponentIndex" : 9,
+      "Position" : [
+        2287.7364072094006,
+        1386.8575440429063
+      ]
+    },
+    {
+      "SynthComponentIndex" : 7,
+      "Position" : [
+        998.3933863523147,
+        1134.7378899428297
+      ]
+    },
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2938.61083984375,
+        1170.7222900390625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 8,
+      "Position" : [
+        2635.0967021288343,
+        1170.3333758946465
+      ]
+    },
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        2314.164306640625,
+        1154.7933349609375
+      ]
+    },
+    {
+      "SynthComponentIndex" : 5,
+      "Position" : [
+        1723.078857421875,
+        1112.0723876953125
+      ]
+    },
     {
       "SynthComponentIndex" : 4,
       "Position" : [
@@ -95,38 +183,10 @@
       ]
     },
     {
-      "SynthComponentIndex" : 0,
-      "Position" : [
-        2563.2177734375,
-        1128.9569091796875
-      ]
-    },
-    {
-      "SynthComponentIndex" : 3,
-      "Position" : [
-        2314.164306640625,
-        1154.7933349609375
-      ]
-    },
-    {
       "SynthComponentIndex" : 2,
       "Position" : [
         1467.411376953125,
         1138.6458740234375
-      ]
-    },
-    {
-      "SynthComponentIndex" : 1,
-      "Position" : [
-        1190.1820068359375,
-        1022.4752807617188
-      ]
-    },
-    {
-      "SynthComponentIndex" : 5,
-      "Position" : [
-        1723.078857421875,
-        1112.0723876953125
       ]
     }
   ]
