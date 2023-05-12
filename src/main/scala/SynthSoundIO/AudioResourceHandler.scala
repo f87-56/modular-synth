@@ -24,27 +24,6 @@ object AudioResourceHandler {
     }.toOption).filter(_.getMaxTransmitters != 0)
     keyboardControl.getMidiDevice +: validDevices
 
-    /*
-    val allTransmitters = deviceInfo.map(a => Try{
-      val device =  MidiSystem.getMidiDevice(a)
-      //device.getTransmitter
-      // Open the devices for our use
-      if(!device.isOpen) then
-        device.open()
-        device.getTransmitter
-      else
-        // See if we are able to get an existing transmitter. Else, open a new one.
-        val a = device.getTransmitters.toArray.headOption
-        a.getOrElse{device.getTransmitter}
-    })
-    //val res = keyboardControl +: allDevices.filter(_.isInstanceOf[Receiver])
-    OutputLog.log(allTransmitters.mkString("Array(", ", ", ")"))
-    val res = keyboardControl +: allTransmitters.collect{case Success(a:MidiDeviceTransmitter) => a}
-    // WARNING: CRASHING BEHAVIOUR
-    openTransmitters = res.toList
-    println("Open transmitters: " + openTransmitters)
-    res*/
-
   /**
    * Sets the synth runtime this device sends to.
    * @param transmitter

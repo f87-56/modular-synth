@@ -20,7 +20,7 @@ import scalafx.scene.paint.Color
 class SynthCanvas(private var _synth:ModularSynthesizer) extends Pane:
 
   this.setMinSize(SynthCanvas.canvasSize._1, SynthCanvas.canvasSize._2)
-  val grid = SynthCanvas.bgGrid
+  private val grid = SynthCanvas.bgGrid
 
   this.children += grid
   grid.toBack()
@@ -110,7 +110,7 @@ object SynthCanvas:
   yield
     val canvas = SynthCanvas(synth)
     val guiComps = synth.components.map(a => GUISynthComponent(canvas, a))
-    guiComps.foreach(canvas.addComponent(_))  // Add the components to canvas
+    guiComps.foreach(canvas.addComponent)  // Add the components to canvas
 
     // The lines
     val componentBros = synth.components zip guiComps

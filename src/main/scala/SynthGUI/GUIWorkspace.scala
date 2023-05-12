@@ -47,7 +47,7 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
     this.setup()
 
   private var zoomNode:Node = Group(_synthCanvas)
-  private def refreshZoomNode() = zoomNode = Group(_synthCanvas)
+  private def refreshZoomNode(): Unit = zoomNode = Group(_synthCanvas)
 
   this.setup()
 
@@ -101,7 +101,7 @@ class GUIWorkspace(synth:ModularSynthesizer) extends ScrollPane:
     _synthCanvas.setScaleY(zoomScale)
 
   // Reset zoom and position
-  def reset() = ???
+  //def reset() = ???
 
   // Zooming in/out. Called from the callback function
   private def onScroll(wheelDelta:Double, mousePoint:Point2D): Unit =

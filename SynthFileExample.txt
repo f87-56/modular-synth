@@ -1,0 +1,124 @@
+This is an example of what a serialized synth looks like.
+
+The structure of the files is as follows:
+    -The first part of the file is dedicated to the logical parts of the program. It stores
+    all the information required to build and exact ModularSynthesizer.
+    -The second part stores the UI-specific information, that is the position of the nodes.
+    The two parts combined hold all the necessary information to build an exact SynthCanvas.
+
+    The first part can be seen as being a list of tuples. Each of those tuples holds:
+        -The name of a synth component
+        -A list of its parameters. For each parameter:
+            - the index of the synth comopnent it is connected to (in the toplevel list). -1 if not connected.
+            - its default value, if its type is among those supported
+        -The first part ends with an entry which holds the index of the output component.
+    The second part is a list of positional information. Each entry holds:
+        - The index of a synth component in the first part.
+        - (x,y) coordinate values, which mark the position.
+
+For example, a sine synth with a simple volume envelope:
+{
+  "Synth" : {
+    "Components" : [
+      {
+        "IdentifyingName" : "",
+        "Parameters" : [
+          {
+            "Index" : 2,
+            "DefaultValue" : "0.5"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Oscillator",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0"
+          },
+          {
+            "Index" : 4,
+            "DefaultValue" : "100.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Amplifier",
+        "Parameters" : [
+          {
+            "Index" : 1,
+            "DefaultValue" : "1.0"
+          },
+          {
+            "Index" : 3,
+            "DefaultValue" : "1.0"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Envelope",
+        "Parameters" : [
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          },
+          {
+            "Index" : -1,
+            "DefaultValue" : "0.1"
+          }
+        ]
+      },
+      {
+        "IdentifyingName" : "Note frequency",
+        "Parameters" : [
+        ]
+      }
+    ],
+    "OutputComponentIndex" : 0
+  },
+  "VisualComponents" : [
+    {
+      "SynthComponentIndex" : 3,
+      "Position" : [
+        1394.205810546875,
+        1200.4283447265625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 0,
+      "Position" : [
+        2102.446044921875,
+        1139.1416015625
+      ]
+    },
+    {
+      "SynthComponentIndex" : 4,
+      "Position" : [
+        1161.6206344159373,
+        1002.6751252062468
+      ]
+    },
+    {
+      "SynthComponentIndex" : 2,
+      "Position" : [
+        1729.814453125,
+        1085.2294921875
+      ]
+    },
+    {
+      "SynthComponentIndex" : 1,
+      "Position" : [
+        1334.9393310546875,
+        941.5479125976562
+      ]
+    }
+  ]
+}

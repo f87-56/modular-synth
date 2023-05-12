@@ -52,26 +52,7 @@ case class Parameter[T](name: String, description: String, takesInput: Boolean =
     // to prevent this
     Try{_defaultValue = newVal.asInstanceOf[T]}
 
-
   /**
-   * WARNING! AN EFFECTFUL FUNCTION! This is one of the few places I'll allow it in the synth structure.
-   * Connect a SynthComponent to this parameter. This should be THE ONLY method used for this purpose.
-   *
-   * Does nothing and returns a failure if the newComponent does not belong to the same synth.
-   *
-   * @param newInput The new input component
-   */
-  /*
-  @targetName("connect")
-  infix def <==(newInput:SynthComponent[T]):Try[Int] =
-    if(!takesInput || (newInput.host != parent.host)) then Failure(IllegalArgumentException())
-    else
-      newInput.addConnection(this)
-      input = Some(newInput.asInstanceOf[SynthComponent[T]])
-      Success(1)*/
-
-  /**
-   * TODO: Refaactor this class????
    * @param newInput
    * @tparam A
    * @return
@@ -127,8 +108,6 @@ object Parameter:
     defaultVal <- c.downField("DefaultValue").as[String]
   yield
     (index, defaultVal)
-
-
 
 end Parameter
 
