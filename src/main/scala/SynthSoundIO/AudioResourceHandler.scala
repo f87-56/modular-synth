@@ -31,7 +31,6 @@ object AudioResourceHandler {
    * @return
    */
   def connectToSynth(midiDevice: MidiDevice, synthRuntime: SynthRuntime): Try[Unit] =
-    println("OPENING: " + midiDevice)
     Try{midiDevice.open()
       midiDevice.getTransmitter.setReceiver(synthRuntime)
       openedDevices = (openedDevices :+ midiDevice).distinct
@@ -47,7 +46,6 @@ object AudioResourceHandler {
   def freeDevice(midiDevice: MidiDevice): Try[Unit] =
     Try{
       //transmitter.getMidiDevice.close()
-      println("FREEING: " + midiDevice)
       midiDevice.getTransmitters.asScala.foreach(a => a.close())
       midiDevice.close()
       openedDevices = openedDevices.distinct.filter(_ != midiDevice)
