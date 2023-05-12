@@ -194,7 +194,6 @@ object ComponentLibrary {
         val i = this.oscillatorType.value
         val n = oscillatorType.choices.size
         val modIndex = (i % n + n) % n
-        //println("Oscillator type: " + this.oscillatorType.value)
         modIndex match
           case 0 => MathUtilities.parametricSin(1, 0, phase, 0, 0)
           case 1 => MathUtilities.squareWave(1,phase)
@@ -276,14 +275,6 @@ object ComponentLibrary {
       b2 = b0
       a1 = 2.0 * r * (g * g - 1.0)
       a2 = r * (1.0 - g * (g - resonance.value))
-      println("---------")
-      println(this.a1)
-      println(this.a2)
-      println(this.b0)
-      println(this.b1)
-      println(this.b2)
-      println("-----------")
-
 
     def filter(x:Double): Double =
       val y = b0 * x + w1

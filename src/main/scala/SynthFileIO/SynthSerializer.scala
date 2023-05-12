@@ -18,7 +18,6 @@ object SynthSerializer:
     canvas
 
   def loadCanvas(jsonText:String):Try[SynthCanvas] =
-    println("AHOY")
     val canvas = decode[SynthCanvas](jsonText).toTry
     OutputLog.log("Loading synth from string literal")
     canvas

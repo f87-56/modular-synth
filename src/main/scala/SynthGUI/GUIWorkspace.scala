@@ -207,7 +207,6 @@ class ComponentSearchBox(val parentCanvas:SynthCanvas) extends ComboBox[String]:
           translateY = pos._2
         this.parentCanvas.addComponent(a)
         a.layout()
-        println(parentCanvas.synth.components)
       )
     this.delete()
 
