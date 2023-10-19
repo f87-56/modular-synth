@@ -98,6 +98,7 @@ object Parameter:
   given Encoder[Parameter[_]] = (a: Parameter[_]) => Json.obj(
     // Index of the input. If none, -1.
     ("Index", Json.fromInt(a.getInput.map(b => b.host.components.indexOf(b)).getOrElse(-1))),
+
     // Encode them all, worry about validity when decoding
     ("DefaultValue", Json.fromString(a.defaultValue.toString))
   )
@@ -116,5 +117,6 @@ end Parameter
  */
 trait EnumerableParam(val choices:List[String]):
   this: Parameter[Int] =>
+
   def enumValue:String =
     choices.lift(this.value).getOrElse("")
