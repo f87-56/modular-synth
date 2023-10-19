@@ -10,9 +10,11 @@ As the program is built in scala, running it will need a working installation of
 
 The progam should compile and start.
 
+If you want to quickly view the capabilities of the program: From the top bar, select Load synth. Choose a file under "DemoSynths". I recommend "TunableKarplus".
+
 ## Features
 
-This program provides a node graph editor, where different "synthesizer components" can be wired together. It provides a simplistic library consisting of basic components, such as oscillators and envelopes. The 
-The synthesizer can be made to respond to MIDI input.
+This program provides a node graph editor, where different "synthesizer components" can be wired together. It provides a simplistic library consisting of basic components, such as oscillators and envelopes. Components have input and output signals of certain data types. A component performs some transformation to its inputs, giving the result as the output. 
+The synthesizer can be made to respond to MIDI input. Synths can be saved to files, and loaded later.
 
-For a more detailed technical spec, as well as a primitive use guide, see [OS2_Final_Document.pdf](https://github.com/f87-56/modular-synth/blob/master/OS2_Final_Document.pdf).
+For a more detailed technical spec, as well as a primitive use guide, see [OS2_Final_Document.pdf](https://github.com/f87-56/modular-synth/blob/master/OS2_Final_Document.pdf). 
