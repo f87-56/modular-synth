@@ -8,7 +8,7 @@ As the program is built in scala, running it will need a working installation of
 
     sbt compile run
 
-The progam should compile and start. (This has been tested with OpenJDK 17).
+The progam should compile and start. (This has been tested with OpenJDK 17. JavaFX is also required).
 
 If you want to quickly view the capabilities of the program: From the top bar, select Load synth. Choose a file under "DemoSynths". I recommend "TunableKarplus".
 
